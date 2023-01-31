@@ -1,0 +1,18 @@
+final languages = [
+  {'localeId': '1028', 'locale': 'Chinese (Simplified)'},
+  {'localeId': '2052', 'locale': 'Chinese (Traditional)'},
+  {'localeId': '1029', 'locale': 'Czech'},
+  {'localeId': '1030', 'locale': 'Danish'},
+  {'localeId': '1043', 'locale': 'Dutch - Netherlands'},
+  {'localeId': '3081', 'locale': 'English - Australia'},
+  {'localeId': '4105', 'locale': 'English - Canada'},
+  {'localeId': '6153', 'locale': 'English - Ireland'},
+  {'localeId': '2057', 'locale': 'English - United Kingdom'},
+  {'localeId': '1033', 'locale': 'English - United States'},
+  {'localeId': '1036', 'locale': 'French - France'},
+  {'localeId': '1031', 'locale': 'German - Germany'},
+  {'localeId': '1040', 'locale': 'Italian'},
+  {'localeId': '1045', 'locale': 'Polish'},
+  {'localeId': '3082', 'locale': 'Spanish'},
+  {'localeId': '1053', 'locale': 'Swedish'},
+];

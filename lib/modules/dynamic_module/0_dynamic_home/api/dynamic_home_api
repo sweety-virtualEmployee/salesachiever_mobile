@@ -1,0 +1,12 @@
+import 'package:salesachiever_mobile/api/api.dart';
+import 'package:salesachiever_mobile/utils/storage_util.dart';
+
+class DynamicHomeApi {
+  final String api = StorageUtil.getString('api');
+  Future<dynamic> getHomeModule() async {
+    final response = await Api().getResult('$api/System/System.CustomFunctionList?FunctionName=GetEntityModules');
+    return response.data;
+  }
+
+ 
+}

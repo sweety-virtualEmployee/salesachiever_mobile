@@ -1,0 +1,3 @@
+const ACCESS_CODES = {
+  'OPPORTUNTIY': 40011
+};
