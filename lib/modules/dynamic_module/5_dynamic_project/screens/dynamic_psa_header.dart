@@ -7,13 +7,14 @@ class DynamicPsaHeader extends StatelessWidget {
   final String title;
   final String projectID;
   final String status;
+  final String siteTown;
   final bool isVisible;
 
   const DynamicPsaHeader(
       {Key? key,
         required this.icon,
         required this.title,
-        required this.isVisible, required this.projectID, required this.status,})
+        required this.isVisible, required this.projectID, required this.status, required this.siteTown,})
       : super(key: key);
 
   @override
@@ -34,39 +35,67 @@ class DynamicPsaHeader extends StatelessWidget {
                   icon,
                 ),
               ),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  PlatformText(
-                    title,
-                    style: TextStyle(
-                      fontWeight: FontWeight.w400,
-                      fontSize: 16,
-                      color: Colors.black87,
-                    ),
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  PlatformText(
-                    projectID,
-                    style: TextStyle(
-                      fontWeight: FontWeight.w400,
-                      fontSize: 16,
-                      color: Colors.black87,
-                    ),
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  PlatformText(
-                    status,
-                    style: TextStyle(
-                      fontWeight: FontWeight.w400,
-                      fontSize: 16,
-                      color: Colors.black87,
-                    ),
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                 // SizedBox(height: 2,),
+              Padding(
+                padding: const EdgeInsets.only(left:10.0),
+                child: Container(
+                  width: MediaQuery.of(context).size.width *0.8,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          PlatformText(
+                            title,
+                            style: TextStyle(
+                              fontWeight: FontWeight.w400,
+                              fontSize: 16,
+                              color: Colors.black87,
+                            ),
+                            overflow: TextOverflow.ellipsis,
+                          ),
 
-                ],
+                          Text(
+                            projectID,
+                            style: TextStyle(
+                              fontWeight: FontWeight.w400,
+                              fontSize: 16,
+                              color: Colors.black87,
+                            ),
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                         // SizedBox(width: 10,)
+                        ],
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            status,
+                            style: TextStyle(
+                              fontWeight: FontWeight.w400,
+                              fontSize: 16,
+                              color: Colors.black87,
+                            ),
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          Text(
+                            siteTown,
+                            style: TextStyle(
+                              fontWeight: FontWeight.w400,
+                              fontSize: 16,
+                              color: Colors.black87,
+                            ),
+                            overflow: TextOverflow.ellipsis,
+                          ),
+
+                        ],
+                      ),
+                     // SizedBox(height: 2,),
+
+                    ],
+                  ),
+                ),
               ),
             ],
           ),
@@ -77,22 +106,5 @@ class DynamicPsaHeader extends StatelessWidget {
         ],
       ),
     );
-  }
-
-  // Define a function to calculate the adequate color:
-  calculateBackgroundColor({required double value}) {
-    if (value == 1 / 5) {
-      return AlwaysStoppedAnimation<Color>(Colors.red);
-    } else if (value == 2 / 5) {
-      return AlwaysStoppedAnimation<Color>(Colors.green);
-    } else if (value == 3 / 5) {
-      return AlwaysStoppedAnimation<Color>(Colors.yellow);
-    } else if (value == 4 / 5) {
-      return AlwaysStoppedAnimation<Color>(Colors.lightGreen);
-    } else if (value == 5 / 5) {
-      return AlwaysStoppedAnimation<Color>(Colors.blue);
-    } else {
-      return Colors.grey;
-    }
   }
 }

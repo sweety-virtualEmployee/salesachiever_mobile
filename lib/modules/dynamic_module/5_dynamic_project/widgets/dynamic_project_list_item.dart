@@ -81,7 +81,7 @@ class _ProjectListItemWidgetState
                   Padding(
                     padding: const EdgeInsets.fromLTRB(0, 4, 12, 4),
                     child: Text(
-                      '${LangUtil.getString('PROJECT', 'START_DATE')} :',
+                      '${LangUtil.getString('PROJECT', 'PROJECT_ID')} :',
                       style: TextStyle(fontWeight: FontWeight.w700,color: Colors.red),
                       overflow: TextOverflow.ellipsis,
                       softWrap: false,
@@ -90,7 +90,7 @@ class _ProjectListItemWidgetState
                   Padding(
                     padding: const EdgeInsets.fromLTRB(0, 4, 12, 4),
                     child: Text(
-                      '${LangUtil.getString('PROJECT', 'END_DATE')} :',
+                      '${LangUtil.getString('PROJECT', 'PROJECT_TITLE')} :',
                       style: TextStyle(fontWeight: FontWeight.w700,color: Colors.red),
                       overflow: TextOverflow.ellipsis,
                       softWrap: false,
@@ -99,7 +99,7 @@ class _ProjectListItemWidgetState
                   Padding(
                           padding: const EdgeInsets.fromLTRB(0, 4, 12, 4),
                           child: Text(
-                            '${LangUtil.getString('PROJECT', 'PROJECT_VALUE')} :',
+                            '${LangUtil.getString('PROJECT', 'SITE_TOWN')} :',
                             style: TextStyle(fontWeight: FontWeight.w700,color: Colors.red),
                             overflow: TextOverflow.ellipsis,
                             softWrap: false,
@@ -108,7 +108,7 @@ class _ProjectListItemWidgetState
                         Padding(
                           padding: const EdgeInsets.fromLTRB(0, 4, 12, 4),
                           child: Text(
-                            '${LangUtil.getString('PROJECT', 'VALUE_TO_US')} :',
+                            '${LangUtil.getString('PROJECT', 'SELLINGSTATUS_ID')} :',
                             style: TextStyle(fontWeight: FontWeight.w700,color: Colors.red),
                             overflow: TextOverflow.ellipsis,
                             softWrap: false,
@@ -124,7 +124,7 @@ class _ProjectListItemWidgetState
                   Padding(
                     padding: const EdgeInsets.fromLTRB(0, 4, 0, 4),
                     child: Text(
-                      DateUtil.getFormattedDate(widget.entity['START_DATE']),
+                      widget.entity['PROJECT_ID'],
                       overflow: TextOverflow.ellipsis,
                       softWrap: false,
                     ),
@@ -132,7 +132,7 @@ class _ProjectListItemWidgetState
                   Padding(
                     padding: const EdgeInsets.fromLTRB(0, 4, 0, 4),
                     child: Text(
-                      DateUtil.getFormattedDate(widget.entity['END_DATE']),
+                      widget.entity['PROJECT_TITLE'],
                       overflow: TextOverflow.ellipsis,
                       softWrap: false,
                     ),
@@ -140,9 +140,8 @@ class _ProjectListItemWidgetState
                   Padding(
                             padding: const EdgeInsets.fromLTRB(0, 4, 0, 4),
                             child: Text(
-                              widget.entity['PROJECT_VALUE'] != null
-                                  ? NumberFormat('#,###')
-                                  .format(widget.entity['PROJECT_VALUE'])
+                              widget.entity['SITE_TOWN'] != null
+                                  ? widget.entity['SITE_TOWN']
                                   : '',
                               overflow: TextOverflow.ellipsis,
                               softWrap: false,
@@ -151,9 +150,8 @@ class _ProjectListItemWidgetState
                           Padding(
                             padding: const EdgeInsets.fromLTRB(0, 4, 0, 4),
                             child: Text(
-                              widget.entity['VALUE_TO_US'] != null
-                                  ? NumberFormat('#,###')
-                                  .format(widget.entity['VALUE_TO_US'])
+                              widget.entity['SELLINGSTATUS_ID'] != null
+                                  ? widget.entity['SELLINGSTATUS_ID']
                                   : '',
                               overflow: TextOverflow.ellipsis,
                               softWrap: false,

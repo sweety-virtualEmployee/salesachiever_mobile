@@ -54,8 +54,7 @@ class _DynamicProjectEditScreenState extends State<DynamicProjectEditScreen> {
 
   @override
   void initState() {
-    _readonly = this.widget.readonly;
-    _project = this.widget.project;
+    _readonly = this.widget.readonly;_project = this.widget.project;
     print("sweety***----$_project");
     // projectresult;
     callApi();
@@ -505,7 +504,7 @@ class _DynamicProjectEditScreenState extends State<DynamicProjectEditScreen> {
         text: _readonly ? 'Edit' : 'Save',
         onTap: (_isValid || _readonly) ? onTap : null,
       ),
-      title: LangUtil.getString('Entities', 'Project.Description.Plural')+"- ${widget.projectName}",
+      title: LangUtil.getString('Entities', 'Project.Description.Plural')+" - ${widget.projectName}",
       body: Container(
         child: Column(
           children: [
@@ -516,6 +515,7 @@ class _DynamicProjectEditScreenState extends State<DynamicProjectEditScreen> {
                   LangUtil.getString('Entities', 'Project.Create.Text'),
               projectID: _project?['PROJECT_ID'],
               status: _project?['SELLINGSTATUS_ID'],
+              siteTown: _project?['SITE_TOWN'],
             ),
             Expanded(
               child: SingleChildScrollView(

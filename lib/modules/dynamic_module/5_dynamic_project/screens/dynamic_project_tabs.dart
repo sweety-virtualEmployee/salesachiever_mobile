@@ -63,6 +63,7 @@ class _ProjectTabsState extends State<ProjectTabs> {
                       LangUtil.getString('Entities', 'Project.Create.Text'),
                   projectID: _project?['PROJECT_ID'],
                   status: _project?['SELLINGSTATUS_ID'],
+                  siteTown: _project?['SITE_TOWN'],
                 ),
                 // DynamicPsaHeader(
                 //     isVisible: true,
