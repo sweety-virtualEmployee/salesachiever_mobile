@@ -18,6 +18,7 @@ import 'package:salesachiever_mobile/modules/dynamic_module/5_dynamic_project/sc
 import 'package:salesachiever_mobile/shared/services/lookup_service.dart';
 import 'package:salesachiever_mobile/shared/widgets/layout/psa_scaffold.dart';
 import 'package:salesachiever_mobile/utils/lang_util.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 
@@ -31,6 +32,7 @@ class DyanmicHomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<DyanmicHomeScreen> {
   String _selectedItem = 'HOME';
   CustomActiveFeature feature = CustomActiveFeature();
+
 
   // Navigate to home screen and clear navigation history
   Future<void> _resetScreen() async => Navigator.pushAndRemoveUntil(

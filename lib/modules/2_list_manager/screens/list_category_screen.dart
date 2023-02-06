@@ -8,6 +8,7 @@ import 'package:salesachiever_mobile/shared/widgets/psa_menu_item.dart';
 import 'package:salesachiever_mobile/shared/widgets/layout/psa_scaffold.dart';
 import 'package:salesachiever_mobile/utils/auth_util.dart';
 import 'package:salesachiever_mobile/utils/lang_util.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ListCategoryScreen extends StatelessWidget {
   const ListCategoryScreen({Key? key}) : super(key: key);
@@ -45,8 +46,23 @@ class ListCategoryScreen extends StatelessWidget {
         .toList();
   }
 
+  checkTimeRemaining() async {
+    final prefs = await SharedPreferences.getInstance();
+    int? timestamp = prefs.getInt('myTimestampKey');
+
+    DateTime dateTime = DateTime.fromMillisecondsSinceEpoch(timestamp!);
+    var currentTime = DateTime.now();
+    var diff = currentTime.difference(dateTime).inSeconds;
+    print("difference${diff}");
+    print("difference${currentTime}");
+    print("difference${dateTime}");
+  }
+
+
   @override
   Widget build(BuildContext context) {
+    print("hy");
+    checkTimeRemaining();
     return PsaScaffold(
       title: LangUtil.getString('Application', 'MainMenu.ListManager.Header'),
       body: ListView(

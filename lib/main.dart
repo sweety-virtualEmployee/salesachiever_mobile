@@ -7,11 +7,14 @@ import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart' show ProviderScope;
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:salesachiever_mobile/shared/models/locale.dart';
+import 'package:salesachiever_mobile/utils/local_session_timeout.dart';
+import 'package:salesachiever_mobile/utils/navigation_Services.dart';
 import 'package:salesachiever_mobile/utils/storage_util.dart';
 
 import 'routes/routes.dart';
 Timer ?_rootTimer;
 void main() async {
+
   WidgetsFlutterBinding.ensureInitialized();
   await StorageUtil.getInstance();
 
@@ -73,53 +76,25 @@ class AppRoot extends StatefulWidget {
 class AppRootState extends State<AppRoot> {
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
-    initializeTimer();
-  }
-  void initializeTimer() {
-    if (_rootTimer != null) _rootTimer!.cancel();
-    const time = const Duration(minutes:  5 );
-    _rootTimer = Timer(time, () {
-      logOutUser();
-    });
-  }
-  void logOutUser() async {
-    // Log out the user if they're logged in, then cancel the timer.
-
-
-    _rootTimer?.cancel();
   }
 
-// You'll probably want to wrap this function in a debounce
-  void _handleUserInteraction([_]) {
-    if (_rootTimer != null && !_rootTimer!.isActive) {
-      // This means the user has been logged out
-      return;
-    }
-    _rootTimer?.cancel();
-
-    initializeTimer();
-  }
   @override
   Widget build(BuildContext context) {
-    return Listener(
-      behavior: HitTestBehavior.translucent,
-      onPointerDown: _handleUserInteraction,
-      onPointerMove: _handleUserInteraction,
-      onPointerUp: _handleUserInteraction,
-      child:PlatformApp(
-      debugShowCheckedModeBanner: false,
-      initialRoute: '/',
-      routes: routes,
-      cupertino: (_, __) => CupertinoAppData(
-        localizationsDelegates: [
-          DefaultMaterialLocalizations.delegate,
-          DefaultCupertinoLocalizations.delegate,
-          DefaultWidgetsLocalizations.delegate,
-        ],
-      ),
-    )
+    const oneSec = Duration(seconds:20);
+    Timer.periodic(oneSec, (Timer t) => checkTimeRemaining());
+    return PlatformApp(
+    debugShowCheckedModeBanner: false,
+    navigatorKey: NavigationService.navigatorKey,
+    initialRoute: '/',
+    routes: routes,
+    cupertino: (_, __) => CupertinoAppData(
+      localizationsDelegates: [
+        DefaultMaterialLocalizations.delegate,
+        DefaultCupertinoLocalizations.delegate,
+        DefaultWidgetsLocalizations.delegate,
+      ],
+    ),
     );
   }
 }

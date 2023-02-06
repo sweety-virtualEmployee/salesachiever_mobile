@@ -15,6 +15,7 @@ import 'package:salesachiever_mobile/utils/message_util.dart';
 import 'package:salesachiever_mobile/utils/storage_util.dart';
 import 'package:salesachiever_mobile/shared/widgets/dialog_loader.dart';
 import 'package:salesachiever_mobile/shared/widgets/psa_text_field.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
@@ -157,6 +158,15 @@ class _LoginScreenState extends State<LoginScreen> {
 
 
     // }
+
+         int timestamp = DateTime.now().millisecondsSinceEpoch;
+
+         final prefs = await SharedPreferences.getInstance();
+         prefs.setInt('myTimestampKey', timestamp);
+
+         DateTime dateTime = DateTime.fromMillisecondsSinceEpoch(timestamp);
+         print("dateTime${dateTime}");
+         print("dateTime${timestamp}");
          Navigator.pushAndRemoveUntil(
         context,
         PageRouteBuilder(

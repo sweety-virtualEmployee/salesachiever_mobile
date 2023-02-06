@@ -305,6 +305,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "3.2.0"
+  get:
+    dependency: "direct main"
+    description:
+      name: get
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "4.6.5"
   glob:
     dependency: transitive
     description:
@@ -438,6 +445,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.1.0"
+  local_session_timeout:
+    dependency: "direct main"
+    description:
+      name: local_session_timeout
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.2.0"
   logging:
     dependency: transitive
     description:
