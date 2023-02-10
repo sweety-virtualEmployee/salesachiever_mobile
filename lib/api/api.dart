@@ -4,6 +4,7 @@ import 'dart:developer';
 import 'package:dio/dio.dart';
 import 'package:salesachiever_mobile/utils/message_util.dart';
 import 'package:salesachiever_mobile/utils/storage_util.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class Api {
   late Dio _dio;
@@ -69,6 +70,8 @@ class Api {
 
   Future<dynamic> get(String path, [List<dynamic>? headers]) async {
     var companyModule;
+    final prefs = await SharedPreferences.getInstance();
+    prefs.remove('myTimestampKey');
     try {
       //log(path);
        headers?.forEach(
@@ -78,6 +81,14 @@ class Api {
       ));
          // log("-----header info--------");
       //log(companyModule.data.toString());
+       int timestamp = DateTime.now().millisecondsSinceEpoch;
+
+       final prefs = await SharedPreferences.getInstance();
+       prefs.setInt('myTimestampKey', timestamp);
+
+       DateTime dateTime = DateTime.fromMillisecondsSinceEpoch(timestamp);
+       print("dateTime${dateTime}");
+       print("dateTime${timestamp}");
       return companyModule;
     } catch (e) {
       print(e);
@@ -87,12 +98,22 @@ class Api {
      
      Future<dynamic> getResult(String path, ) async {
     var companyModule;
+    final prefs = await SharedPreferences.getInstance();
+    prefs.remove('myTimestampKey');
     try {
       //log(path);
     var  token =  StorageUtil.getString('token');
       companyModule = await _dio.get(path,options: Options(method: "GET", headers: { "Authorization": "Token $token","Accept": "application/json" }));
          // log("-----header info--------");
       //log(companyModule.data.toString());
+    int timestamp = DateTime.now().millisecondsSinceEpoch;
+
+    final prefs = await SharedPreferences.getInstance();
+    prefs.setInt('myTimestampKey', timestamp);
+
+    DateTime dateTime = DateTime.fromMillisecondsSinceEpoch(timestamp);
+    print("dateTime${dateTime}");
+    print("dateTime${timestamp}");
       return companyModule;
     } catch (e) {
       print(e);
@@ -102,7 +123,17 @@ class Api {
     
 
   Future<dynamic> post(String path, Map<String, dynamic> data) async {
+    final prefs = await SharedPreferences.getInstance();
+    prefs.remove('myTimestampKey');
     try {
+      int timestamp = DateTime.now().millisecondsSinceEpoch;
+
+      final prefs = await SharedPreferences.getInstance();
+      prefs.setInt('myTimestampKey', timestamp);
+
+      DateTime dateTime = DateTime.fromMillisecondsSinceEpoch(timestamp);
+      print("dateTime${dateTime}");
+      print("dateTime${timestamp}");
       return await _dio.post(path, data: data);
     } catch (e) {
       throw (e);
@@ -110,7 +141,17 @@ class Api {
   }
 
   Future<dynamic> put(String path, Map<String, dynamic> data) async {
+    final prefs = await SharedPreferences.getInstance();
+    prefs.remove('myTimestampKey');
     try {
+      int timestamp = DateTime.now().millisecondsSinceEpoch;
+
+      final prefs = await SharedPreferences.getInstance();
+      prefs.setInt('myTimestampKey', timestamp);
+
+      DateTime dateTime = DateTime.fromMillisecondsSinceEpoch(timestamp);
+      print("dateTime${dateTime}");
+      print("dateTime${timestamp}");
       return await _dio.put(path, data: data);
     } catch (e) {
       throw (e);
@@ -118,7 +159,17 @@ class Api {
   }
 
   Future<dynamic> delete(String path) async {
+    final prefs = await SharedPreferences.getInstance();
+    prefs.remove('myTimestampKey');
     try {
+      int timestamp = DateTime.now().millisecondsSinceEpoch;
+
+      final prefs = await SharedPreferences.getInstance();
+      prefs.setInt('myTimestampKey', timestamp);
+
+      DateTime dateTime = DateTime.fromMillisecondsSinceEpoch(timestamp);
+      print("dateTime${dateTime}");
+      print("dateTime${timestamp}");
       return await _dio.delete(path);
     } catch (e) {
       throw (e);

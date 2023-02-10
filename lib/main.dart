@@ -81,7 +81,7 @@ class AppRootState extends State<AppRoot> {
 
   @override
   Widget build(BuildContext context) {
-    const oneSec = Duration(seconds:20);
+    const oneSec = Duration(seconds:120);
     Timer.periodic(oneSec, (Timer t) => checkTimeRemaining());
     return PlatformApp(
     debugShowCheckedModeBanner: false,
