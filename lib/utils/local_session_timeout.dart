@@ -15,7 +15,7 @@ checkTimeRemaining() async {
       var currentTime = DateTime.now();
       var diff = currentTime.difference(dateTime).inMinutes;
       print("difference${diff}");
-      if(diff>=10){
+      if(diff>=30){
         print("move to login screen");
         final prefs = await SharedPreferences.getInstance();
         prefs.remove('myTimestampKey');

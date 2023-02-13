@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
+import 'package:salesachiever_mobile/modules/dynamic_module/5_dynamic_project/api/dynamic_project_api.dart';
 import 'package:salesachiever_mobile/modules/dynamic_module/5_dynamic_project/screens/dynamic_project_edit_screen.dart';
 import 'package:salesachiever_mobile/modules/dynamic_module/5_dynamic_project/screens/dynamic_psa_header.dart';
 import 'package:salesachiever_mobile/modules/dynamic_module/5_dynamic_project/services/dynamic_project_service.dart';
@@ -15,11 +16,20 @@ class ProjectTabs extends StatefulWidget {
   final Map<String, dynamic> project;
   final String title;
   final bool readonly;
+  final String? tabId;
+  final String? moduleId;
+  final String? tabType;
+  final String? projectName;
+  final Function refresh;
   const ProjectTabs({
     Key? key,
-    // required this.projectData,
     required this.readonly,
     required this.title,
+    required this.refresh,
+    this.tabId,
+    this.projectName,
+    this.tabType,
+    this.moduleId,
     required this.project,
   }) : super(key: key);
 
@@ -29,13 +39,22 @@ class ProjectTabs extends StatefulWidget {
 
 class _ProjectTabsState extends State<ProjectTabs> {
   DynamicProjectService service = DynamicProjectService();
+  DynamicProjectApi service1 = DynamicProjectApi();
   bool _readonly = true;
   dynamic _project;
   bool _isValid = false;
   @override
   void initState() {
     _project = this.widget.project;
-    service.getProjectTabs();
+    if(widget.tabType == "P"){
+      print("parent type tab");
+      service.getEntitySubTabForm(widget.moduleId.toString(), widget.tabId.toString());
+      print("responsesubEntity${service1}");
+    }
+    else{
+      print("not parent type tab");
+      service.getProjectTabs();
+    }
     super.initState();
   }
 
@@ -50,9 +69,9 @@ class _ProjectTabsState extends State<ProjectTabs> {
   Widget build(BuildContext context) {
     print("project data $_project");
     return PsaScaffold(
-      title: LangUtil.getString('Entities', 'Project.Description') + " - Tabs",
+      title: LangUtil.getString('Entities', 'Project.Description') + " -  ${widget.projectName==null?"Tabs":widget.projectName}",
       body: FutureBuilder(
-          future: service.getProjectTabs(),
+          future:widget.tabType == "P"?service.getEntitySubTabForm(widget.moduleId.toString(), widget.tabId.toString()): service.getProjectTabs(),
           builder: (context, snapshot) {
             if (snapshot.hasData) {
               return Column(children: [
@@ -65,14 +84,6 @@ class _ProjectTabsState extends State<ProjectTabs> {
                   status: _project?['SELLINGSTATUS_ID'],
                   siteTown: _project?['SITE_TOWN'],
                 ),
-                // DynamicPsaHeader(
-                //     isVisible: true,
-                //     icon: 'assets/images/projects_icon.png',
-                //     title: _project['PROJECT_TITLE'], projectID: _project['PROJECT_ID'], status: "Pending", createdBY: "hugugu",
-                //
-                //
-                // ),
-                //Container(height: 20,color: Colors.black,),
                 Container(
                   color: Colors.white,
                   child: ListView(
@@ -81,14 +92,9 @@ class _ProjectTabsState extends State<ProjectTabs> {
                       CupertinoFormSection(
                         backgroundColor:
                             CupertinoColors.systemGroupedBackground,
-                        //const Color(0xFFFAFAFA),
                         children: [
                           Column(
                             children: [
-                              // Container(
-                              //   height: 20,
-                              //   color: Colors.black,
-                              // ),
                               ListView.separated(
                                 shrinkWrap: true,
                                 physics: NeverScrollableScrollPhysics(),
@@ -120,15 +126,42 @@ class _ProjectTabsState extends State<ProjectTabs> {
                                                         ['TAB_DESC']
                                                     .toString(),
                                                 project: widget.project,
-                                                tabId: jsonDecode(jsonEncode(
+                                             tabId: jsonDecode(jsonEncode(
                                                         snapshot.data))[index]
                                                     ['TAB_ID'],
-                                                // projectData: widget.projectData,
                                                 readonly: true,
                                               );
                                             },
                                           ),
                                         );
+                                      }
+                                      else{
+                                        print("parent module");
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) {
+                                              return ProjectTabs(
+                                                project: widget.project,
+                                                projectName: jsonDecode(
+                                                    jsonEncode(snapshot
+                                                        .data))[index]
+                                                ['TAB_DESC']
+                                                    .toString(),
+                                                tabId: jsonDecode(jsonEncode(
+                                                    snapshot.data))[index]
+                                                ['TAB_ID'],
+                                                moduleId: jsonDecode(jsonEncode(
+                                                    snapshot.data))[index]
+                                                ['MODULE_ID'],
+                                                tabType:jsonDecode(jsonEncode(snapshot.data))[
+                                                index]['TAB_TYPE'],                                                  title: _project?['PROJECT_TITLE'] ??
+                                                    LangUtil.getString('Entities', 'Project.Create.Text'),
+                                                readonly: true, refresh: widget.refresh,
+                                              );
+                                            },
+                                          ),
+                                        ).then((value) => widget.refresh());
                                       }
                                     },
                                     child: Container(
@@ -178,34 +211,6 @@ class _ProjectTabsState extends State<ProjectTabs> {
                                                                             .data))[
                                                                 index]['TAB_HEX']
                                                             .toString())),
-                                                    // backgroundColor: titleText ==
-                                                    //         "Companies"
-                                                    //     ? Colors.green
-                                                    //     : titleText == "Contact"
-                                                    //         ? Colors.blue
-                                                    //         : titleText ==
-                                                    //                 "Project"
-                                                    //             ? Colors.red
-                                                    //             : titleText ==
-                                                    //                     "Actions"
-                                                    //                 ? Colors
-                                                    //                     .yellow
-                                                    //                 : titleText ==
-                                                    //                         "Opportunities"
-                                                    //                     ? Colors
-                                                    //                         .lightGreen
-                                                    //                     : Colors
-                                                    //                         .grey,
-                                                    // child: Text(
-                                                    //   jsonDecode(jsonEncode(
-                                                    //               snapshot
-                                                    //                   .data))[
-                                                    //           index]['ITEM_COUNT']
-                                                    //       .toString(),
-                                                    //   style: TextStyle(
-                                                    //       color: Colors.black,
-                                                    //       fontSize: 12),
-                                                    // ),
                                                   )
                                                 : SizedBox(),
                                           ),

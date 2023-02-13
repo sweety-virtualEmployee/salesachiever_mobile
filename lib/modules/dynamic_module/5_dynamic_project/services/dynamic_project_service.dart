@@ -19,6 +19,14 @@ class DynamicProjectService extends EntityService {
     log("sweety ---$dataResult");
      return dataResult;
   }
+  Future<List>getEntitySubTabForm(String moduleId,String tabId) async {
+     print("moduleID${moduleId}");
+     print("tabId${tabId}");
+    final dynamic response = await DynamicProjectApi().getEntitySubTabForm(moduleId, tabId);
+    final List<dynamic> dataResult = response;
+    log("subnentity values ---$dataResult");
+    return dataResult;
+  }
   Future<List> getProjectForm(String p1, String p2) async {
     final dynamic response = await DynamicProjectApi().getProjectForm(p1,p2);
     final List<dynamic> dataResult = response; 

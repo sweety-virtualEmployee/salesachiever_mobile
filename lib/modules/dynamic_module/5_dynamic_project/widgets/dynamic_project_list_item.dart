@@ -253,6 +253,7 @@ class _ProjectListItemWidgetState
 
         dynamic project =
         await ProjectService().getEntity(widget.entity['PROJECT_ID']);
+        print("project list");
         log("${project.data.toString()}");
 
         context.loaderOverlay.hide();
@@ -263,14 +264,10 @@ class _ProjectListItemWidgetState
             builder: (context) {
               return ProjectTabs(
                 project: project.data,
-                // projectData: dataList,
                 title: widget.entity['PROJECT_TITLE'],
                 readonly: true,
+                refresh: widget.refresh,
               );
-              // return ProjectEditScreen(
-              //   project: project.data,
-              //   readonly: true,
-              // );
             },
           ),
         ).then((value) => widget.refresh());

@@ -56,7 +56,6 @@ class _DynamicProjectEditScreenState extends State<DynamicProjectEditScreen> {
   void initState() {
     _readonly = this.widget.readonly;_project = this.widget.project;
     print("sweety***----$_project");
-    // projectresult;
     callApi();
 
     if (_project['PROJECT_ID'] == null) {
@@ -87,16 +86,9 @@ class _DynamicProjectEditScreenState extends State<DynamicProjectEditScreen> {
   }
 
   callApi() async {
-    print("hy");
     await getProjectForm();
   }
 
-  void _onNoteChange(String key, String value, int? state) {
-    setState(() {
-      _notes = value;
-      _isNewNote = state == null || state == 0;
-    });
-  }
 
   void validate() {
     var isValid = ProjectService().validateEntity(_project);

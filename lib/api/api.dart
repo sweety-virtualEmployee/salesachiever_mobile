@@ -91,6 +91,8 @@ class Api {
        print("dateTime${timestamp}");
       return companyModule;
     } catch (e) {
+      print("error");
+      print(e.toString());
       print(e);
       throw (e);
     }
