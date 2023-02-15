@@ -43,7 +43,6 @@ class _OpportunityListItemWidgetState
 
   @override
   Widget build(BuildContext context) {
-    print("sweety rawat" + widget.entity['START_DATE']);
     String dealDesc = widget.entity['DESCRIPTION'] ?? '';
 
     return ListTile(

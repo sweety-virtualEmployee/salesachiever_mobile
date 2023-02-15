@@ -6,6 +6,7 @@ import 'package:salesachiever_mobile/modules/dynamic_module/5_dynamic_project/ap
 import 'package:salesachiever_mobile/modules/dynamic_module/5_dynamic_project/screens/dynamic_project_edit_screen.dart';
 import 'package:salesachiever_mobile/modules/dynamic_module/5_dynamic_project/screens/dynamic_psa_header.dart';
 import 'package:salesachiever_mobile/modules/dynamic_module/5_dynamic_project/services/dynamic_project_service.dart';
+import 'package:salesachiever_mobile/modules/dynamic_module/5_dynamic_project/widgets/dynamic_project_view_related_records.dart';
 import 'package:salesachiever_mobile/shared/widgets/elements/psa_progress_indicator.dart';
 import 'package:salesachiever_mobile/shared/widgets/layout/psa_scaffold.dart';
 import 'package:salesachiever_mobile/shared/widgets/psa_header.dart';
@@ -42,17 +43,14 @@ class _ProjectTabsState extends State<ProjectTabs> {
   DynamicProjectApi service1 = DynamicProjectApi();
   bool _readonly = true;
   dynamic _project;
-  bool _isValid = false;
+
   @override
   void initState() {
     _project = this.widget.project;
     if(widget.tabType == "P"){
-      print("parent type tab");
       service.getEntitySubTabForm(widget.moduleId.toString(), widget.tabId.toString());
-      print("responsesubEntity${service1}");
     }
     else{
-      print("not parent type tab");
       service.getProjectTabs();
     }
     super.initState();
@@ -135,7 +133,9 @@ class _ProjectTabsState extends State<ProjectTabs> {
                                           ),
                                         );
                                       }
-                                      else{
+                                      else if (jsonDecode(jsonEncode(snapshot.data))[
+                                      index]['TAB_TYPE'] ==
+                                          "P") {
                                         print("parent module");
                                         Navigator.push(
                                           context,
@@ -162,6 +162,19 @@ class _ProjectTabsState extends State<ProjectTabs> {
                                             },
                                           ),
                                         ).then((value) => widget.refresh());
+                                      }
+                                      else{
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) {
+                                              return DynamicProjectViewRelatedRecords(
+                                                entity: widget.project,
+                                                projectId: _project['PROJECT_ID'] ?? '',
+                                              );
+                                            },
+                                          ),
+                                        );
                                       }
                                     },
                                     child: Container(
@@ -227,67 +240,6 @@ class _ProjectTabsState extends State<ProjectTabs> {
                                       ),
                                     ),
                                   );
-                                  //  ListTile(
-                                  //   dense: true,
-                                  //   contentPadding: EdgeInsets.symmetric(
-                                  //       horizontal: 0.0, vertical: 0.0),
-                                  //   visualDensity:
-                                  //       VisualDensity(horizontal: 0, vertical: -4),
-                                  //   title: Padding(
-                                  //     padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
-                                  //     child: PlatformText(
-                                  //         jsonDecode(jsonEncode(snapshot.data))[index]
-                                  //                 ['TAB_DESC']
-                                  //             .toString(),
-                                  //              textAlign: TextAlign.right,
-                                  //         style: TextStyle()),
-                                  //   ),
-                                  //   trailing: Icon(
-                                  //     context.platformIcons.rightChevron,
-                                  //     size: 20,
-                                  //   ),
-                                  //   // contentPadding: const EdgeInsets.only(right: 0),
-                                  //   onTap: () {
-                                  //     if (jsonDecode(jsonEncode(snapshot.data))[index]
-                                  //             ['TAB_TYPE'] ==
-                                  //         "C") {
-                                  //       Navigator.push(
-                                  //         context,
-                                  //         MaterialPageRoute(
-                                  //           builder: (context) {
-                                  //             return ProjectEditScreen(
-                                  //               project: widget.project,
-                                  //               readonly: true,
-                                  //             );
-                                  //           },
-                                  //         ),
-                                  //       );
-                                  //       //                     Navigator.push(
-                                  //       //   context,
-                                  //       //   platformPageRoute(
-                                  //       //     context: context,
-                                  //       //     builder: (BuildContext context) => DynamicProjectEditScreen(
-                                  //       //       project: {},
-                                  //       //       readonly: false,
-                                  //       //  )));
-                                  //       // Navigator.push(
-                                  //       //   context,
-                                  //       //   MaterialPageRoute(
-                                  //       //     builder: (context) {
-                                  //       //       return DynamicProjectInfoScreen(
-                                  //       //         // onSave: widget._onSave,
-                                  //       //         //    onBack: widget._onBack
-                                  //       //            );
-                                  //       //       // return ProjectEditScreen(
-                                  //       //       //   project: project.data,
-                                  //       //       //   readonly: true,
-                                  //       //       // );
-                                  //       //     },
-                                  //       //   ),
-                                  //       // );
-                                  //     }
-                                  //   },
-                                  // );
                                 },
                               ),
                             ],
@@ -306,10 +258,6 @@ class _ProjectTabsState extends State<ProjectTabs> {
       action: SizedBox(
         width: 20,
       ),
-      // action: PsaEditButton(
-      //   text: _readonly ? 'Edit' : 'Save',
-      //   onTap: (_isValid || _readonly) ? onTap : null,
-      // ),
     );
   }
 }

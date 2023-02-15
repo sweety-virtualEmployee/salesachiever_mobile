@@ -12,7 +12,6 @@ import 'package:salesachiever_mobile/utils/navigation_Services.dart';
 import 'package:salesachiever_mobile/utils/storage_util.dart';
 
 import 'routes/routes.dart';
-Timer ?_rootTimer;
 void main() async {
 
   WidgetsFlutterBinding.ensureInitialized();
@@ -50,25 +49,7 @@ void main() async {
   runApp(ProviderScope(child: AppRoot()));
 }
 
-// class MyApp extends StatelessWidget {
-//   @override
-//   Widget build(BuildContext context) {
-//     return PlatformApp(
-//       debugShowCheckedModeBanner: false,
-//       initialRoute: '/',
-//       routes: routes,
-//       cupertino: (_, __) => CupertinoAppData(
-//         localizationsDelegates: [
-//           DefaultMaterialLocalizations.delegate,
-//           DefaultCupertinoLocalizations.delegate,
-//           DefaultWidgetsLocalizations.delegate,
-//         ],
-//       ),
-//     );
-//   }
-// }
 class AppRoot extends StatefulWidget {
-  // This widget is the root of your application.
   @override
   AppRootState createState() => AppRootState();
 }
