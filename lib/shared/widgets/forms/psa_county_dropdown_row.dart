@@ -77,7 +77,7 @@ class PsaCountyDropdownRow extends StatelessWidget {
                     color: Colors.white,
                   ),
                   style: TextStyle(color: Colors.grey.shade700, fontSize: 15),
-                  suffix: Icon(context.platformIcons.rightChevron),
+                  suffix: Icon(context.platformIcons.rightChevron,color: Colors.grey,),
                 ),
               ),
             ),

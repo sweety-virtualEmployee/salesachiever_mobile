@@ -211,7 +211,7 @@ class ActionCreateRelatedRecords extends StatelessWidget {
           },
           icon: Icon(context.platformIcons.add),
         ),
-        if (AuthUtil.hasAccess(
+       /* if (AuthUtil.hasAccess(
             int.parse(ACCESS_CODES['OPPORTUNTIY'].toString())))
           PsaButtonRow(
             isVisible: false,
@@ -274,7 +274,7 @@ class ActionCreateRelatedRecords extends StatelessWidget {
               }
             },
             icon: Icon(context.platformIcons.add),
-          ),
+          ),*/
       ],
     );
   }

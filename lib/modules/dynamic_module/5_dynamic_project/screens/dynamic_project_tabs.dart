@@ -7,10 +7,13 @@ import 'package:salesachiever_mobile/modules/dynamic_module/5_dynamic_project/sc
 import 'package:salesachiever_mobile/modules/dynamic_module/5_dynamic_project/screens/dynamic_psa_header.dart';
 import 'package:salesachiever_mobile/modules/dynamic_module/5_dynamic_project/services/dynamic_project_service.dart';
 import 'package:salesachiever_mobile/modules/dynamic_module/5_dynamic_project/widgets/dynamic_project_view_related_records.dart';
+import 'package:salesachiever_mobile/shared/screens/related_entity_screen.dart';
 import 'package:salesachiever_mobile/shared/widgets/elements/psa_progress_indicator.dart';
 import 'package:salesachiever_mobile/shared/widgets/layout/psa_scaffold.dart';
 import 'package:salesachiever_mobile/shared/widgets/psa_header.dart';
 import 'package:salesachiever_mobile/utils/lang_util.dart';
+
+import '../../../3_company/services/company_service.dart';
 
 class ProjectTabs extends StatefulWidget {
   // final List <ProjectForm>projectData;
@@ -109,7 +112,7 @@ class _ProjectTabsState extends State<ProjectTabs> {
                                           ['TAB_HEX']
                                       .toString();
                                   return GestureDetector(
-                                    onTap: () {
+                                    onTap: () async {
                                       if (jsonDecode(jsonEncode(snapshot.data))[
                                               index]['TAB_TYPE'] ==
                                           "C") {
@@ -163,16 +166,38 @@ class _ProjectTabsState extends State<ProjectTabs> {
                                           ),
                                         ).then((value) => widget.refresh());
                                       }
-                                      else{
+                                      else if (jsonDecode(jsonEncode(snapshot.data))[
+                                      index]['TAB_TYPE'] ==
+                                          "L"){
+                                        var result = await CompanyService().getRelatedEntity(
+                                            'project',
+                                            _project?['PROJECT_ID'],
+                                            jsonDecode(
+                                                jsonEncode(snapshot
+                                                    .data))[index]
+                                            ['TAB_DESC']
+                                                .toString());
+
                                         Navigator.push(
                                           context,
-                                          MaterialPageRoute(
-                                            builder: (context) {
-                                              return DynamicProjectViewRelatedRecords(
-                                                entity: widget.project,
-                                                projectId: _project['PROJECT_ID'] ?? '',
-                                              );
-                                            },
+                                          platformPageRoute(
+                                            context: context,
+                                            builder: (BuildContext context) => RelatedEntityScreen(
+                                              entity: "project",
+                                              type:jsonDecode(
+                                                  jsonEncode(snapshot
+                                                      .data))[index]
+                                              ['TAB_DESC']
+                                                  .toString().toLowerCase(),
+                                              title: jsonDecode(
+                                                  jsonEncode(snapshot
+                                                      .data))[index]
+                                              ['TAB_DESC']
+                                                  .toString(),
+                                              list: result,
+                                              isSelectable: false,
+                                              isEditable: true,
+                                            ),
                                           ),
                                         );
                                       }
@@ -187,52 +212,57 @@ class _ProjectTabsState extends State<ProjectTabs> {
                                         crossAxisAlignment:
                                             CrossAxisAlignment.center,
                                         children: [
-                                          SizedBox(
-                                            width: 110,
-                                            child: PlatformText(
-                                                jsonDecode(jsonEncode(snapshot
-                                                            .data))[index]
-                                                        ['TAB_DESC']
-                                                    .toString(),
-                                                textAlign: TextAlign.right,
-                                                maxLines: 2,
-                                                softWrap: true,
-                                                style: TextStyle()),
+                                          Expanded(
+                                            child: Padding(
+                                              padding: const EdgeInsets.only(left: 8.0),
+                                              child: PlatformText(
+                                                  jsonDecode(jsonEncode(snapshot
+                                                              .data))[index]
+                                                          ['TAB_DESC']
+                                                      .toString(),
+                                                  textAlign: TextAlign.right,
+                                                  softWrap: true,
+                                                  style: TextStyle()),
+                                            ),
                                           ),
                                           Spacer(),
-                                          Padding(
-                                            padding: const EdgeInsets.only(
-                                                right: 15.0),
-                                            child: jsonDecode(jsonEncode(snapshot
-                                                                        .data))[
-                                                                    index][
-                                                                'TAB_HEX']
-                                                            .toString() !=
-                                                        null &&
-                                                    jsonDecode(jsonEncode(
-                                                                    snapshot
-                                                                        .data))[
-                                                                index]
-                                                            ['TAB_TYPE'] ==
-                                                        'L'
-                                                ? CircleAvatar(
-                                                    radius: 10,
-                                                    backgroundColor: Color(
-                                                        int.parse(jsonDecode(
-                                                                    jsonEncode(
-                                                                        snapshot
-                                                                            .data))[
-                                                                index]['TAB_HEX']
-                                                            .toString())),
-                                                  )
-                                                : SizedBox(),
-                                          ),
+                                          if(jsonDecode(jsonEncode(
+                                              snapshot
+                                                  .data))[
+                                          index]
+                                          ['TAB_TYPE'] ==
+                                              'L')...[
+                                            Padding(
+                                              padding: const EdgeInsets.only(
+                                                  right: 15.0),
+                                              child:  CircleAvatar(
+                                                radius: 8,
+                                                backgroundColor: Color(
+                                                    int.parse(jsonDecode(
+                                                        jsonEncode(
+                                                            snapshot
+                                                                .data))[
+                                                    index]['TAB_HEX']
+                                                        .toString())),
+                                             /*   child: Padding(
+                                                  padding: const EdgeInsets.all(10.0),
+                                                  child: Text(service.getTabsListCount( _project?['PROJECT_ID'], "type").then((value){
+                                                    value["Count"];
+                                                  }).toString()),
+                                                ),*/
+                                              )
+                                            ),
+                                          ]
+                                          else...[
+                                            SizedBox(width: 30,)
+                                         ],
                                           Padding(
                                             padding: const EdgeInsets.only(
                                                 right: 15.0),
                                             child: Icon(
                                               context
                                                   .platformIcons.rightChevron,
+                                              color: Colors.grey,
                                               size: 20,
                                             ),
                                           ),

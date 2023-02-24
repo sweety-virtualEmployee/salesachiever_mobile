@@ -15,6 +15,11 @@ class DynamicProjectApi {
     final response = await Api().getResult('$api/System/System.CustomFunctionList?FunctionName=GetEntityTabs&Param1=005');
     return response.data;
   }
+
+  Future<dynamic> getTabsListCount(String id,String type) async {
+    final response = await Api().get('$api/Project/$id/CompanyLinksCount');
+    return response.data;
+  }
   Future<dynamic> getProjectForm(String p1,String p2) async {
     final response = await Api().getResult('$api/System/System.CustomFunctionList?FunctionName=GetFieldsByForm&Param1=$p1 &Param2=$p2');
     print("getPRojectForm${response.data}");

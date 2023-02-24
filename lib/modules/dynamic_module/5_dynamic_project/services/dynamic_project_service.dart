@@ -19,6 +19,13 @@ class DynamicProjectService extends EntityService {
     log("sweety ---$dataResult");
      return dataResult;
   }
+
+  Future<dynamic> getTabsListCount(String id,String type) async {
+    final dynamic response = await DynamicProjectApi().getTabsListCount(id, type);
+    log("sweetytabs Count ---${response["Count"]}");
+    return response;
+  }
+
   Future<List>getEntitySubTabForm(String moduleId,String tabId) async {
      print("moduleID${moduleId}");
      print("tabId${tabId}");
@@ -37,11 +44,6 @@ class DynamicProjectService extends EntityService {
     final List<dynamic> dataResult = response;
     return dataResult;
   }
-  //  Future<List> getActiveFeaturesEntity() async {
-  //   final dynamic response = await DynamicProjectApi().getActiveFeaturesEntity();
-  //   final List<dynamic> dataResult = response;
-  //    return dataResult;
-  // }
 
   @override
   Future<dynamic> getEntity(String entityId) async {
@@ -94,7 +96,6 @@ class DynamicProjectService extends EntityService {
         Hive.box<dynamic>('projectForm').values.toList();
     print("items---"+items.toString());
 
-    //items.sort((a, b) => a['ORDER_NUM'].compareTo(b['ORDER_NUM']));
 
     return items.where((e) => e['FIELD_NAME'] != 'PROJECT_TYPE_ID').toList();
   }

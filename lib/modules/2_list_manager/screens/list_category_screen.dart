@@ -21,10 +21,10 @@ class ListCategoryScreen extends StatelessWidget {
       {'contextId': 'LIST_CATEGORY.CATEGORY_ID', 'itemId': 'PJ'}
     ];
 
-    if (AuthUtil.hasAccess(int.parse(ACCESS_CODES['OPPORTUNTIY'].toString()))) {
+   /* if (AuthUtil.hasAccess(int.parse(ACCESS_CODES['OPPORTUNTIY'].toString()))) {
       _listItems
           .add({'contextId': 'LIST_CATEGORY.CATEGORY_ID', 'itemId': 'DE'});
-    }
+    }*/
 
     return _listItems
         .map(

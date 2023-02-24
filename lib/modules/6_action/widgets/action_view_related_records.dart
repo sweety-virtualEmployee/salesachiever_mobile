@@ -309,7 +309,7 @@ class ActionViewRelatedRecords extends StatelessWidget {
             }
           },
         ),
-        if (AuthUtil.hasAccess(
+       /* if (AuthUtil.hasAccess(
             int.parse(ACCESS_CODES['OPPORTUNTIY'].toString())))
           AssociatedEntityWidget(
             title: LangUtil.getString(
@@ -388,7 +388,7 @@ class ActionViewRelatedRecords extends StatelessWidget {
                 }
               }
             },
-          ),
+          ),*/
       ],
     );
   }

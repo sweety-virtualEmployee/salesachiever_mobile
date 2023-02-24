@@ -57,7 +57,7 @@ class ContactViewRelatedRecords extends StatelessWidget {
           relatedEntityType: 'actions',
           isEditable: false,
         ),
-        if (AuthUtil.hasAccess(
+       /* if (AuthUtil.hasAccess(
             int.parse(ACCESS_CODES['OPPORTUNTIY'].toString())))
           RelatedEntityWidget(
             entity: _entity,
@@ -69,7 +69,7 @@ class ContactViewRelatedRecords extends StatelessWidget {
             id: _contactId,
             relatedEntityType: 'OpportunityLinks?pageSize=1000&pageNumber=1',
             isEditable: true,
-          )
+          )*/
       ],
     );
   }

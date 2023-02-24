@@ -96,47 +96,50 @@ class _ProjectListItemWidgetState
                 ],
               ),
               SizedBox(width: 50,),
-              Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(0, 4, 0, 4),
-                    child: Text(
-                      widget.entity['PROJECT_ID'],
-                      overflow: TextOverflow.ellipsis,
-                      softWrap: false,
+              Expanded(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(0, 4, 0, 4),
+                      child: Text(
+                        widget.entity['PROJECT_ID'],
+                        overflow: TextOverflow.ellipsis,
+                        softWrap: false,
+                      ),
                     ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(0, 4, 0, 4),
-                    child: Text(
-                      widget.entity['PROJECT_TITLE'],
-                      overflow: TextOverflow.ellipsis,
-                      softWrap: false,
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(0, 4, 0, 4),
+                      child: Text(
+                        widget.entity['PROJECT_TITLE']!=null?widget.entity['PROJECT_TITLE']:"",
+                        overflow: TextOverflow.ellipsis,
+                        softWrap: false,
+                        maxLines: 4,
+                      ),
                     ),
-                  ),
-                  Padding(
-                            padding: const EdgeInsets.fromLTRB(0, 4, 0, 4),
-                            child: Text(
-                              widget.entity['SITE_TOWN'] != null
-                                  ? widget.entity['SITE_TOWN']
-                                  : '',
-                              overflow: TextOverflow.ellipsis,
-                              softWrap: false,
+                    Padding(
+                              padding: const EdgeInsets.fromLTRB(0, 4, 0, 4),
+                              child: Text(
+                                widget.entity['SITE_TOWN'] != null
+                                    ? widget.entity['SITE_TOWN']
+                                    : '',
+                                overflow: TextOverflow.ellipsis,
+                                softWrap: false,
+                              ),
                             ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.fromLTRB(0, 4, 0, 4),
-                            child: Text(
-                              widget.entity['SELLINGSTATUS_ID'] != null
-                                  ? widget.entity['SELLINGSTATUS_ID']
-                                  : '',
-                              overflow: TextOverflow.ellipsis,
-                              softWrap: false,
+                            Padding(
+                              padding: const EdgeInsets.fromLTRB(0, 4, 0, 4),
+                              child: Text(
+                                widget.entity['SELLINGSTATUS_ID'] != null
+                                    ? widget.entity['SELLINGSTATUS_ID']
+                                    : '',
+                                overflow: TextOverflow.ellipsis,
+                                softWrap: false,
+                              ),
                             ),
-                          ),
-                ],
+                  ],
+                ),
               ),
             ],
           ),
@@ -188,7 +191,7 @@ class _ProjectListItemWidgetState
             builder: (context) {
               return ProjectTabs(
                 project: project.data,
-                title: widget.entity['PROJECT_TITLE'],
+                title: widget.entity['PROJECT_TITLE']!=null?widget.entity['PROJECT_TITLE']:"",
                 readonly: true,
                 refresh: widget.refresh,
               );

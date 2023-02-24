@@ -21,10 +21,8 @@ class DynamicPsaHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       color: Color(0xffE67E6B),
-     // color: Colors.white,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-       // mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Row(
             children: [
@@ -35,26 +33,28 @@ class DynamicPsaHeader extends StatelessWidget {
                   icon,
                 ),
               ),
-              Padding(
-                padding: const EdgeInsets.only(left:10.0),
-                child: Container(
-                  width: MediaQuery.of(context).size.width *0.8,
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.only(left:10.0),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          PlatformText(
-                            title,
-                            style: TextStyle(
-                              fontWeight: FontWeight.w400,
-                              fontSize: 16,
-                              color: Colors.black87,
+                          Expanded(
+                            child: PlatformText(
+                              title,
+                              style: TextStyle(
+                                fontWeight: FontWeight.w400,
+                                fontSize: 16,
+                                color: Colors.black87,
+                              ),
+                              overflow: TextOverflow.ellipsis,
+                              softWrap: true,
+                              maxLines: 5,
                             ),
-                            overflow: TextOverflow.ellipsis,
                           ),
-
                           Text(
                             projectID,
                             style: TextStyle(

@@ -18,9 +18,9 @@ class CreateRecordScreen extends StatelessWidget {
       'Action.Description',
     ];
 
-    if (AuthUtil.hasAccess(int.parse(ACCESS_CODES['OPPORTUNTIY'].toString()))) {
+    /*if (AuthUtil.hasAccess(int.parse(ACCESS_CODES['OPPORTUNTIY'].toString()))) {
       menuItems.add('Opportunity.Description');
-    }
+    }*/
 
     return menuItems
         .map(

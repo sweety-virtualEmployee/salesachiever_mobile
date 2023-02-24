@@ -41,7 +41,7 @@ var mainMenu = <dynamic>[
     'image': 'assets/images/projects_icon.png',
     'hasChild': true,
   },
-  {
+  /*{
     'key': 'OPPORTUNITY',
     'context': 'Entities',
     'title': 'Opportunity.Description.Plural',
@@ -49,7 +49,7 @@ var mainMenu = <dynamic>[
     'image': 'assets/images/opportunity_icon.png',
     'accessCode': ACCESS_CODES['OPPORTUNTIY'],
     'hasChild': true,
-  }, 
+  }, */
   {
     'key': 'ACTION',
     'context': 'Entities',
