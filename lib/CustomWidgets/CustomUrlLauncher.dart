@@ -17,7 +17,7 @@ class CustomUrlLauncher{
     } else {
       throw 'Could not launch $url';
     }
-  }
+    }
 
 
 

@@ -44,6 +44,7 @@ class _RelatedEntityScreenState extends State<RelatedEntityScreen> {
   @override
   void initState() {
     list = widget.list;
+    print("listValue${list}");
     super.initState();
   }
 

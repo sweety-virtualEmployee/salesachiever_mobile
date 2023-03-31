@@ -90,10 +90,10 @@ class DynamicProjectService extends EntityService {
   }
 
   Future<dynamic> updateProjectNote(
-      String projectId, dynamic projectNote) async {
+      String projectId, dynamic projectNote,String notesId) async {
     if (projectNote == null || projectNote == '') projectNote = ' ';
 
-    return _projectApi.updateProjectNote(projectId, projectNote);
+    return _projectApi.updateProjectNote(projectId, projectNote,notesId: notesId);
   }
 
   Future<dynamic> getProjectNote(String projectId) async {

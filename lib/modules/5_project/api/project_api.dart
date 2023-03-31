@@ -67,7 +67,7 @@ return await _api.get('/project/$projectId');
     return response.data;
   }
 
-  Future<void> updateProjectNote(String projectId, String note) async {
+  Future<void> updateProjectNote(String projectId, String note,{String? notesId}) async {
     Response response =
         await _api.put('/projectNote/$projectId', {'NOTES': note});
        // log("response of update project note${response.data}");

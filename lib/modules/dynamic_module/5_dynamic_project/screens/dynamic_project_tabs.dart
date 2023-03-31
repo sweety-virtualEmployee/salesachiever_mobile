@@ -2,11 +2,13 @@ import 'dart:convert';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
+import 'package:loader_overlay/loader_overlay.dart';
 import 'package:salesachiever_mobile/modules/dynamic_module/5_dynamic_project/api/dynamic_project_api.dart';
 import 'package:salesachiever_mobile/modules/dynamic_module/5_dynamic_project/screens/dynamic_project_edit_screen.dart';
 import 'package:salesachiever_mobile/modules/dynamic_module/5_dynamic_project/screens/dynamic_psa_header.dart';
 import 'package:salesachiever_mobile/modules/dynamic_module/5_dynamic_project/services/dynamic_project_service.dart';
 import 'package:salesachiever_mobile/modules/dynamic_module/5_dynamic_project/widgets/dynamic_project_view_related_records.dart';
+import 'package:salesachiever_mobile/shared/screens/dynamic_related_entity_screen.dart';
 import 'package:salesachiever_mobile/shared/screens/related_entity_screen.dart';
 import 'package:salesachiever_mobile/shared/widgets/elements/psa_progress_indicator.dart';
 import 'package:salesachiever_mobile/shared/widgets/layout/psa_scaffold.dart';
@@ -113,6 +115,7 @@ class _ProjectTabsState extends State<ProjectTabs> {
                                       .toString();
                                   return GestureDetector(
                                     onTap: () async {
+                                      context.loaderOverlay.show();
                                       if (jsonDecode(jsonEncode(snapshot.data))[
                                               index]['TAB_TYPE'] ==
                                           "C") {
@@ -169,25 +172,35 @@ class _ProjectTabsState extends State<ProjectTabs> {
                                       else if (jsonDecode(jsonEncode(snapshot.data))[
                                       index]['TAB_TYPE'] ==
                                           "L"){
-                                        var result = await CompanyService().getRelatedEntity(
+                                        print("true");
+                                        String path=jsonDecode(
+                                            jsonEncode(snapshot
+                                                .data))[index]
+                                        ['TAB_LIST'].replaceAll("@RECORDID", _project?['PROJECT_ID']);
+                                        print(path.replaceAll("&amp;", "&"));
+
+                                        var result = await service.getTabListEntityApi(path.replaceAll("&amp;", "&"));
+
+                                        /* var result = await CompanyService().getRelatedEntity(
                                             'project',
                                             _project?['PROJECT_ID'],
                                             jsonDecode(
                                                 jsonEncode(snapshot
                                                     .data))[index]
                                             ['TAB_DESC']
-                                                .toString());
+                                                .toString());*/
 
                                         Navigator.push(
                                           context,
                                           platformPageRoute(
                                             context: context,
-                                            builder: (BuildContext context) => RelatedEntityScreen(
-                                              entity: "project",
+                                            builder: (BuildContext context) => DynamicRelatedEntityScreen(
+                                              entity: _project,
+                                              project: _project,
                                               type:jsonDecode(
                                                   jsonEncode(snapshot
                                                       .data))[index]
-                                              ['TAB_DESC']
+                                              ['TAB_LIST_MODULE']
                                                   .toString().toLowerCase(),
                                               title: jsonDecode(
                                                   jsonEncode(snapshot
@@ -201,6 +214,7 @@ class _ProjectTabsState extends State<ProjectTabs> {
                                           ),
                                         );
                                       }
+                                      context.loaderOverlay.hide();
                                     },
                                     child: Container(
                                       color: Colors.white,

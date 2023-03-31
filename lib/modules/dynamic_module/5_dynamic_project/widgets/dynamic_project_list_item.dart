@@ -115,7 +115,7 @@ class _ProjectListItemWidgetState
                         widget.entity['PROJECT_TITLE']!=null?widget.entity['PROJECT_TITLE']:"",
                         overflow: TextOverflow.ellipsis,
                         softWrap: false,
-                        maxLines: 4,
+                        maxLines: 1,
                       ),
                     ),
                     Padding(

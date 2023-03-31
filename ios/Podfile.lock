@@ -1,8 +1,5 @@
 PODS:
   - Flutter (1.0.0)
-  - flutter_archive (0.0.1):
-    - Flutter
-    - ZIPFoundation (= 0.9.13)
   - flutter_phone_direct_caller (0.0.1):
     - Flutter
   - fluttertoast (0.0.2):
@@ -23,11 +20,9 @@ PODS:
     - Flutter
   - vibration (1.7.5):
     - Flutter
-  - ZIPFoundation (0.9.13)
 
 DEPENDENCIES:
   - Flutter (from `Flutter`)
-  - flutter_archive (from `.symlinks/plugins/flutter_archive/ios`)
   - flutter_phone_direct_caller (from `.symlinks/plugins/flutter_phone_direct_caller/ios`)
   - fluttertoast (from `.symlinks/plugins/fluttertoast/ios`)
   - image_picker_ios (from `.symlinks/plugins/image_picker_ios/ios`)
@@ -40,13 +35,10 @@ DEPENDENCIES:
 SPEC REPOS:
   trunk:
     - Toast
-    - ZIPFoundation
 
 EXTERNAL SOURCES:
   Flutter:
     :path: Flutter
-  flutter_archive:
-    :path: ".symlinks/plugins/flutter_archive/ios"
   flutter_phone_direct_caller:
     :path: ".symlinks/plugins/flutter_phone_direct_caller/ios"
   fluttertoast:
@@ -66,17 +58,15 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   Flutter: f04841e97a9d0b0a8025694d0796dd46242b2854
-  flutter_archive: 1805fdd3a695fd284b43edb53dc35ca843fb761c
   flutter_phone_direct_caller: bd2ffd297f371a8a6c7bfbba0196964ffe3c4358
   fluttertoast: eb263d302cc92e04176c053d2385237e9f43fad0
-  image_picker_ios: b786a5dcf033a8336a657191401bfdf12017dabb
+  image_picker_ios: 4a8aadfbb6dc30ad5141a2ce3832af9214a705b5
   package_info_plus: 6c92f08e1f853dc01228d6f553146438dafcd14e
-  path_provider_foundation: 37748e03f12783f9de2cb2c4eadfaa25fe6d4852
-  shared_preferences_foundation: 297b3ebca31b34ec92be11acd7fb0ba932c822ca
+  path_provider_foundation: c68054786f1b4f3343858c1e1d0caaded73f0be9
+  shared_preferences_foundation: 986fc17f3d3251412d18b0265f9c64113a8c2472
   Toast: 91b396c56ee72a5790816f40d3a94dd357abc196
-  url_launcher_ios: ae1517e5e344f5544fb090b079e11f399dfbe4d2
+  url_launcher_ios: 08a3dfac5fb39e8759aeb0abbd5d9480f30fc8b4
   vibration: 7d883d141656a1c1a6d8d238616b2042a51a1241
-  ZIPFoundation: ae5b4b813d216d3bf0a148773267fff14bd51d37
 
 PODFILE CHECKSUM: ef19549a9bc3046e7bb7d2fab4d021637c0c58a3
 

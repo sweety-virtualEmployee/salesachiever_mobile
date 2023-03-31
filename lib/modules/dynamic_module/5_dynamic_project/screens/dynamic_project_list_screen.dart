@@ -1,5 +1,7 @@
 import 'package:flutter/widgets.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
+import 'package:salesachiever_mobile/modules/5_project/screens/project_edit_screen.dart';
+import 'package:salesachiever_mobile/modules/dynamic_module/5_dynamic_project/screens/dynamic_project_add.dart';
 import 'package:salesachiever_mobile/modules/dynamic_module/5_dynamic_project/screens/dynamic_project_edit_screen.dart';
 import 'package:salesachiever_mobile/modules/dynamic_module/5_dynamic_project/services/dynamic_project_service.dart';
 import 'package:salesachiever_mobile/modules/dynamic_module/5_dynamic_project/widgets/dynamic_project_list_item.dart';
@@ -47,8 +49,8 @@ class DynamicProjectListScreen extends StatelessWidget {
           context,
           platformPageRoute(
             context: context,
-            builder: (BuildContext context) => DynamicProjectEditScreen(
-              projectName: "",
+            builder: (BuildContext context) =>
+                DynamicProjectAddScreen(
               project: {},
              // projectData: [],
               readonly: false,
