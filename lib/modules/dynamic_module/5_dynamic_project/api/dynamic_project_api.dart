@@ -86,7 +86,7 @@ class DynamicProjectApi {
       headers.add({'key': 'FilterSet', 'headers': jsonEncode(filterBy)});
 
     return await Api().get(
-        '/list/$listName?searchText=$searchText&pageSize=$pageSize&pageNumber=$pageNumber&systemLayout=true',
+        '/list/$listName?searchText=$searchText&pageSize=$pageSize&pageNumber=$pageNumber&systemLayout=false',
         headers);
   }
 

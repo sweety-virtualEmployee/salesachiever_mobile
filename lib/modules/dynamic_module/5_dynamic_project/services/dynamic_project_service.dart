@@ -51,6 +51,7 @@ class DynamicProjectService extends EntityService {
      return dataResult;
   }
   Future<List> getProject() async {
+     print("getting project list");
     final dynamic response = await DynamicProjectApi().getProject();
     final List<dynamic> dataResult = response;
     return dataResult;
@@ -58,6 +59,7 @@ class DynamicProjectService extends EntityService {
 
   @override
   Future<dynamic> getEntity(String entityId) async {
+     print("this api called");
     return _projectApi.getById(entityId);
   }
 
@@ -83,22 +85,24 @@ class DynamicProjectService extends EntityService {
         searchText, pageNumber, pageSize, sortBy, filterBy);
   }
 
-  Future<dynamic> addProjectNote(String projectId, dynamic projectNote) async {
+  Future<dynamic> addProjectNote(String projectId, dynamic projectNote,dynamic projectDescription) async {
     if (projectNote == null || projectNote == '') projectNote = ' ';
 
-    return _projectApi.addProjectNote(projectId, projectNote);
+    return _projectApi.addProjectNote(projectId, projectNote,projectDescription);
   }
 
   Future<dynamic> updateProjectNote(
-      String projectId, dynamic projectNote,String notesId) async {
+    String notesId, dynamic projectNote,) async {
+    print("apicalled");
     if (projectNote == null || projectNote == '') projectNote = ' ';
 
-    return _projectApi.updateProjectNote(projectId, projectNote,notesId: notesId);
+    return _projectApi.updateProjectNote(notesId,projectNote);
   }
 
   Future<dynamic> getProjectNote(String projectId) async {
     var data = await _projectApi.getProjectNotes(projectId);
-    List<dynamic> notes = data['Items'];
+    print("Data${data}");
+    dynamic notes = data;
     return notes;
   }
 

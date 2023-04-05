@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:developer';
 import 'package:dio/dio.dart';
 import 'package:salesachiever_mobile/api/api.dart';
+import 'package:salesachiever_mobile/utils/auth_util.dart';
 import 'package:salesachiever_mobile/utils/storage_util.dart';
 
 class ProjectApi {
@@ -47,7 +48,7 @@ class ProjectApi {
       headers.add({'key': 'FilterSet', 'headers': jsonEncode(filterBy)});
 
     return await Api().get(
-        '/list/$listName?searchText=$searchText&pageSize=$pageSize&pageNumber=$pageNumber&systemLayout=true',
+        '/list/$listName?searchText=$searchText&pageSize=$pageSize&pageNumber=$pageNumber&systemLayout=false',
         headers);
   }
 
@@ -56,21 +57,28 @@ class ProjectApi {
 return await _api.get('/project/$projectId');
   }
 
-  Future<dynamic> addProjectNote(String projectId, String note) async {
+  Future<dynamic> addProjectNote(String projectId, String note,String description) async {
+   print("userName${AuthUtil.getUserName()}");
     Response response =
-        await _api.post('/projectNote/$projectId', {'NOTES': note});
+        await _api.post('/projectNote/$projectId', {
+          'NOTES': note,
+          'DESCRIPTION':description,
+          "RTF_NOTES": "",
+          "SAUSER_ID": AuthUtil.getUserName()});
     return response.data;
   }
 
   Future<dynamic> getProjectNotes(String projectId) async {
-    Response response = await _api.get('/project/$projectId/notes');
+    Response response = await _api.get('/ProjectNote/$projectId');
     return response.data;
   }
 
-  Future<void> updateProjectNote(String projectId, String note,{String? notesId}) async {
+  Future<void> updateProjectNote(String notesId,String note) async {
+    print("notesID4${notesId}");
+
     Response response =
-        await _api.put('/projectNote/$projectId', {'NOTES': note});
-       // log("response of update project note${response.data}");
+        await _api.put('/projectNote/$notesId', {'NOTES': note});
+        log("response of update project note${response.data}");
     return response.data;
   }
 

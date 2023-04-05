@@ -41,7 +41,7 @@ class ProjectService extends EntityService {
   Future<dynamic> addProjectNote(String projectId, dynamic projectNote) async {
     if (projectNote == null || projectNote == '') projectNote = ' ';
 
-    return _projectApi.addProjectNote(projectId, projectNote);
+    return _projectApi.addProjectNote(projectId, projectNote,"");
   }
 
   Future<dynamic> updateProjectNote(
@@ -70,7 +70,7 @@ class ProjectService extends EntityService {
   }
 
   List<dynamic> getuserFields() {
-    List<dynamic> items =
+     List<dynamic> items =
         Hive.box<dynamic>('userFields_project').values.toList();
 
     items.sort((a, b) => a['ORDER_NUM'].compareTo(b['ORDER_NUM']));

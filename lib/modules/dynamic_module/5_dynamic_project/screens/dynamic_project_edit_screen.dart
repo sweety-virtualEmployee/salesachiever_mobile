@@ -507,7 +507,7 @@ class _DynamicProjectEditScreenState extends State<DynamicProjectEditScreen> {
                   LangUtil.getString('Entities', 'Project.Create.Text'),
               projectID: _project?['PROJECT_ID'],
               status: _project?['SELLINGSTATUS_ID'],
-              siteTown: _project?['SITE_TOWN'],
+              siteTown: _project?['OWNER_ID'],
             ),
             Expanded(
               child: SingleChildScrollView(

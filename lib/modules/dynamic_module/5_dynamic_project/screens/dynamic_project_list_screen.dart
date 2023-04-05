@@ -26,12 +26,14 @@ class DynamicProjectListScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    print("listName${listName}");
     return PsaScaffold(
       title: LangUtil.getString('Entities', 'Project.Description')+" - List",
       body: PsaEntityListView(
         service: DynamicProjectService(listName: listName),
         display: (
             {required final dynamic entity, required final Function refresh}) {
+          print("check entity${entity}");
           return DynamicProjectListItemWidget(
             entity: entity,
             refresh: refresh,

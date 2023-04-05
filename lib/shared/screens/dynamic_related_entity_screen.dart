@@ -246,7 +246,22 @@ class _DynamicRelatedEntityScreenState
                               }
                             },
                           )
-                       : null,
+                       :(widget.type == 'projectnotes')
+            ? PsaAddButton(
+          onTap: () =>   Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) {
+                return DynamicProjectNotes(
+                  project: _project,
+                  notesData: {},
+                  isNewNote: true,
+                );
+              },
+            ),
+          ),
+        )
+            : null,
         body: Column(
           children: [
             DynamicPsaHeader(
@@ -256,7 +271,7 @@ class _DynamicRelatedEntityScreenState
                   LangUtil.getString('Entities', 'Project.Create.Text'),
               projectID: _project?['PROJECT_ID'],
               status: _project?['SELLINGSTATUS_ID'],
-              siteTown: _project?['SITE_TOWN'],
+              siteTown: _project?['OWNER_ID'],
             ),
             Expanded(
               child: ListView.builder(
@@ -312,15 +327,16 @@ class _DynamicRelatedEntityScreenState
                           ),
                         );
                       } else if (widget.type == "projectnotes") {
+                        dynamic response = await DynamicProjectService()
+                            .getProjectNote(item['NOTE_ID']);
                         Navigator.push(
                           context,
                           MaterialPageRoute(
                             builder: (context) {
                               return DynamicProjectNotes(
-                                description: item['DESCRIPTION'],
                                 project: _project,
-                                notes: item['NOTES'],
-                                notesId: item['NOTE_ID'],
+                                notesData: response,
+                                isNewNote: false,
                               );
                             },
                           ),
@@ -436,15 +452,16 @@ class _DynamicRelatedEntityScreenState
                                           ),
                                         );
                                       } else if (widget.type == "projectnotes") {
+                                         dynamic response = await DynamicProjectService()
+                                            .getProjectNote(item['NOTE_ID']);
                                         Navigator.push(
                                           context,
                                           MaterialPageRoute(
                                             builder: (context) {
                                               return DynamicProjectNotes(
-                                                description: item['DESCRIPTION'],
                                                 project: _project,
-                                                notes: item['NOTES'],
-                                                notesId: item['NOTE_ID'],
+                                                notesData:response,
+                                                  isNewNote: false
                                               );
                                             },
                                           ),

@@ -46,10 +46,13 @@ class _PsaEntityListViewState extends State<PsaEntityListView> {
 
   @override
   void initState() {
+    print("entity service${this.widget.service}");
     _searchText = '%25';
     entityService = this.widget.service;
     entityList = EntityListStream(
         entityService, _searchText, this.widget.sortBy, this.widget.filterBy);
+    print("entity service${this.widget.service}");
+    print("entity list value${entityList}");
     scrollController.addListener(() {
       if (scrollController.position.maxScrollExtent <
           scrollController.offset + 5000) {

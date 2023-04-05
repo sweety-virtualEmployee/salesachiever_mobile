@@ -78,7 +78,7 @@ class _ProjectListItemWidgetState
                   Padding(
                           padding: const EdgeInsets.fromLTRB(0, 4, 12, 4),
                           child: Text(
-                            '${LangUtil.getString('PROJECT', 'SITE_TOWN')} :',
+                            '${LangUtil.getString('PROJECT', 'OWNER_ID')} :',
                             style: TextStyle(fontWeight: FontWeight.w700,color: Colors.red),
                             overflow: TextOverflow.ellipsis,
                             softWrap: false,
@@ -112,7 +112,7 @@ class _ProjectListItemWidgetState
                     Padding(
                       padding: const EdgeInsets.fromLTRB(0, 4, 0, 4),
                       child: Text(
-                        widget.entity['PROJECT_TITLE']!=null?widget.entity['PROJECT_TITLE']:"",
+                        widget.entity['PROJECT_PROJECT_TITLE']!=null?widget.entity['PROJECT_PROJECT_TITLE']:"",
                         overflow: TextOverflow.ellipsis,
                         softWrap: false,
                         maxLines: 1,
@@ -121,8 +121,8 @@ class _ProjectListItemWidgetState
                     Padding(
                               padding: const EdgeInsets.fromLTRB(0, 4, 0, 4),
                               child: Text(
-                                widget.entity['SITE_TOWN'] != null
-                                    ? widget.entity['SITE_TOWN']
+                                widget.entity['PROJECT_OWNER_ID'] != null
+                                    ? widget.entity['PROJECT_OWNER_ID']
                                     : '',
                                 overflow: TextOverflow.ellipsis,
                                 softWrap: false,
@@ -131,8 +131,8 @@ class _ProjectListItemWidgetState
                             Padding(
                               padding: const EdgeInsets.fromLTRB(0, 4, 0, 4),
                               child: Text(
-                                widget.entity['SELLINGSTATUS_ID'] != null
-                                    ? widget.entity['SELLINGSTATUS_ID']
+                                widget.entity['PROJECT_SELLINGSTATUS_ID'] != null
+                                    ? widget.entity['PROJECT_SELLINGSTATUS_ID']
                                     : '',
                                 overflow: TextOverflow.ellipsis,
                                 softWrap: false,

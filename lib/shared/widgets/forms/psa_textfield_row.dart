@@ -14,6 +14,7 @@ class PsaTextFieldRow extends StatefulWidget {
   final Function? onChange;
   final bool? isRequired;
   final String? updatedFieldKey;
+  final int? maxLines;
 
   const PsaTextFieldRow({
     Key? key,
@@ -23,6 +24,7 @@ class PsaTextFieldRow extends StatefulWidget {
     this.value,
     this.keyboardType,
     this.onChange,
+    this.maxLines = 1,
     this.isRequired = false,
     this.updatedFieldKey,
   }) : super(key: key);
@@ -68,22 +70,27 @@ class _PsaTextFieldRowState extends State<PsaTextFieldRow> {
       color: Colors.white,
       child: CupertinoFormRow(
         child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            SizedBox(
-              width: MediaQuery.of(context).size.width * 0.30,
-              child: Text(
-                widget.title ?? '',
-                textAlign: TextAlign.right,
-                style: TextStyle(
-                    color: widget.isRequired! && textController.text.isEmpty
-                        ? Colors.red
-                        : Colors.black),
+            Padding(
+              padding: const EdgeInsets.only(top: 8.0),
+              child: SizedBox(
+                width: MediaQuery.of(context).size.width * 0.30,
+                child: Text(
+                  widget.title ?? '',
+                  textAlign: TextAlign.right,
+                  style: TextStyle(
+                      color: widget.isRequired! && textController.text.isEmpty
+                          ? Colors.red
+                          : Colors.black),
+                ),
               ),
             ),
             Expanded(
               child: Padding(
                 padding: const EdgeInsets.only(left: 12.0, right: 12.0),
                 child: CupertinoTextField(
+                  maxLines: widget.maxLines,
                   controller: textController,
                   decoration: new BoxDecoration(
                     color: Colors.white,

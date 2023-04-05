@@ -23,7 +23,7 @@ class ListManagerService {
 
     var data = await _listItemApi.getDefaultLists(user);
     List<dynamic> items = data['Items'];
-    log("project *********$items");
+    log("project1 *********$items");
 
     await Hive.box<dynamic>('defaultLists').clear();
     await Hive.box<dynamic>('defaultLists').addAll(items);
