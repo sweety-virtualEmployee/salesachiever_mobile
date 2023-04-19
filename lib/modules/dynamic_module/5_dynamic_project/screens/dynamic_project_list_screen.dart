@@ -33,7 +33,6 @@ class DynamicProjectListScreen extends StatelessWidget {
         service: DynamicProjectService(listName: listName),
         display: (
             {required final dynamic entity, required final Function refresh}) {
-          print("check entity${entity}");
           return DynamicProjectListItemWidget(
             entity: entity,
             refresh: refresh,

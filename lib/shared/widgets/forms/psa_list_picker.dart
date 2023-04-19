@@ -17,7 +17,10 @@ class PsaListPicker extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    print("list print$contextId");
     List<Locale> listValues = LangUtil.getLocaleList(contextId);
+    print("list print$listValues");
+
     listValues.sort((a, b) => a.displayValue.compareTo(b.displayValue));
 
     return PsaScaffold(
@@ -26,6 +29,8 @@ class PsaListPicker extends StatelessWidget {
         padding: const EdgeInsets.symmetric(vertical: 8.0),
         child: ListView.separated(
           itemBuilder: (BuildContext _context, int index) {
+            print("list print$listValues");
+
             return InkWell(
               child: Padding(
                 padding:

@@ -7,6 +7,7 @@ import 'package:salesachiever_mobile/modules/3_company/screens/company_list_scre
 import 'package:salesachiever_mobile/modules/4_contact/screens/contact_list_screen.dart';
 import 'package:salesachiever_mobile/modules/0_home/screens/home_screen.dart';
 import 'package:salesachiever_mobile/modules/5_project/screens/project_list_screen.dart';
+import 'package:salesachiever_mobile/modules/dynamic_module/5_dynamic_project/screens/dynamic_project_list_screen.dart';
 import 'package:salesachiever_mobile/shared/models/locale.dart';
 import 'package:salesachiever_mobile/shared/widgets/layout/psa_scaffold.dart';
 import 'package:salesachiever_mobile/utils/lang_util.dart';
@@ -84,7 +85,7 @@ class SelectFilterValueScreen extends StatelessWidget {
                         listName: list,
                       );
                     if (entity == 'PROJECT')
-                      return ProjectListScreen(
+                      return DynamicProjectListScreen(
                         sortBy: sortBy,
                         filterBy: filter,
                         listName: list,

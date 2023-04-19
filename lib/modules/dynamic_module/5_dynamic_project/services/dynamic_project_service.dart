@@ -45,6 +45,28 @@ class DynamicProjectService extends EntityService {
     return items;
   }
 
+  Future<dynamic> getLookByDDL(
+      String tableName,String fieldName,String returnField,int pageNumber) async {
+    var data = await DynamicProjectApi().getLooksUpByDDL(tableName,fieldName,returnField,pageNumber);
+    return data;
+
+  }
+
+  Future<dynamic> getLookByRecordId(
+      String recordId) async {
+    var data = await DynamicProjectApi().getLooksUpByRecordId(recordId);
+    print(data);
+    return data;
+  }
+
+  Future<List<dynamic>> getSearchLookByDDL(
+      String tableName,String fieldName,String returnField,String searchText) async {
+    var data = await DynamicProjectApi().getSearchLooksUpByDDL(tableName,fieldName,returnField,searchText);
+    print(data);
+    List<dynamic> items = data['Items'];
+    return items;
+  }
+
   Future<List> getProjectForm(String p1, String p2) async {
     final dynamic response = await DynamicProjectApi().getProjectForm(p1,p2);
     final List<dynamic> dataResult = response; 

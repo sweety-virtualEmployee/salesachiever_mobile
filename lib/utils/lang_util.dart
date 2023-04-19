@@ -37,6 +37,7 @@ class LangUtil {
   }
 
   static List<Locale> getLocaleList(String contextId) {
+    print("conetxexid$contextId");
     List<Locale> result = Hive.box<Locale>('locales')
         .values
         .where((locale) => locale.contextId == contextId)

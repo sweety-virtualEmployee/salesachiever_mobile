@@ -6,6 +6,7 @@ import 'package:loader_overlay/loader_overlay.dart';
 import 'package:salesachiever_mobile/modules/5_project/services/project_service.dart';
 import 'package:salesachiever_mobile/modules/dynamic_module/5_dynamic_project/api/dynamic_project_api.dart';
 import 'package:salesachiever_mobile/modules/dynamic_module/5_dynamic_project/screens/dynamic_psa_header.dart';
+import 'package:salesachiever_mobile/modules/dynamic_module/5_dynamic_project/widgets/dynamicPsaLooksUp.dart';
 import 'package:salesachiever_mobile/shared/services/lookup_service.dart';
 import 'package:salesachiever_mobile/shared/widgets/buttons/psa_edit_button.dart';
 import 'package:salesachiever_mobile/shared/widgets/elements/psa_progress_indicator.dart';
@@ -34,7 +35,8 @@ class DynamicProjectEditScreen extends StatefulWidget {
     Key? key,
     required this.project,
     required this.readonly,
-    this.tabId, required this.projectName,
+    this.tabId,
+    required this.projectName,
   }) : super(key: key);
 
   @override
@@ -54,7 +56,8 @@ class _DynamicProjectEditScreenState extends State<DynamicProjectEditScreen> {
 
   @override
   void initState() {
-    _readonly = this.widget.readonly;_project = this.widget.project;
+    _readonly = this.widget.readonly;
+    _project = this.widget.project;
     print("sweety***----$_project");
     callApi();
 
@@ -74,6 +77,9 @@ class _DynamicProjectEditScreenState extends State<DynamicProjectEditScreen> {
   }
 
   void _onChange(String key, dynamic value, bool isRequired) {
+    print("on change method");
+    print("key$key");
+    print("value$value");
     setState(() {
       if (key == 'SITE_COUNTRY' && _project[key] != value) {
         _project['SITE_COUNTY'] = '';
@@ -88,7 +94,6 @@ class _DynamicProjectEditScreenState extends State<DynamicProjectEditScreen> {
   callApi() async {
     await getProjectForm();
   }
-
 
   void validate() {
     var isValid = ProjectService().validateEntity(_project);
@@ -113,16 +118,6 @@ class _DynamicProjectEditScreenState extends State<DynamicProjectEditScreen> {
     return response;
   }
 
-  // Future<List> getProjectEntity() async {
-  //   final dynamic response = await DynamicProjectApi().getActiveFeaturesEntity();
-  //   print("response${response}");
-  //   setState(() {
-  //     filedEntity = response;
-  //   });
-  //   log("fieldEntity${response}");
-  //
-  //   return response;
-  // }
   Widget generateFields(
       Key key,
       String type,
@@ -138,7 +133,6 @@ class _DynamicProjectEditScreenState extends State<DynamicProjectEditScreen> {
         var isRequired = mandatoryFields.any((e) =>
             e['TABLE_NAME'] == field['TABLE_NAME'] &&
             e['FIELD_NAME'] == field['FIELD_NAME']);
-
         switch (field['FIELD_TYPE']) {
           case 'L':
             if (field['TABLE_NAME'] == 'ACCOUNT' &&
@@ -292,6 +286,25 @@ class _DynamicProjectEditScreenState extends State<DynamicProjectEditScreen> {
               ),
             );
             break;
+          case 'U':
+            widgets.add(
+              DynamicPsaDropdownRow(
+                type: type,
+                isRequired: isRequired,
+                fieldKey: field['FIELD_NAME'],
+                tableName: field['LKTable'],
+                fieldName: field['LKField'],
+                returnField:field['LKReturn'],
+                lkApi: field['LKAPI'],
+                title: LangUtil.getString(
+                    field['TABLE_NAME'], field['FIELD_NAME']),
+                value: entity?[field['FIELD_NAME']]?.toString() ?? '',
+                readOnly: readonly ||
+                    (field['DISABLED'] != null && field['DISABLED']),
+                onChange: (_, __) => onChange(_, __, isRequired),
+              ),
+            );
+            break;
         }
       }
     } else {
@@ -304,199 +317,15 @@ class _DynamicProjectEditScreenState extends State<DynamicProjectEditScreen> {
     );
   }
 
-  Widget _buildDynamicType(Key key) {
-    List<Widget> widgets = [];
-    // print("icon------"+fieldData[i]['FIELD_TYPE'].toString());
-    // print("activeField"+activeFields.toString());
-    if (fieldData != null) {
-      for (int i = 0; i < fieldData.length; i++) {
-        // bool isRequired = fieldData[i]['Mandatory']=="N"?false:true;
-        var isRequired = mandatoryFields.any((e) =>
-            e['TABLE_NAME'] == fieldData[i]['TABLE_NAME'] &&
-            e['FIELD_DESC'] == fieldData[i]['FIELD_DESC']);
-        switch (fieldData[i]['FIELD_TYPE']) {
-          case 'L':
-            widgets.add(
-              PsaDropdownRow(
-                isRequired: isRequired,
-                type: "",
-                tableName: fieldData[i]['FIELD_TABLE'] == null
-                    ? ""
-                    : fieldData[i]['FIELD_TABLE'],
-                fieldName: fieldData[i]['FIELD_DESC'] == null
-                    ? ""
-                    : fieldData[i]['FIELD_DESC'],
-                title: LangUtil.getStringNew(fieldData, i),
-                // LangUtil.getStringNew(fieldData[i]['FIELD_TABLE']==null? "":fieldData[i]['FIELD_TABLE'],fieldData[i]['FIELD_NAME']==null?"":fieldData[i]['FIELD_NAME'],),
-                value: fieldData != ""
-                    ? fieldData[i]['Data_Value']?.toString() ?? ''
-                    : "",
-                //activeFields[fieldData[i]['FIELD_NAME']==null?"":fieldData[i]['FIELD_NAME']]?.toString() ?? '',
-                readOnly: _readonly,
-                onChange: (_, __) => _onChange(_, __, isRequired),
-              ),
-            );
-            break;
-          case 'H':
-            widgets.add(
-              PsaTextFieldRow(
-                isRequired: isRequired,
-                fieldKey: fieldData[i]['FIELD_DESC'] != null
-                    ? fieldData[i]['FIELD_DESC']
-                    : "",
-                title: LangUtil.getStringNew(fieldData, i),
-                // LangUtil.getString(fieldData[i]['FIELD_TABLE'],fieldData[i]['FIELD_NAME']),
-                value: fieldData != ""
-                    ? fieldData[i]['Data_Value']?.toString() ?? ''
-                    : "",
-                keyboardType: TextInputType.text,
-                readOnly: _readonly,
-                onChange: (_, __) => _onChange(_, __, isRequired),
-              ),
-            );
-            break;
-          case 'C':
-            widgets.add(
-              PsaTextFieldRow(
-                isRequired: isRequired,
-                fieldKey: fieldData[i]['FIELD_DESC'] != null
-                    ? fieldData[i]['FIELD_DESC']
-                    : "",
-                title: LangUtil.getStringNew(fieldData, i),
-                value: fieldData != ""
-                    ? fieldData[i]['Data_Value']?.toString() ?? ''
-                    : "",
-                keyboardType: TextInputType.text,
-                readOnly: _readonly,
-                onChange: (_, __) => _onChange(_, __, isRequired),
-              ),
-            );
-            break;
-          case 'I':
-            widgets.add(
-              PsaNumberFieldRow(
-                isRequired: isRequired,
-                fieldKey: fieldData[i]['FIELD_DESC'] != null
-                    ? fieldData[i]['FIELD_DESC']
-                    : "",
-                title: LangUtil.getStringNew(fieldData, i),
-                value: fieldData != "" ? 0 : 0,
-                keyboardType: TextInputType.number,
-                readOnly: _readonly,
-                onChange: (_, __) => _onChange(_, __, isRequired),
-              ),
-            );
-            break;
-          case 'F':
-            widgets.add(
-              PsaFloatFieldRow(
-                isRequired: isRequired,
-                fieldKey: fieldData[i]['FIELD_DESC'] != null
-                    ? fieldData[i]['FIELD_DESC']
-                    : "",
-                title: LangUtil.getStringNew(fieldData, i),
-                value: fieldData[i]['Data_Value'] != ""
-                    ? double.parse(fieldData[i]['Data_Value'])
-                    : 0.0,
-                keyboardType: TextInputType.numberWithOptions(decimal: true),
-                readOnly: _readonly,
-                onChange: (_, __) => _onChange(_, __, isRequired),
-              ),
-            );
-            break;
-          case 'D':
-            widgets.add(
-              PsaDateFieldRow(
-                isRequired: isRequired,
-                fieldKey: fieldData[i]['FIELD_DESC'] != null
-                    ? fieldData[i]['FIELD_DESC']
-                    : "",
-                title: LangUtil.getStringNew(fieldData, i),
-                value: fieldData != ""
-                    ? fieldData[i]['Data_Value']?.toString() ?? ''
-                    : "",
-                //activeFields[fieldData['FIELD_NAME']]?.toString() ?? '',
-                readOnly: _readonly,
-                onChange: (_, __) => _onChange(_, __, isRequired),
-              ),
-            );
-            break;
-          case 'B':
-            widgets.add(
-              PsaCheckBoxRow(
-                isRequired: isRequired,
-                fieldKey: fieldData[i]['FIELD_DESC'] != null
-                    ? fieldData[i]['FIELD_DESC']
-                    : "",
-                title: LangUtil.getStringNew(fieldData, i),
-                // LangUtil.getStringNew(fieldData[i]['FIELD_TABLE']!=null?fieldData[i]['FIELD_TABLE']:"Field Table", fieldData[i]['FIELD_NAME']!=null?fieldData[i]['FIELD_NAME']:""),
-                value: fieldData[i]['Data_Value'] != ""
-                    ? fieldData[i]['Data_Value']
-                    : true,
-                readOnly: _readonly,
-                onChange: (_, __) => _onChange(_, __, isRequired),
-              ),
-            );
-            break;
-          case 'T':
-            widgets.add(
-              PsaTimeFieldRow(
-                isRequired: isRequired,
-                fieldKey: fieldData[i]['FIELD_DESC'] != null
-                    ? fieldData[i]['FIELD_DESC']
-                    : "",
-                title: LangUtil.getStringNew(fieldData, i),
-                //LangUtil.getStringNew(fieldData[i]['FIELD_TABLE']!=null?fieldData[i]['FIELD_TABLE']:"Field Table", fieldData[i]['FIELD_NAME']!=null?fieldData[i]['FIELD_NAME']:""),
-                value: fieldData != ""
-                    ? DateFormat("dd-MM-yyyy")
-                            .parse(fieldData[i]['Data_Value'])
-                            ?.toString() ??
-                        ''
-                    : "",
-                readOnly: _readonly,
-                onChange: (_, __) => _onChange(_, __, isRequired),
-              ),
-            );
-            break;
-          case 'M':
-            widgets.add(
-              PsaTextAreaFieldRow(
-                isRequired: isRequired,
-                fieldKey: fieldData[i]['FIELD_DESC'] != null
-                    ? fieldData[i]['FIELD_DESC']
-                    : "",
-                title: LangUtil.getStringNew(fieldData, i),
-                //  LangUtil.getStringNew(fieldData[i]['FIELD_TABLE']!=null?fieldData[i]['FIELD_TABLE']:"Field Table", fieldData[i]['FIELD_NAME']!=null?fieldData[i]['FIELD_NAME']:""),
-                value: fieldData != ""
-                    ? fieldData[i]['Data_Value']?.toString() ?? ''
-                    : "",
-                readOnly: _readonly,
-                onChange: (_, __) => _onChange(_, __, isRequired),
-              ),
-            );
-            break;
-        }
-        //print("icon--"+icon);
-      }
-    } else {
-      return Center(child: PsaProgressIndicator());
-    }
-
-    return CupertinoFormSection(
-      children: widgets.length > 0 ? widgets : [Container()],
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
-    // var visibleFileds = activeFields.where((e) => e['COLVAL']).toList();
-
     return PsaScaffold(
       action: PsaEditButton(
         text: _readonly ? 'Edit' : 'Save',
         onTap: (_isValid || _readonly) ? onTap : null,
       ),
-      title: LangUtil.getString('Entities', 'Project.Description.Plural')+" - ${widget.projectName}",
+      title: LangUtil.getString('Entities', 'Project.Description.Plural') +
+          " - ${widget.projectName}",
       body: Container(
         child: Column(
           children: [
@@ -525,29 +354,6 @@ class _DynamicProjectEditScreenState extends State<DynamicProjectEditScreen> {
                                 _readonly,
                                 _onChange)
                             : Center(child: PsaProgressIndicator()))
-                    // Container(
-                    //   child: DataFieldService().generateFields(
-                    //       key,
-                    //       'project',
-                    //       _project,
-                    //       visibleFileds,
-                    //       mandatoryFields,
-                    //       _readonly,
-                    //       _onChange),
-                    // ),
-                    // ProjectInfoSection(
-                    //   project: _project,
-                    //   readonly: _readonly,
-                    //   onChange: _onChange,
-                    //   onNoteChange: _onNoteChange,
-                    //   onSave: onInfoSave,
-                    //   onBack: onInfoBack,
-                    // ),
-                    // ProjectViewRelatedRecords(
-                    //   entity: _project,
-                    //   projectId: _project['PROJECT_ID'] ?? '',
-                    // ),
-                    // ProjectCreateRelatedRecords(project: _project),
                   ],
                 ),
               ),
@@ -582,6 +388,9 @@ class _DynamicProjectEditScreenState extends State<DynamicProjectEditScreen> {
   Future<void> saveProject() async {
     try {
       context.loaderOverlay.show();
+      print("saving the project");
+      print(_project['PROJECT_ID']);
+      print(_project);
 
       if (_project['PROJECT_ID'] != null) {
         await ProjectService().updateEntity(_project!['PROJECT_ID'], _project);

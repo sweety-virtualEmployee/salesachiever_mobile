@@ -4,6 +4,8 @@ import 'package:salesachiever_mobile/shared/models/locale.dart';
 
 class LocaleService {
   Future<void> localizations(String localeId) async {
+    print("locale id");
+    print(localeId);
     final List<dynamic> response = await LocaleApi().localization(localeId);
 
     List<Locale> locales =

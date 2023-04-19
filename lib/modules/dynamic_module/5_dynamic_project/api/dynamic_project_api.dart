@@ -35,6 +35,7 @@ class DynamicProjectApi {
 
   Future<dynamic> getTabListEntityApi(
       String path) async {
+    print("path$path");
     Response response = await _api.get('/${path}');
     return response.data;
   }
@@ -42,6 +43,23 @@ class DynamicProjectApi {
   Future<dynamic> getProject() async {
     final response = await Api().getResult('$api/System/System.CustomFunctionList?FunctionName=GetFieldsByForm&Param1=P001');
     // final response = await Api().getResult('$api/System/System.CustomFunctionList?FunctionName=GetFieldsByForm&Param1=P001');
+    return response.data;
+  }
+
+  Future<dynamic> getLooksUpByDDL(String tableName,String fieldName,String returnField,int pageNumber) async {
+    final response = await Api().getResult('$api/system/SYSTEM.LookupsByDDL?TableName=ACCOUNT&FieldName=ACCT_ID&ReturnField=ACCTNAME&PageSize=20&PageNumber=$pageNumber');
+    print(response);
+    return response.data;
+  }
+
+  Future<dynamic> getLooksUpByRecordId(String recordId) async {
+    final response = await Api().getResult('$api$recordId');
+    print(response);
+    return response.data;
+  }
+  Future<dynamic> getSearchLooksUpByDDL(String tableName,String fieldName,String returnField,String searchText) async {
+    final response = await Api().getResult('$api/system/SYSTEM.LookupsByDDL?TableName=ACCOUNT&FieldName=ACCT_ID&ReturnField=ACCTNAME&SearchText=$searchText&PageSize=15&PageNumber=1');
+    print(response);
     return response.data;
   }
   //  Future<dynamic> getActiveFeaturesEntity() async {
