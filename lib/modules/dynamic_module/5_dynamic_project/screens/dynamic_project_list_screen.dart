@@ -14,6 +14,7 @@ class DynamicProjectListScreen extends StatelessWidget {
   final List<dynamic>? sortBy;
   final List<dynamic>? filterBy;
   final String listName;
+  final String listType;
   final bool isSelectable;
 
   const DynamicProjectListScreen({
@@ -21,6 +22,7 @@ class DynamicProjectListScreen extends StatelessWidget {
     this.sortBy,
     this.filterBy,
     required this.listName,
+    required this.listType,
     this.isSelectable = false,
   }) : super(key: key);
 
@@ -28,7 +30,7 @@ class DynamicProjectListScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     print("listName${listName}");
     return PsaScaffold(
-      title: LangUtil.getString('Entities', 'Project.Description')+" - List",
+      title: "$listType - List",
       body: PsaEntityListView(
         service: DynamicProjectService(listName: listName),
         display: (
@@ -38,9 +40,10 @@ class DynamicProjectListScreen extends StatelessWidget {
             refresh: refresh,
             isSelectable: isSelectable,
             isEditable: false,
+            type:listType
           );
         },
-        type: 'PROJECT',
+        type: listType,
         list: listName,
         sortBy: sortBy,
         filterBy: filterBy,

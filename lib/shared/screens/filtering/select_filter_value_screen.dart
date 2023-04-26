@@ -73,7 +73,8 @@ class SelectFilterValueScreen extends StatelessWidget {
                     });
 
                     if (entity == 'ACCOUNT')
-                      return CompanyListScreen(
+                      return DynamicProjectListScreen(
+                        listType: entity,
                         sortBy: sortBy,
                         filterBy: filter,
                         listName: list,
@@ -86,6 +87,7 @@ class SelectFilterValueScreen extends StatelessWidget {
                       );
                     if (entity == 'PROJECT')
                       return DynamicProjectListScreen(
+                        listType: entity,
                         sortBy: sortBy,
                         filterBy: filter,
                         listName: list,

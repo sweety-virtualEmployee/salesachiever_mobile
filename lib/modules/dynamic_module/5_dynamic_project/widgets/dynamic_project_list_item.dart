@@ -21,7 +21,7 @@ class DynamicProjectListItemWidget extends EntityListItemWidget {
     bool isSelectable = false,
     required bool isEditable,
     this.onEdit,
-    this.onDelete,
+    this.onDelete, required  this.type,
   })  : assert(entity != null),
         super(
           key: key,
@@ -33,6 +33,7 @@ class DynamicProjectListItemWidget extends EntityListItemWidget {
 
   final Function()? onEdit;
   final Function()? onDelete;
+  final String type;
 
   @override
   _ProjectListItemWidgetState createState() => _ProjectListItemWidgetState();
@@ -42,12 +43,168 @@ class _ProjectListItemWidgetState
     extends EntityListItemWidgetState<DynamicProjectListItemWidget> {
   @override
   void initState() {
+    print("listitem:type${widget.type}");
+    print("entity${widget.entity}");
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    return ListTile(
+    return widget.type == 'COMPANY'?
+    ListTile(
+      subtitle: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(0, 4, 12, 4),
+                    child: Text(
+                      'Account Name :',
+                      style: TextStyle(fontWeight: FontWeight.w700,color: Colors.green),
+                      overflow: TextOverflow.ellipsis,
+                      softWrap: false,
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(0, 4, 12, 4),
+                    child: Text(
+                      'Address :',
+                      style: TextStyle(fontWeight: FontWeight.w700,color: Colors.green),
+                      overflow: TextOverflow.ellipsis,
+                      softWrap: false,
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(0, 4, 12, 4),
+                    child: Text(
+                      'Town :',
+                      style: TextStyle(fontWeight: FontWeight.w700,color: Colors.green),
+                      overflow: TextOverflow.ellipsis,
+                      softWrap: false,
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(0, 4, 12, 4),
+                    child: Text(
+                      'Account_Type :',
+                      style: TextStyle(fontWeight: FontWeight.w700,color: Colors.green),
+                      overflow: TextOverflow.ellipsis,
+                      softWrap: false,
+                    ),
+                  ),
+                ],
+              ),
+              SizedBox(width: 50,),
+              Expanded(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(0, 4, 0, 4),
+                      child: Text(
+                        widget.entity['ACCOUNT_ACCTNAME'],
+                        overflow: TextOverflow.ellipsis,
+                        softWrap: false,
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(0, 4, 0, 4),
+                      child: Text(
+                        widget.entity['ACCOUNT_ADDR1']!=null?widget.entity['ACCOUNT_ADDR1']:"",
+                        overflow: TextOverflow.ellipsis,
+                        softWrap: false,
+                        maxLines: 1,
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(0, 4, 0, 4),
+                      child: Text(
+                        widget.entity['ACCOUNT_TOWN'] != null
+                            ? widget.entity['ACCOUNT_TOWN']
+                            : '',
+                        overflow: TextOverflow.ellipsis,
+                        softWrap: false,
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(0, 4, 0, 4),
+                      child: Text(
+                        widget.entity['ACCOUNT_ACCT_TYPE_ID'] != null
+                            ? widget.entity['ACCOUNT_ACCT_TYPE_ID']
+                            : '',
+                        overflow: TextOverflow.ellipsis,
+                        softWrap: false,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          if (widget.isEditable)
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                TextButton(
+                  onPressed: widget.onEdit,
+                  child: Text('Edit'),
+                ),
+                TextButton(
+                  onPressed: widget.onDelete,
+                  child: Text('Delete'),
+                )
+              ],
+            )
+        ],
+      ),
+      trailing: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(context.platformIcons.rightChevron),
+        ],
+      ),
+      onTap: () async {
+        if (widget.isSelectable) {
+          Navigator.pop(context, {
+            'ID': widget.entity['ACCT_ID'],
+            'TEXT': widget.entity['ACCOUNT_ACCTNAME'],
+            'ACCT_ID': widget.entity['PROJECT_ID'],
+            'ACCTNAME': widget.entity['PROJECT_TITLE'],
+          });
+          return;
+        }
+
+        context.loaderOverlay.show();
+        dynamic project = await DynamicProjectService().getEntityById(widget.type,widget.entity['ACCT_ID']);
+
+        print("project list");
+        log("${project.data.toString()}");
+
+        context.loaderOverlay.hide();
+
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) {
+              return ProjectTabs(
+                project: project.data,
+                title: widget.entity['PROJECT_TITLE']!=null?widget.entity['PROJECT_TITLE']:"",
+                readonly: true,
+                refresh: widget.refresh,
+                moduleId: "003",
+                entityType: widget.type,
+              );
+            },
+          ),
+        ).then((value) => widget.refresh());
+      },
+    ) : widget.type == 'PROJECT'?ListTile(
       subtitle: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -194,11 +351,13 @@ class _ProjectListItemWidgetState
                 title: widget.entity['PROJECT_TITLE']!=null?widget.entity['PROJECT_TITLE']:"",
                 readonly: true,
                 refresh: widget.refresh,
+                moduleId: "005",
+                entityType: widget.type,
               );
             },
           ),
         ).then((value) => widget.refresh());
       },
-    );
+    ):SizedBox();
   }
 }

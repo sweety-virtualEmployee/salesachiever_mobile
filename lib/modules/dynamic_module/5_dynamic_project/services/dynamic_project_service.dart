@@ -13,8 +13,8 @@ class DynamicProjectService extends EntityService {
   DynamicProjectService({listName}) : _projectApi = new ProjectApi(listName: listName);
 
 
-   Future<List> getProjectTabs() async {
-    final dynamic response = await DynamicProjectApi().getProjectTabs();
+   Future<List> getProjectTabs(String moduleId) async {
+    final dynamic response = await DynamicProjectApi().getProjectTabs(moduleId);
     final List<dynamic> dataResult = response;
     log("sweety ---$dataResult");
      return dataResult;
@@ -80,9 +80,9 @@ class DynamicProjectService extends EntityService {
   }
 
   @override
-  Future<dynamic> getEntity(String entityId) async {
+  Future<dynamic> getEntityById(String type,String entityId) async {
      print("this api called");
-    return _projectApi.getById(entityId);
+    return DynamicProjectApi().getById(type,entityId);
   }
 
   @override
@@ -107,22 +107,22 @@ class DynamicProjectService extends EntityService {
         searchText, pageNumber, pageSize, sortBy, filterBy);
   }
 
-  Future<dynamic> addProjectNote(String projectId, dynamic projectNote,dynamic projectDescription) async {
+  Future<dynamic> addProjectNote(String typeNote,String projectId, dynamic projectNote,dynamic projectDescription) async {
     if (projectNote == null || projectNote == '') projectNote = ' ';
 
-    return _projectApi.addProjectNote(projectId, projectNote,projectDescription);
+    return DynamicProjectApi().addProjectNote(typeNote,projectId, projectNote,projectDescription);
   }
 
-  Future<dynamic> updateProjectNote(
+  Future<dynamic> updateProjectNote(String typeNote,
     String notesId, dynamic projectNote,) async {
     print("apicalled");
     if (projectNote == null || projectNote == '') projectNote = ' ';
 
-    return _projectApi.updateProjectNote(notesId,projectNote);
+    return  DynamicProjectApi().updateProjectNote(typeNote,notesId,projectNote);
   }
 
-  Future<dynamic> getProjectNote(String projectId) async {
-    var data = await _projectApi.getProjectNotes(projectId);
+  Future<dynamic> getProjectNote(String typeNote,String projectId) async {
+    var data = await DynamicProjectApi().getProjectNotes(typeNote,projectId);
     print("Data${data}");
     dynamic notes = data;
     return notes;

@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
@@ -21,7 +20,6 @@ import 'package:salesachiever_mobile/utils/lang_util.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-
 class DyanmicHomeScreen extends StatefulWidget {
   const DyanmicHomeScreen({Key? key}) : super(key: key);
 
@@ -33,19 +31,8 @@ class _HomeScreenState extends State<DyanmicHomeScreen> {
   String _selectedItem = 'HOME';
   CustomActiveFeature feature = CustomActiveFeature();
 
-
-  // Navigate to home screen and clear navigation history
-  Future<void> _resetScreen() async => Navigator.pushAndRemoveUntil(
-        context,
-        PageRouteBuilder(
-          pageBuilder: (context, animation1, animation2) => DyanmicHomeScreen(),
-          transitionDuration: Duration(seconds: 0),
-        ),
-        (route) => false,
-      );
-
   Future<void> _navigate(String item) async {
-     bool isContainActiveFeature = await feature.activeFeatures();
+    bool isContainActiveFeature = await feature.activeFeatures();
     try {
       context.loaderOverlay.show();
 
@@ -53,11 +40,10 @@ class _HomeScreenState extends State<DyanmicHomeScreen> {
       if (item == 'COMPANY' ||
           item == 'CONTACT' ||
           item == 'PROJECT' ||
-           item == 'OPPORTUNITY'||
-          item == 'ACTION'
-         )
+          item == 'OPPORTUNITY' ||
+          item == 'ACTION')
         defaultLists = await ListManagerService().getDefaultLists();
-        context.loaderOverlay.hide();
+      context.loaderOverlay.hide();
 
       Navigator.push(
         context,
@@ -65,13 +51,24 @@ class _HomeScreenState extends State<DyanmicHomeScreen> {
           context: context,
           builder: (BuildContext context) {
             if (item == 'LISTMANAGER') return ListCategoryScreen();
-            if (item == 'COMPANY')
+            if (item == 'COMPANY'){
+              print("yes company");
+              return DynamicProjectListScreen(
+                listType:item,
+                listName: defaultLists.firstWhere(
+                        (element) => element['SECTION'] == 'ACCOUNT',
+                    orElse: () => null)?['VAR_VALUE'] ??
+                    'acsrch_api',
+              );
+            }
+
+           /* if (item == 'COMPANY')
               return CompanyListScreen(
                 listName: defaultLists.firstWhere(
                         (element) => element['SECTION'] == 'ACCOUNT',
                         orElse: () => null)?['VAR_VALUE'] ??
                     'acsrch_api',
-              );
+              );*/
             if (item == 'CONTACT')
               return ContactListScreen(
                 listName: defaultLists.firstWhere(
@@ -79,24 +76,25 @@ class _HomeScreenState extends State<DyanmicHomeScreen> {
                         orElse: () => null)?['VAR_VALUE'] ??
                     'cont_api',
               );
-            if(isContainActiveFeature &&item == 'PROJECT'){   
-      // if(isContainActiveFeature && item == 'PROJECT'){
-    return DynamicProjectListScreen(
+            if (isContainActiveFeature && item == 'PROJECT') {
+              print("yesprojects");
+              // if(isContainActiveFeature && item == 'PROJECT'){
+              return DynamicProjectListScreen(
+                listType:item,
                 listName: defaultLists.firstWhere(
                         (element) => element['SECTION'] == 'PROJECT',
                         orElse: () => null)?['VAR_VALUE'] ??
                     'pjfilt_api',
               );
-      }
-      else{
-        print("error");
-        // ProjectListScreen(
-        //         listName: defaultLists.firstWhere(
-        //                 (element) => element['SECTION'] == 'PROJECT',
-        //                 orElse: () => null)?['VAR_VALUE'] ??
-        //             'pjfilt_api',
-        //       );
-      }   
+            } else {
+              print("error");
+              // ProjectListScreen(
+              //         listName: defaultLists.firstWhere(
+              //                 (element) => element['SECTION'] == 'PROJECT',
+              //                 orElse: () => null)?['VAR_VALUE'] ??
+              //             'pjfilt_api',
+              //       );
+            }
             // if (item == 'PROJECT' )
             //   return ProjectListScreen(
             //     listName: defaultLists.firstWhere(
@@ -104,7 +102,7 @@ class _HomeScreenState extends State<DyanmicHomeScreen> {
             //             orElse: () => null)?['VAR_VALUE'] ??
             //         'pjfilt_api',
             //   );
-              if(item == 'OPPORTUNITY')
+            if (item == 'OPPORTUNITY')
               return OpportunityListScreen(
                 listName: defaultLists.firstWhere(
                         (element) => element['SECTION'] == 'DEAL',
@@ -121,7 +119,6 @@ class _HomeScreenState extends State<DyanmicHomeScreen> {
             if (item == 'CALENDAR') return CalendarScreen();
             if (item == 'CREATERECORD') return CreateRecordScreen();
             if (item == 'SETTINGS') return SettingsScreen();
-            
 
             return DyanmicHomeScreen();
           },
@@ -149,9 +146,9 @@ class _HomeScreenState extends State<DyanmicHomeScreen> {
           });
 
           if (item == 'HOME') {
-           // _resetScreen();
+            // _resetScreen();
           } else if (item == 'EMAILUS') {
-           // _launchURL();
+            // _launchURL();
           } else {
             _navigate(item);
           }

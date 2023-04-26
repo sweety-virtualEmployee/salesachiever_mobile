@@ -16,10 +16,13 @@ class DynamicProjectNotes extends StatefulWidget {
   final Map<String, dynamic> project;
   final Map<String, dynamic> notesData;
   final bool isNewNote;
+  final String entityType;
+  final String typeNote;
 
   DynamicProjectNotes(
       {Key? key,
-      required this.project,required this.notesData,required this.isNewNote})
+        required this.typeNote,
+      required this.project,required this.notesData,required this.isNewNote,required this.entityType})
       : super(key: key);
 
   @override
@@ -57,11 +60,16 @@ class _DynamicProjectNotesState extends State<DynamicProjectNotes> {
       print("isNotes${_isNewNote}");
       context.loaderOverlay.show();
       if (widget.isNewNote==true) {
-        await DynamicProjectService().addProjectNote(
-            widget.project["PROJECT_ID"], _updateNotes,_updateDescription);
+        if(widget.entityType =="COMPANY"){
+          await DynamicProjectService().addProjectNote(widget.typeNote,
+              widget.project["ACCT_ID"], _updateNotes, _updateDescription);
+        }else {
+          await DynamicProjectService().addProjectNote(widget.typeNote,
+              widget.project["PROJECT_ID"], _updateNotes, _updateDescription);
+        }
       } else {
         await DynamicProjectService()
-            .updateProjectNote(_notesData['NOTE_ID'], _updateNotes);
+            .updateProjectNote(widget.typeNote,_notesData['NOTE_ID'], _updateNotes);
       }
 
       setState(() => _readonly = !_readonly);
@@ -90,14 +98,23 @@ class _DynamicProjectNotesState extends State<DynamicProjectNotes> {
         body: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            DynamicPsaHeader(
+            widget.entityType=="COMPANY"?DynamicPsaHeader(
+              isVisible: true,
+              icon: 'assets/images/company_icon.png',
+              title:  widget.project?['ACCTNAME'],
+              projectID:  widget.project?['ACCT_ID'],
+              status:  widget.project?['ACCT_TYPE_ID'],
+              siteTown:  widget.project?['ADDR1'],
+              backgroundColor: Color(0xff3cab4f),
+            ):DynamicPsaHeader(
               isVisible: true,
               icon: 'assets/images/projects_icon.png',
-              title: widget.project['PROJECT_TITLE'] ??
+              title: widget.project?['PROJECT_TITLE'] ??
                   LangUtil.getString('Entities', 'Project.Create.Text'),
-              projectID: widget.project['PROJECT_ID'],
-              status: widget.project['SELLINGSTATUS_ID'],
-              siteTown: widget.project['OWNER_ID'],
+              projectID:  widget.project?['PROJECT_ID'],
+              status:  widget.project?['SELLINGSTATUS_ID'],
+              siteTown:  widget.project?['OWNER_ID'],
+              backgroundColor: Color(0xffE67E6B),
             ),
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,

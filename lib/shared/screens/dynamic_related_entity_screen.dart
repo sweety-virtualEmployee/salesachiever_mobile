@@ -24,6 +24,7 @@ class DynamicRelatedEntityScreen extends StatefulWidget {
     required this.entity,
     required this.type,
     required this.title,
+    required this.entityType,
     required this.list,
     required this.isSelectable,
     required this.isEditable,
@@ -33,6 +34,7 @@ class DynamicRelatedEntityScreen extends StatefulWidget {
   final dynamic entity;
   final String type;
   final String title;
+  final String entityType;
   final List<dynamic> list;
   final bool isSelectable;
   final bool isEditable;
@@ -246,25 +248,35 @@ class _DynamicRelatedEntityScreenState
                               }
                             },
                           )
-                       :(widget.type == 'projectnotes')
-            ? PsaAddButton(
-          onTap: () =>   Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) {
-                return DynamicProjectNotes(
-                  project: _project,
-                  notesData: {},
-                  isNewNote: true,
-                );
-              },
-            ),
-          ),
-        )
-            : null,
+                        : (widget.type.contains("notes"))
+                            ? PsaAddButton(
+                                onTap: () => Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) {
+                                      return DynamicProjectNotes(
+                                        project: _project,
+                                        notesData: {},
+                                        typeNote:widget.type,
+                                        isNewNote: true,
+                                        entityType: widget.entityType,
+                                      );
+                                    },
+                                  ),
+                                ),
+                              )
+                            : null,
         body: Column(
           children: [
-            DynamicPsaHeader(
+            widget.entityType=="COMPANY"?DynamicPsaHeader(
+              isVisible: true,
+              icon: 'assets/images/company_icon.png',
+              title: _project?['ACCTNAME'],
+              projectID: _project?['ACCT_ID'],
+              status: _project?['ACCT_TYPE_ID'],
+              siteTown: _project?['ADDR1'],
+              backgroundColor: Color(0xff3cab4f),
+            ):DynamicPsaHeader(
               isVisible: true,
               icon: 'assets/images/projects_icon.png',
               title: _project?['PROJECT_TITLE'] ??
@@ -272,6 +284,7 @@ class _DynamicRelatedEntityScreenState
               projectID: _project?['PROJECT_ID'],
               status: _project?['SELLINGSTATUS_ID'],
               siteTown: _project?['OWNER_ID'],
+              backgroundColor: Color(0xffE67E6B),
             ),
             Expanded(
               child: ListView.builder(
@@ -284,8 +297,8 @@ class _DynamicRelatedEntityScreenState
                       print("typecharul${widget.type}");
                       print("element${item["ACCT_ID"]}");
                       if (widget.type == "companies") {
-                        dynamic company = await CompanyService()
-                            .getEntity(item["ACCT_ID"]);
+                        dynamic company =
+                            await CompanyService().getEntity(item["ACCT_ID"]);
                         Navigator.push(
                           context,
                           MaterialPageRoute(
@@ -298,8 +311,8 @@ class _DynamicRelatedEntityScreenState
                           ),
                         );
                       } else if (widget.type == "contacts") {
-                        dynamic contact = await ContactService()
-                            .getEntity(item['CONT_ID']);
+                        dynamic contact =
+                            await ContactService().getEntity(item['CONT_ID']);
                         Navigator.push(
                           context,
                           MaterialPageRoute(
@@ -312,8 +325,8 @@ class _DynamicRelatedEntityScreenState
                           ),
                         );
                       } else if (widget.type == "actions") {
-                        dynamic action = await ActionService()
-                            .getEntity(item['ACTION_ID']);
+                        dynamic action =
+                            await ActionService().getEntity(item['ACTION_ID']);
                         Navigator.push(
                           context,
                           MaterialPageRoute(
@@ -326,17 +339,19 @@ class _DynamicRelatedEntityScreenState
                             },
                           ),
                         );
-                      } else if (widget.type == "projectnotes") {
+                      } else if (widget.type.contains("notes")) {
                         dynamic response = await DynamicProjectService()
-                            .getProjectNote(item['NOTE_ID']);
+                            .getProjectNote(widget.type,item['NOTE_ID']);
                         Navigator.push(
                           context,
                           MaterialPageRoute(
                             builder: (context) {
                               return DynamicProjectNotes(
                                 project: _project,
+                                typeNote:widget.type,
                                 notesData: response,
                                 isNewNote: false,
+                                entityType: widget.entityType,
                               );
                             },
                           ),
@@ -355,25 +370,34 @@ class _DynamicRelatedEntityScreenState
                                 children: [
                                   for (final entry in item.entries)
                                     Padding(
-                                      padding: const EdgeInsets.only(left: 20.0,right: 20,top: 10),
-                                      child:  Row(
+                                      padding: const EdgeInsets.only(
+                                          left: 20.0, right: 20, top: 10),
+                                      child: Row(
                                         children: [
                                           SizedBox(
-                                            width:130,
+                                            width: 130,
                                             child: Padding(
-                                              padding: const EdgeInsets.fromLTRB(0, 4, 0, 4),
+                                              padding:
+                                                  const EdgeInsets.fromLTRB(
+                                                      0, 4, 0, 4),
                                               child: Text(
                                                 '${entry.key} :',
-                                                style: TextStyle(fontWeight: FontWeight.w700,color: Colors.red),
+                                                style: TextStyle(
+                                                    fontWeight: FontWeight.w700,
+                                                    color: widget.entityType == "Company"?Color(0xff3cab4f):Color(0xffE67E6B)),
                                                 overflow: TextOverflow.ellipsis,
                                                 softWrap: false,
                                               ),
                                             ),
                                           ),
-                                          SizedBox(width: 50,),
+                                          SizedBox(
+                                            width: 50,
+                                          ),
                                           Expanded(
                                             child: Padding(
-                                              padding: const EdgeInsets.fromLTRB(0, 4, 0, 4),
+                                              padding:
+                                                  const EdgeInsets.fromLTRB(
+                                                      0, 4, 0, 4),
                                               child: Text(
                                                 '${entry.value.toString()}',
                                                 overflow: TextOverflow.ellipsis,
@@ -382,7 +406,7 @@ class _DynamicRelatedEntityScreenState
                                             ),
                                           ),
                                         ],
-                                      ),/* Row(
+                                      ), /* Row(
                                         mainAxisAlignment: MainAxisAlignment.start,
                                         children: [
                                           Expanded(
@@ -451,50 +475,53 @@ class _DynamicRelatedEntityScreenState
                                             },
                                           ),
                                         );
-                                      } else if (widget.type == "projectnotes") {
-                                         dynamic response = await DynamicProjectService()
-                                            .getProjectNote(item['NOTE_ID']);
+                                      } else if (widget.type.contains("notes")) {
+                                        dynamic response =
+                                            await DynamicProjectService()
+                                                .getProjectNote(widget.type,
+                                                    item['NOTE_ID']);
                                         Navigator.push(
                                           context,
                                           MaterialPageRoute(
                                             builder: (context) {
                                               return DynamicProjectNotes(
-                                                project: _project,
-                                                notesData:response,
-                                                  isNewNote: false
-                                              );
+                                                  project: _project,
+                                                  notesData: response,
+                                                  entityType: widget.entityType,
+                                                  typeNote:widget.type,
+                                                  isNewNote: false);
                                             },
                                           ),
                                         );
                                       }
                                     },
-                                    icon:
-                                        Icon(context.platformIcons.rightChevron)),
+                                    icon: Icon(
+                                        context.platformIcons.rightChevron)),
                               ],
                             ),
                           ],
                         ),
-                        if((widget.type == 'company' ||
+                        if ((widget.type == 'company' ||
                             widget.type == 'companies' ||
-                            widget.type == 'companies?pageSize=1000&pageNumber=1')
-                        )
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          children: [
-                            TextButton(
-                              onPressed: (){
-                              onLinkEdit(index);
-                              },
-                              child: Text('Edit'),
-                            ),
-                            TextButton(
-                              onPressed:(){
-                               onLinkDelete(index);
-                              },
-                              child: Text('Delete'),
-                            )
-                          ],
-                        ),
+                            widget.type ==
+                                'companies?pageSize=1000&pageNumber=1'))
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              TextButton(
+                                onPressed: () {
+                                  onLinkEdit(index);
+                                },
+                                child: Text('Edit'),
+                              ),
+                              TextButton(
+                                onPressed: () {
+                                  onLinkDelete(index);
+                                },
+                                child: Text('Delete'),
+                              )
+                            ],
+                          ),
                         Divider(
                           color: Colors.black26,
                           thickness: 2,
@@ -516,7 +543,8 @@ class _DynamicRelatedEntityScreenState
     context.loaderOverlay.show();
     String type = widget.type;
     var linkedEntity = list[index]['LINK_ID'] != null
-        ? await DynamicProjectService().getProjectAccountLink(list[index]['LINK_ID'])
+        ? await DynamicProjectService()
+            .getProjectAccountLink(list[index]['LINK_ID'])
         : null;
 
     var linkedDeal = list[index]['MULTI_ID'] != null
@@ -526,14 +554,14 @@ class _DynamicRelatedEntityScreenState
     if (linkedEntity == null) {
       if (linkedDeal['CONT_ID'] != null) {
         dynamic contact =
-        await ContactService().getEntity(linkedDeal['CONT_ID']);
+            await ContactService().getEntity(linkedDeal['CONT_ID']);
         linkedDeal['FIRSTNAME'] = contact.data['FIRSTNAME'];
         linkedDeal['SURNAME'] = contact.data['SURNAME'];
       }
 
       dynamic company = await CompanyService().getEntity(linkedDeal['ACCT_ID']);
       dynamic deal =
-      await OpportunityService().getEntity(linkedDeal['DEAL_ID']);
+          await OpportunityService().getEntity(linkedDeal['DEAL_ID']);
 
       linkedDeal['ACCTNAME'] = company.data['ACCTNAME'];
       linkedDeal['DEAL_NAME'] = deal.data['DESCRIPTION'];
@@ -554,25 +582,25 @@ class _DynamicRelatedEntityScreenState
             'ID': linkedEntity != null
                 ? linkedEntity['ACCT_ID']
                 : linkedDeal != null
-                ? linkedDeal['ACCT_ID']
-                : '',
+                    ? linkedDeal['ACCT_ID']
+                    : '',
             'TEXT': linkedEntity != null
                 ? linkedEntity['ACCTNAME']
                 : linkedDeal != null
-                ? linkedDeal['ACCTNAME']
-                : '',
+                    ? linkedDeal['ACCTNAME']
+                    : '',
           },
           contact: {
             'ID': linkedEntity != null
                 ? linkedEntity['CONT_ID']
                 : linkedDeal != null
-                ? linkedDeal['CONT_ID']
-                : '',
+                    ? linkedDeal['CONT_ID']
+                    : '',
             'TEXT': linkedEntity != null
                 ? '${linkedEntity['FIRSTNAME'] ?? ''} ${linkedEntity['SURNAME'] ?? ''}'
                 : linkedDeal != null
-                ? '${linkedDeal['FIRSTNAME'] ?? ''} ${linkedDeal['SURNAME'] ?? ''}'
-                : '',
+                    ? '${linkedDeal['FIRSTNAME'] ?? ''} ${linkedDeal['SURNAME'] ?? ''}'
+                    : '',
           },
           project: {
             'ID': linkedEntity != null ? linkedEntity['PROJECT_ID'] : '',
@@ -612,7 +640,7 @@ class _DynamicRelatedEntityScreenState
 
               setState(() {
                 list.removeWhere(
-                        (element) => element['LINK_ID'] == list[index]['LINK_ID']);
+                    (element) => element['LINK_ID'] == list[index]['LINK_ID']);
               });
 
               Navigator.pop(context);
@@ -622,5 +650,4 @@ class _DynamicRelatedEntityScreenState
       ),
     );
   }
-
 }

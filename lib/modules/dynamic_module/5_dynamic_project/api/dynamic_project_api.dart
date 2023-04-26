@@ -4,6 +4,8 @@ import 'package:dio/dio.dart';
 import 'package:salesachiever_mobile/api/api.dart';
 import 'package:salesachiever_mobile/utils/storage_util.dart';
 
+import '../../../../utils/auth_util.dart';
+
 class DynamicProjectApi {
   final Api _api;
   final String? listName;
@@ -11,13 +13,15 @@ class DynamicProjectApi {
   DynamicProjectApi({this.listName}) : _api = Api();
 
    final String api = StorageUtil.getString('api');
-  Future<dynamic> getProjectTabs() async {
-    final response = await Api().getResult('$api/System/System.CustomFunctionList?FunctionName=GetEntityTabs&Param1=005');
+  Future<dynamic> getProjectTabs(String moduleId) async {
+    print("api$moduleId");
+    final response = await Api().getResult('$api/System/System.CustomFunctionList?FunctionName=GetEntityTabs&Param1=$moduleId');
+    print(response);
     return response.data;
   }
 
   Future<dynamic> getTabsListCount(String id,String type) async {
-    final response = await Api().get('$api/Project/$id/CompanyLinksCount');
+  final response = await Api().get('$api/~~~~~~~~~/$id/CompanyLinksCount');
     return response.data;
   }
 
@@ -27,6 +31,32 @@ class DynamicProjectApi {
     return response.data;
   }
 
+  Future<dynamic> getProjectNotes(String typeNote,String projectId) async {
+    String noteType = typeNote.substring(0, typeNote.length - 1);
+    Response response = await Api().getResult('$api/$noteType/$projectId');
+    return response.data;
+  }
+
+  Future<void> updateProjectNote(String typeNote,String notesId,String note) async {
+    print("notesID4${notesId}");
+    String noteType = typeNote.substring(0, typeNote.length - 1);
+
+    Response response =
+    await Api().put('$api/$noteType/$notesId', {'NOTES': note});
+    log("response of update project note${response.data}");
+    return response.data;
+  }
+  Future<dynamic> addProjectNote(String typeNote,String projectId, String note,String description) async {
+    print("userName${AuthUtil.getUserName()}");
+    String noteType = typeNote.substring(0, typeNote.length - 1);
+    Response response =
+    await Api().post('$api/$noteType/$projectId', {
+      'NOTES': note,
+      'DESCRIPTION':description,
+      "RTF_NOTES": "",
+      "SAUSER_ID": AuthUtil.getUserName()});
+    return response.data;
+  }
   Future<dynamic> getEntitySubTabForm(String p1,String p2) async {
     final response = await Api().getResult('$api/System/System.CustomFunctionList?FunctionName=GetEntitySubTabs&Param1=$p1&Param2=$p2');
      print("GetSubEntityForm${response.data}");
@@ -47,7 +77,7 @@ class DynamicProjectApi {
   }
 
   Future<dynamic> getLooksUpByDDL(String tableName,String fieldName,String returnField,int pageNumber) async {
-    final response = await Api().getResult('$api/system/SYSTEM.LookupsByDDL?TableName=ACCOUNT&FieldName=ACCT_ID&ReturnField=ACCTNAME&PageSize=20&PageNumber=$pageNumber');
+    final response = await Api().getResult('$api/system/SYSTEM.LookupsByDDL?TableName=$tableName&FieldName=$fieldName&ReturnField=$returnField&Dormant=N&PageSize=20&PageNumber=$pageNumber');
     print(response);
     return response.data;
   }
@@ -58,7 +88,7 @@ class DynamicProjectApi {
     return response.data;
   }
   Future<dynamic> getSearchLooksUpByDDL(String tableName,String fieldName,String returnField,String searchText) async {
-    final response = await Api().getResult('$api/system/SYSTEM.LookupsByDDL?TableName=ACCOUNT&FieldName=ACCT_ID&ReturnField=ACCTNAME&SearchText=$searchText&PageSize=15&PageNumber=1');
+    final response = await Api().getResult('$api/system/SYSTEM.LookupsByDDL?TableName=$tableName&FieldName=$fieldName&ReturnField=$returnField&SearchText=$searchText&Dormant=N&PageSize=15&PageNumber=1');
     print(response);
     return response.data;
   }
@@ -66,6 +96,18 @@ class DynamicProjectApi {
   //   final response = await Api().getResult('$api/System/System.CustomFunctionList?FunctionName=GetFieldDataByForm&Param1=P001&Param2=000000000065');
   //   return response.data;
   // }
+
+  Future<dynamic> getById(String type,String projectId) async {
+    if(type=="COMPANY"){
+      final response = await Api().get('/company/$projectId');
+      return response;
+    }
+    else{
+      final response = await Api().get('/projects/$projectId');
+      return response;
+    }
+
+  }
 
   Future<dynamic> create(dynamic project) async {
     Response response = await _api.post('/project/', project);
@@ -108,27 +150,9 @@ class DynamicProjectApi {
         headers);
   }
 
-  Future<dynamic> getById(String projectId) async {
-return await _api.get('/project/$projectId');
-  }
 
-  Future<dynamic> addProjectNote(String projectId, String note) async {
-    Response response =
-        await _api.post('/projectNote/$projectId', {'NOTES': note});
-    return response.data;
-  }
 
-  Future<dynamic> getProjectNotes(String projectId) async {
-    Response response = await _api.get('/project/$projectId/notes');
-    return response.data;
-  }
 
-  Future<void> updateProjectNote(String projectId, String note) async {
-    Response response =
-        await _api.put('/projectNote/$projectId', {'NOTES': note});
-       // log("response of update project note${response.data}");
-    return response.data;
-  }
 
   Future<dynamic> getUserFields() async {
     Response response = await _api.get('/userField/project');

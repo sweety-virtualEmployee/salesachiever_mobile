@@ -27,6 +27,7 @@ class ProjectTabs extends StatefulWidget {
   final String? tabType;
   final String? projectName;
   final Function refresh;
+  final String entityType;
   const ProjectTabs({
     Key? key,
     required this.readonly,
@@ -35,6 +36,7 @@ class ProjectTabs extends StatefulWidget {
     this.tabId,
     this.projectName,
     this.tabType,
+    required this.entityType,
     this.moduleId,
     required this.project,
   }) : super(key: key);
@@ -52,11 +54,16 @@ class _ProjectTabsState extends State<ProjectTabs> {
   @override
   void initState() {
     _project = this.widget.project;
+    print("check tge id");
+    print(widget.moduleId);
+    print(widget.tabId);
     if(widget.tabType == "P"){
+      print(widget.moduleId);
+      print(widget.moduleId);
       service.getEntitySubTabForm(widget.moduleId.toString(), widget.tabId.toString());
     }
     else{
-      service.getProjectTabs();
+      service.getProjectTabs(widget.moduleId.toString());
     }
     super.initState();
   }
@@ -70,15 +77,23 @@ class _ProjectTabsState extends State<ProjectTabs> {
 
   @override
   Widget build(BuildContext context) {
-    print("project data ${_project['OWNER_ID']}");
+    print("project data ${_project["ACCT_TYPE_ID"]}");
     return PsaScaffold(
       title: LangUtil.getString('Entities', 'Project.Description') + " -  ${widget.projectName==null?"Tabs":widget.projectName}",
       body: FutureBuilder(
-          future:widget.tabType == "P"?service.getEntitySubTabForm(widget.moduleId.toString(), widget.tabId.toString()): service.getProjectTabs(),
+          future:widget.tabType == "P"?service.getEntitySubTabForm(widget.moduleId.toString(), widget.tabId.toString()): service.getProjectTabs(widget.moduleId.toString()),
           builder: (context, snapshot) {
             if (snapshot.hasData) {
               return Column(children: [
-                DynamicPsaHeader(
+                widget.entityType=="COMPANY"?DynamicPsaHeader(
+                  isVisible: true,
+                  icon: 'assets/images/company_icon.png',
+                  title: _project?['ACCTNAME'],
+                  projectID: _project?['ACCT_ID'],
+                  status: _project?['ACCT_TYPE_ID'],
+                  siteTown: _project?['ADDR1'],
+                  backgroundColor: Color(0xff3cab4f),
+                ):DynamicPsaHeader(
                   isVisible: true,
                   icon: 'assets/images/projects_icon.png',
                   title: _project?['PROJECT_TITLE'] ??
@@ -86,6 +101,7 @@ class _ProjectTabsState extends State<ProjectTabs> {
                   projectID: _project?['PROJECT_ID'],
                   status: _project?['SELLINGSTATUS_ID'],
                   siteTown: _project?['OWNER_ID'],
+                  backgroundColor: Color(0xffE67E6B),
                 ),
                 Container(
                   color: Colors.white,
@@ -119,6 +135,10 @@ class _ProjectTabsState extends State<ProjectTabs> {
                                       if (jsonDecode(jsonEncode(snapshot.data))[
                                               index]['TAB_TYPE'] ==
                                           "C") {
+                                        print("yes");
+                                        print(jsonDecode(
+                                            jsonEncode(snapshot
+                                                .data))[index]);
                                         Navigator.push(
                                           context,
                                           MaterialPageRoute(
@@ -134,6 +154,7 @@ class _ProjectTabsState extends State<ProjectTabs> {
                                                         snapshot.data))[index]
                                                     ['TAB_ID'],
                                                 readonly: true,
+                                                entityType: widget.entityType,
                                               );
                                             },
                                           ),
@@ -149,6 +170,7 @@ class _ProjectTabsState extends State<ProjectTabs> {
                                             builder: (context) {
                                               return ProjectTabs(
                                                 project: widget.project,
+                                                entityType: widget.entityType,
                                                 projectName: jsonDecode(
                                                     jsonEncode(snapshot
                                                         .data))[index]
@@ -173,22 +195,27 @@ class _ProjectTabsState extends State<ProjectTabs> {
                                       index]['TAB_TYPE'] ==
                                           "L"){
                                         print("true");
-                                        String path=jsonDecode(
-                                            jsonEncode(snapshot
-                                                .data))[index]
-                                        ['TAB_LIST'].replaceAll("@RECORDID", _project?['PROJECT_ID']);
+                                        String path;
+                                        if(widget.entityType=="COMPANY"){
+                                          path = jsonDecode(
+                                              jsonEncode(snapshot
+                                                  .data))[index]
+                                          ['TAB_LIST'].replaceAll("@RECORDID",
+                                              _project?['ACCT_ID']);
+                                        }else {
+                                          path = jsonDecode(
+                                              jsonEncode(snapshot
+                                                  .data))[index]
+                                          ['TAB_LIST'].replaceAll("@RECORDID",
+                                              _project?['PROJECT_ID']);
+                                        }
                                         print(path.replaceAll("&amp;", "&"));
+                                        print("check the tab type${jsonDecode(jsonEncode(snapshot
+                                                .data))[index]
+                                        ['TAB_LIST_MODULE']
+                                            .toString().toLowerCase()}");
 
                                         var result = await service.getTabListEntityApi(path.replaceAll("&amp;", "&"));
-
-                                        /* var result = await CompanyService().getRelatedEntity(
-                                            'project',
-                                            _project?['PROJECT_ID'],
-                                            jsonDecode(
-                                                jsonEncode(snapshot
-                                                    .data))[index]
-                                            ['TAB_DESC']
-                                                .toString());*/
 
                                         Navigator.push(
                                           context,
@@ -197,6 +224,7 @@ class _ProjectTabsState extends State<ProjectTabs> {
                                             builder: (BuildContext context) => DynamicRelatedEntityScreen(
                                               entity: _project,
                                               project: _project,
+                                              entityType: widget.entityType,
                                               type:jsonDecode(
                                                   jsonEncode(snapshot
                                                       .data))[index]

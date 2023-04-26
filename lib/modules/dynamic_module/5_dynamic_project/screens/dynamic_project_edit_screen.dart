@@ -30,6 +30,7 @@ class DynamicProjectEditScreen extends StatefulWidget {
   final String? tabId;
   final bool readonly;
   final String projectName;
+  final String entityType;
 
   const DynamicProjectEditScreen({
     Key? key,
@@ -37,6 +38,7 @@ class DynamicProjectEditScreen extends StatefulWidget {
     required this.readonly,
     this.tabId,
     required this.projectName,
+    required this.entityType,
   }) : super(key: key);
 
   @override
@@ -61,7 +63,7 @@ class _DynamicProjectEditScreenState extends State<DynamicProjectEditScreen> {
     print("sweety***----$_project");
     callApi();
 
-    if (_project['PROJECT_ID'] == null) {
+  /*  if (_project['PROJECT_ID'] == null) {
       var defaultValues = LookupService().getDefaultValues('Project');
 
       defaultValues.forEach((element) {
@@ -70,7 +72,7 @@ class _DynamicProjectEditScreenState extends State<DynamicProjectEditScreen> {
 
       if (_project['PROJECT_ID'] == null) _project['PROJECT_TYPE_ID'] = 'STD';
     }
-
+*/
     validate();
 
     super.initState();
@@ -92,7 +94,14 @@ class _DynamicProjectEditScreenState extends State<DynamicProjectEditScreen> {
   }
 
   callApi() async {
-    await getProjectForm();
+    String id="";
+    if(widget.entityType == "COMPANY"){
+     id= _project['ACCT_ID'];
+    }
+    else{
+      id= _project['PROJECT_ID'];
+    }
+    await getProjectForm(id);
   }
 
   void validate() {
@@ -106,9 +115,10 @@ class _DynamicProjectEditScreenState extends State<DynamicProjectEditScreen> {
   var fieldData;
   var filedEntity;
 
-  Future<List> getProjectForm() async {
-    final dynamic response = await DynamicProjectApi()
-        .getProjectForm(widget.tabId.toString(), _project['PROJECT_ID']);
+  Future<List> getProjectForm(String id) async {
+    print("LEt chech id$id");
+
+    final dynamic response = await DynamicProjectApi().getProjectForm(widget.tabId.toString(), id);
     print("response${response}");
     setState(() {
       fieldData = response;
@@ -329,7 +339,15 @@ class _DynamicProjectEditScreenState extends State<DynamicProjectEditScreen> {
       body: Container(
         child: Column(
           children: [
-            DynamicPsaHeader(
+            widget.entityType=="COMPANY"?DynamicPsaHeader(
+              isVisible: true,
+              icon: 'assets/images/company_icon.png',
+              title: _project?['ACCTNAME'],
+              projectID: _project?['ACCT_ID'],
+              status: _project?['ACCT_TYPE_ID'],
+              siteTown: _project?['ADDR1'],
+              backgroundColor: Color(0xff3cab4f),
+            ):DynamicPsaHeader(
               isVisible: true,
               icon: 'assets/images/projects_icon.png',
               title: _project?['PROJECT_TITLE'] ??
@@ -337,6 +355,7 @@ class _DynamicProjectEditScreenState extends State<DynamicProjectEditScreen> {
               projectID: _project?['PROJECT_ID'],
               status: _project?['SELLINGSTATUS_ID'],
               siteTown: _project?['OWNER_ID'],
+              backgroundColor: Color(0xffE67E6B),
             ),
             Expanded(
               child: SingleChildScrollView(

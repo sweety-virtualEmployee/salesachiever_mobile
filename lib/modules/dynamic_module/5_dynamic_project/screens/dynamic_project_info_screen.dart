@@ -43,7 +43,7 @@ class _DynamicProjectInfoScreenState extends State<DynamicProjectInfoScreen> {
    DynamicInfoFieldService inoService = DynamicInfoFieldService();
   @override
   void initState() {
-    service.getProjectTabs();
+    service.getProjectTabs("");
      _projectTypeId = _project['PROJECT_TYPE_ID'] ?? 'STD';
     _initialize();
     _validate();

@@ -9,18 +9,20 @@ class DynamicPsaHeader extends StatelessWidget {
   final String status;
   final String siteTown;
   final bool isVisible;
+  final Color backgroundColor;
 
   const DynamicPsaHeader(
       {Key? key,
         required this.icon,
         required this.title,
+        required this.backgroundColor,
         required this.isVisible, required this.projectID, required this.status, required this.siteTown,})
       : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: Color(0xffE67E6B),
+      color: backgroundColor!=null ?backgroundColor: Color(0xffE67E6B),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
