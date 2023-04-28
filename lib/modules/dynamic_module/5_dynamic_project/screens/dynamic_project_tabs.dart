@@ -14,6 +14,7 @@ import 'package:salesachiever_mobile/shared/widgets/elements/psa_progress_indica
 import 'package:salesachiever_mobile/shared/widgets/layout/psa_scaffold.dart';
 import 'package:salesachiever_mobile/shared/widgets/psa_header.dart';
 import 'package:salesachiever_mobile/utils/lang_util.dart';
+import 'package:salesachiever_mobile/utils/text_formatting_util.dart';
 
 import '../../../3_company/services/company_service.dart';
 
@@ -79,7 +80,7 @@ class _ProjectTabsState extends State<ProjectTabs> {
   Widget build(BuildContext context) {
     print("project data ${_project["ACCT_TYPE_ID"]}");
     return PsaScaffold(
-      title: LangUtil.getString('Entities', 'Project.Description') + " -  ${widget.projectName==null?"Tabs":widget.projectName}",
+      title: "${capitalizeFirstLetter(widget.entityType)} Tabs" ,
       body: FutureBuilder(
           future:widget.tabType == "P"?service.getEntitySubTabForm(widget.moduleId.toString(), widget.tabId.toString()): service.getProjectTabs(widget.moduleId.toString()),
           builder: (context, snapshot) {

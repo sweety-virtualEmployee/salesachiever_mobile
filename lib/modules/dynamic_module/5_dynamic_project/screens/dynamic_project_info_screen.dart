@@ -25,12 +25,13 @@ class DynamicProjectInfoScreen extends StatefulWidget {
     Key? key,
     //required this.project,
     //required this.readonly,
-  //  required this.onSave,
-  //  required this.onBack,
+    //  required this.onSave,
+    //  required this.onBack,
   }) : super(key: key);
 
   @override
-  _DynamicProjectInfoScreenState createState() => _DynamicProjectInfoScreenState();
+  _DynamicProjectInfoScreenState createState() =>
+      _DynamicProjectInfoScreenState();
 }
 
 class _DynamicProjectInfoScreenState extends State<DynamicProjectInfoScreen> {
@@ -39,12 +40,13 @@ class _DynamicProjectInfoScreenState extends State<DynamicProjectInfoScreen> {
   bool _isValid = false;
   String _projectTypeId = '';
   List<dynamic> filedsList = [];
-   DynamicProjectService service = DynamicProjectService();
-   DynamicInfoFieldService inoService = DynamicInfoFieldService();
+  DynamicProjectService service = DynamicProjectService();
+  DynamicInfoFieldService inoService = DynamicInfoFieldService();
+
   @override
   void initState() {
     service.getProjectTabs("");
-     _projectTypeId = _project['PROJECT_TYPE_ID'] ?? 'STD';
+    _projectTypeId = _project['PROJECT_TYPE_ID'] ?? 'STD';
     _initialize();
     _validate();
 
@@ -56,7 +58,6 @@ class _DynamicProjectInfoScreenState extends State<DynamicProjectInfoScreen> {
     _validate();
   }
 
- 
   _initialize() {
     var userFields = ProjectService().getuserFields();
     var visibleFields = LookupService().getVisibleUserFields();
@@ -112,7 +113,7 @@ class _DynamicProjectInfoScreenState extends State<DynamicProjectInfoScreen> {
                         _project['PROJECT_ID'] = newEntity['PROJECT_ID'];
                       }
 
-                    //  await widget.onSave(_project);
+                      //  await widget.onSave(_project);
 
                       setState(() => _readonly = !_readonly);
 
@@ -130,49 +131,37 @@ class _DynamicProjectInfoScreenState extends State<DynamicProjectInfoScreen> {
           'ProjectEditWindow',
           'InformationTab.Header',
         ),
-         body: FutureBuilder(
-          future: service.getProject(),
-          builder: (context, snapshot) {
-            if (snapshot.hasData) {
-              return ListView.builder(
-                itemCount: jsonDecode(jsonEncode(snapshot.data)).length,
-                itemBuilder: (context, index) {
-                  return Container(
-            child: inoService.generateFields(
-             jsonDecode(jsonEncode(snapshot.data))[index]
-                                    ['TABLE_NAME']
-                                .toString(),
-               jsonDecode(jsonEncode(snapshot.data))[index]
-                                    ['PROJECT_ID']
-                                .toString(),
-              //_project,
-               jsonDecode(jsonEncode(snapshot.data))[index]
-                                    ['TABLE_NAME']
-                                .toString(),
-              filedsList,
-              _readonly,
-              _onChange,
-            ),
-          );
-                },
+        body: FutureBuilder(
+            future: service.getProject(),
+            builder: (context, snapshot) {
+              if (snapshot.hasData) {
+                return ListView.builder(
+                  itemCount: jsonDecode(jsonEncode(snapshot.data)).length,
+                  itemBuilder: (context, index) {
+                    return Container(
+                      child: inoService.generateFields(
+                        jsonDecode(jsonEncode(snapshot.data))[index]
+                                ['TABLE_NAME']
+                            .toString(),
+                        jsonDecode(jsonEncode(snapshot.data))[index]
+                                ['PROJECT_ID']
+                            .toString(),
+                        //_project,
+                        jsonDecode(jsonEncode(snapshot.data))[index]
+                                ['TABLE_NAME']
+                            .toString(),
+                        filedsList,
+                        _readonly,
+                        _onChange,
+                      ),
+                    );
+                  },
+                );
+              }
+              return Center(
+                child: PsaProgressIndicator(),
               );
-            }
-            return Center(
-              child: PsaProgressIndicator(),
-            );
-          }),
-        //  body: SingleChildScrollView(
-        //   child: Container(
-        //     child: DynamicInfoFieldService.generateFields(
-        //       'Project',
-        //       _projectTypeId,
-        //       _project,
-        //       filedsList,
-        //       _readonly,
-        //       _onChange,
-        //     ),
-        //   ),
-        // ),
+            }),
       ),
     );
   }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:loader_overlay/loader_overlay.dart';
+import 'package:salesachiever_mobile/modules/5_project/services/project_service.dart';
 import 'package:salesachiever_mobile/modules/dynamic_module/5_dynamic_project/screens/dynamic_project_notes.dart';
 import 'package:salesachiever_mobile/modules/dynamic_module/5_dynamic_project/screens/dynamic_psa_header.dart';
 import 'package:salesachiever_mobile/modules/dynamic_module/5_dynamic_project/services/dynamic_project_service.dart';
@@ -15,6 +16,7 @@ import '../../modules/4_contact/services/contact_service.dart';
 import '../../modules/6_action/screens/action_edit_screen.dart';
 import '../../modules/6_action/screens/action_type_screen.dart';
 import '../../modules/6_action/services/action_service.dart';
+import '../../modules/dynamic_module/5_dynamic_project/screens/dynamic_project_add.dart';
 import '../widgets/buttons/psa_add_button.dart';
 import 'add_related_entity_screen.dart';
 
@@ -294,8 +296,6 @@ class _DynamicRelatedEntityScreenState
                   return InkWell(
                     onTap: () async {
                       context.loaderOverlay.show();
-                      print("typecharul${widget.type}");
-                      print("element${item["ACCT_ID"]}");
                       if (widget.type == "companies") {
                         dynamic company =
                             await CompanyService().getEntity(item["ACCT_ID"]);
@@ -357,6 +357,21 @@ class _DynamicRelatedEntityScreenState
                           ),
                         );
                       }
+                      else{
+                        dynamic project = await ProjectService().getEntity(item['PROJECT_ID']);
+                        print("projectbalue$project");
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) {
+                              return DynamicProjectAddScreen(
+                                project: project.data,
+                                readonly: true,
+                              );
+                            },
+                          ),
+                        );
+                      }
                       context.loaderOverlay.hide();
                     },
                     child: Column(
@@ -384,7 +399,7 @@ class _DynamicRelatedEntityScreenState
                                                 '${entry.key} :',
                                                 style: TextStyle(
                                                     fontWeight: FontWeight.w700,
-                                                    color: widget.entityType == "Company"?Color(0xff3cab4f):Color(0xffE67E6B)),
+                                                    color: widget.entityType == "COMPANY"?Color(0xff3cab4f):Color(0xffE67E6B)),
                                                 overflow: TextOverflow.ellipsis,
                                                 softWrap: false,
                                               ),
@@ -406,21 +421,7 @@ class _DynamicRelatedEntityScreenState
                                             ),
                                           ),
                                         ],
-                                      ), /* Row(
-                                        mainAxisAlignment: MainAxisAlignment.start,
-                                        children: [
-                                          Expanded(
-                                            child: Text("${entry.key} : ", style: TextStyle(fontWeight: FontWeight.w700),
-                                              overflow: TextOverflow.ellipsis,
-                                              softWrap: false,),
-                                          ),
-                                          SizedBox(width: 50,),
-                                          Expanded(
-                                            child: Text(entry.value.toString(), overflow: TextOverflow.ellipsis,
-                                              softWrap: false,maxLines: 1,),
-                                          ),
-                                        ],
-                                      ),*/
+                                      ),
                                     )
                                 ],
                               ),
@@ -430,8 +431,6 @@ class _DynamicRelatedEntityScreenState
                               children: [
                                 IconButton(
                                     onPressed: () async {
-                                      print("typecharul${widget.type}");
-                                      print("element${item["ACCT_ID"]}");
                                       if (widget.type == "companies") {
                                         dynamic company = await CompanyService()
                                             .getEntity(item["ACCT_ID"]);
@@ -494,6 +493,22 @@ class _DynamicRelatedEntityScreenState
                                           ),
                                         );
                                       }
+                                      else
+                                        {
+                                          dynamic project = await ProjectService().getEntity(item['PROJECT_ID']);
+                                          print("projectbalue$project");
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (context) {
+                                                return DynamicProjectAddScreen(
+                                                  project: project.data,
+                                                  readonly: true,
+                                                );
+                                              },
+                                            ),
+                                          );
+                                        }
                                     },
                                     icon: Icon(
                                         context.platformIcons.rightChevron)),

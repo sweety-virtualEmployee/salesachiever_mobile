@@ -245,7 +245,7 @@ class ListAction extends StatelessWidget {
                       : Container(),
                   Icon(
                     Icons.chevron_right,
-                    color: Colors.red,
+                    color: Colors.grey,
                   ),
                 ],
               ),

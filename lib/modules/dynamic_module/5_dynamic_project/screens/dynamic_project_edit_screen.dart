@@ -24,6 +24,7 @@ import 'package:salesachiever_mobile/shared/widgets/psa_header.dart';
 import 'package:salesachiever_mobile/utils/error_util.dart';
 import 'package:salesachiever_mobile/utils/lang_util.dart';
 import 'package:salesachiever_mobile/utils/message_util.dart';
+import 'package:salesachiever_mobile/utils/text_formatting_util.dart';
 
 class DynamicProjectEditScreen extends StatefulWidget {
   final Map<String, dynamic> project;
@@ -334,8 +335,7 @@ class _DynamicProjectEditScreenState extends State<DynamicProjectEditScreen> {
         text: _readonly ? 'Edit' : 'Save',
         onTap: (_isValid || _readonly) ? onTap : null,
       ),
-      title: LangUtil.getString('Entities', 'Project.Description.Plural') +
-          " - ${widget.projectName}",
+      title: "${capitalizeFirstLetter(widget.entityType)} - ${widget.projectName}",
       body: Container(
         child: Column(
           children: [
