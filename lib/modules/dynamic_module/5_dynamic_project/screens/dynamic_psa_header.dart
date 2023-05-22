@@ -64,15 +64,17 @@ class DynamicPsaHeader extends StatelessWidget {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text(
-                            "Status: ${status}",
-                            style: TextStyle(
-                              fontWeight: FontWeight.w400,
-                              fontSize: 16,
-                              color: Colors.black87,
+                          status.isNotEmpty?Expanded(
+                            child: Text(
+                              "Status: ${status}",
+                              style: TextStyle(
+                                fontWeight: FontWeight.w400,
+                                fontSize: 16,
+                                color: Colors.black87,
+                              ),
+                              overflow: TextOverflow.ellipsis,
                             ),
-                            overflow: TextOverflow.ellipsis,
-                          ),
+                          ):SizedBox(),
                           Text(
                             projectID,
                             style: TextStyle(

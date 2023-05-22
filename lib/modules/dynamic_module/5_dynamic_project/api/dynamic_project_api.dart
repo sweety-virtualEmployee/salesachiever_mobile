@@ -66,13 +66,12 @@ class DynamicProjectApi {
   Future<dynamic> getTabListEntityApi(
       String path) async {
     print("path$path");
-    Response response = await _api.get('/${path}');
+    Response response = await _api.get('/${path}?pageSize=10&pageNumber=1');
     return response.data;
   }
 
   Future<dynamic> getProject() async {
     final response = await Api().getResult('$api/System/System.CustomFunctionList?FunctionName=GetFieldsByForm&Param1=P001');
-    // final response = await Api().getResult('$api/System/System.CustomFunctionList?FunctionName=GetFieldsByForm&Param1=P001');
     return response.data;
   }
 
@@ -100,6 +99,15 @@ class DynamicProjectApi {
   Future<dynamic> getById(String type,String projectId) async {
     if(type=="COMPANY"){
       final response = await Api().get('/company/$projectId');
+      return response;
+    } else if(type=="CONTACT"){
+      final response = await Api().get('/contact/$projectId');
+      return response;
+    }else if(type=="ACTION"){
+      final response = await Api().get('/action/$projectId');
+      return response;
+    }else if(type=="OPPORTUNITY"){
+      final response = await Api().get('/opportunity/$projectId');
       return response;
     }
     else{

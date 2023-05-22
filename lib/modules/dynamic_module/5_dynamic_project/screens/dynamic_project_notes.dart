@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:loader_overlay/loader_overlay.dart';
 import 'package:salesachiever_mobile/modules/dynamic_module/5_dynamic_project/screens/dynamic_psa_header.dart';
+import 'package:salesachiever_mobile/modules/dynamic_module/5_dynamic_project/widgets/common_header.dart';
 import 'package:salesachiever_mobile/shared/widgets/layout/psa_scaffold.dart';
 import '../../../../shared/widgets/buttons/psa_edit_button.dart';
 import '../../../../shared/widgets/forms/psa_textfield_row.dart';
@@ -63,6 +64,12 @@ class _DynamicProjectNotesState extends State<DynamicProjectNotes> {
         if(widget.entityType =="COMPANY"){
           await DynamicProjectService().addProjectNote(widget.typeNote,
               widget.project["ACCT_ID"], _updateNotes, _updateDescription);
+        } else if(widget.entityType =="CONTACT"){
+          await DynamicProjectService().addProjectNote(widget.typeNote,
+              widget.project["CONT_ID"], _updateNotes, _updateDescription);
+        } else if(widget.entityType =="ACTION"){
+          await DynamicProjectService().addProjectNote(widget.typeNote,
+              widget.project["ACTION_ID"], _updateNotes, _updateDescription);
         }else {
           await DynamicProjectService().addProjectNote(widget.typeNote,
               widget.project["PROJECT_ID"], _updateNotes, _updateDescription);
@@ -90,7 +97,7 @@ class _DynamicProjectNotesState extends State<DynamicProjectNotes> {
     print("fieldData12${ _notesData['DESCRIPTION']}");
     print("fieldData12${widget.isNewNote}");
     return PsaScaffold(
-        title: "Project Notes",
+        title: _readonly ? 'Edit Notes' : 'Add Notes',
         action: PsaEditButton(
           text: _readonly ? 'Edit' : 'Save',
           onTap: onTap,
@@ -98,24 +105,9 @@ class _DynamicProjectNotesState extends State<DynamicProjectNotes> {
         body: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            widget.entityType=="COMPANY"?DynamicPsaHeader(
-              isVisible: true,
-              icon: 'assets/images/company_icon.png',
-              title:  widget.project?['ACCTNAME'],
-              projectID:  widget.project?['ACCT_ID'],
-              status:  widget.project?['ACCT_TYPE_ID'],
-              siteTown:  widget.project?['ADDR1'],
-              backgroundColor: Color(0xff3cab4f),
-            ):DynamicPsaHeader(
-              isVisible: true,
-              icon: 'assets/images/projects_icon.png',
-              title: widget.project?['PROJECT_TITLE'] ??
-                  LangUtil.getString('Entities', 'Project.Create.Text'),
-              projectID:  widget.project?['PROJECT_ID'],
-              status:  widget.project?['SELLINGSTATUS_ID'],
-              siteTown:  widget.project?['OWNER_ID'],
-              backgroundColor: Color(0xffE67E6B),
-            ),
+            Container(
+                height:61,
+                child: CommonHeader(entityType: widget.entityType, entity: widget.project)),
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [

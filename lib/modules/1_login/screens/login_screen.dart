@@ -143,22 +143,8 @@ class _LoginScreenState extends State<LoginScreen> {
         apiController.text
       );
       bool isContainActiveFeature = await feature.activeFeatures();
+      print("isContaineActibefeature$isContainActiveFeature");
        if(isContainActiveFeature){
-        
-        
-    //        secondUrl = apiController.text;  
-       
-       
-    //    // StorageUtil.putBool('first',false);
-    //      if(firstUrl != secondUrl){
-    //     StorageUtil.putString('newUrl',secondUrl);
-
-    // }  else{
-    //    StorageUtil.putString('newUrl','');
-
-
-    // }
-
          int timestamp = DateTime.now().millisecondsSinceEpoch;
 
          final prefs = await SharedPreferences.getInstance();

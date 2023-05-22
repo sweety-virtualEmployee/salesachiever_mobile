@@ -36,6 +36,7 @@ class _HomeMenuState extends State<DynamicHomeMenu> {
         future: service.getHomeModule(),
         builder: (context, snapshot) {
           if (snapshot.hasData) {
+            print("check module id${jsonDecode(jsonEncode(snapshot.data))}");
             return ListView.separated(
               separatorBuilder: (context, index) => Divider(
                 height: 0,

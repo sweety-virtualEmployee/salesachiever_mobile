@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:loader_overlay/loader_overlay.dart';
+import 'package:salesachiever_mobile/modules/10_opportunities/screens/opportunity_edit_screen.dart';
 import 'package:salesachiever_mobile/modules/5_project/services/project_service.dart';
 import 'package:salesachiever_mobile/modules/dynamic_module/5_dynamic_project/screens/dynamic_project_notes.dart';
 import 'package:salesachiever_mobile/modules/dynamic_module/5_dynamic_project/screens/dynamic_psa_header.dart';
 import 'package:salesachiever_mobile/modules/dynamic_module/5_dynamic_project/services/dynamic_project_service.dart';
 import 'package:salesachiever_mobile/shared/widgets/layout/psa_scaffold.dart';
 import 'package:salesachiever_mobile/utils/lang_util.dart';
+import 'package:salesachiever_mobile/utils/text_formatting_util.dart';
 
 import '../../modules/10_opportunities/services/opportunity_service.dart';
 import '../../modules/3_company/screens/company_edit_screen.dart';
@@ -17,6 +19,7 @@ import '../../modules/6_action/screens/action_edit_screen.dart';
 import '../../modules/6_action/screens/action_type_screen.dart';
 import '../../modules/6_action/services/action_service.dart';
 import '../../modules/dynamic_module/5_dynamic_project/screens/dynamic_project_add.dart';
+import '../../modules/dynamic_module/5_dynamic_project/widgets/common_header.dart';
 import '../widgets/buttons/psa_add_button.dart';
 import 'add_related_entity_screen.dart';
 
@@ -270,25 +273,17 @@ class _DynamicRelatedEntityScreenState
                             : null,
         body: Column(
           children: [
-            widget.entityType=="COMPANY"?DynamicPsaHeader(
-              isVisible: true,
-              icon: 'assets/images/company_icon.png',
-              title: _project?['ACCTNAME'],
-              projectID: _project?['ACCT_ID'],
-              status: _project?['ACCT_TYPE_ID'],
-              siteTown: _project?['ADDR1'],
-              backgroundColor: Color(0xff3cab4f),
-            ):DynamicPsaHeader(
-              isVisible: true,
-              icon: 'assets/images/projects_icon.png',
-              title: _project?['PROJECT_TITLE'] ??
-                  LangUtil.getString('Entities', 'Project.Create.Text'),
-              projectID: _project?['PROJECT_ID'],
-              status: _project?['SELLINGSTATUS_ID'],
-              siteTown: _project?['OWNER_ID'],
-              backgroundColor: Color(0xffE67E6B),
+            Container(
+                height:61,
+                child: CommonHeader(entityType: widget.entityType, entity: _project)),
+            Container(
+              color: Colors.black,
+              height: 20,
             ),
-            Expanded(
+            if (list.isEmpty) Padding(
+              padding: const EdgeInsets.only(top: 200.0),
+              child: Text("No ${widget.type} is linked to ${capitalizeFirstLetter(widget.entityType)}"),
+            ) else Expanded(
               child: ListView.builder(
                 itemCount: list.length,
                 itemBuilder: (BuildContext context, int index) {
@@ -335,6 +330,20 @@ class _DynamicRelatedEntityScreenState
                                 action: action.data,
                                 readonly: true,
                                 popScreens: 1,
+                              );
+                            },
+                          ),
+                        );
+                      }  else if (widget.type == "opportunities") {
+                        dynamic deal =
+                        await OpportunityService().getEntity(widget.entity['DEAL_ID'].toString());
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) {
+                              return OpportunityEditScreen(
+                                deal: deal.data,
+                                readonly: true,
                               );
                             },
                           ),
@@ -395,14 +404,18 @@ class _DynamicRelatedEntityScreenState
                                               padding:
                                                   const EdgeInsets.fromLTRB(
                                                       0, 4, 0, 4),
-                                              child: Text(
+                                              child:Text(
                                                 '${entry.key} :',
                                                 style: TextStyle(
                                                     fontWeight: FontWeight.w700,
-                                                    color: widget.entityType == "COMPANY"?Color(0xff3cab4f):Color(0xffE67E6B)),
+                                                    color: widget.type == "companies"?Color(0xff3cab4f):
+                                                    widget.type == "contacts"?Color(0xff4C99E0):
+                                                    widget.type == "opportunities"?Color(0xffA4C400):
+                                                    widget.type == "actions"?Color(0xffae1a3e):
+                                                    Color(0xffE67E6B)),
                                                 overflow: TextOverflow.ellipsis,
                                                 softWrap: false,
-                                              ),
+                                              )
                                             ),
                                           ),
                                           SizedBox(

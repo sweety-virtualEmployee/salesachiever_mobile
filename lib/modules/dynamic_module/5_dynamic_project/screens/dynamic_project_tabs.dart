@@ -7,6 +7,7 @@ import 'package:salesachiever_mobile/modules/dynamic_module/5_dynamic_project/ap
 import 'package:salesachiever_mobile/modules/dynamic_module/5_dynamic_project/screens/dynamic_project_edit_screen.dart';
 import 'package:salesachiever_mobile/modules/dynamic_module/5_dynamic_project/screens/dynamic_psa_header.dart';
 import 'package:salesachiever_mobile/modules/dynamic_module/5_dynamic_project/services/dynamic_project_service.dart';
+import 'package:salesachiever_mobile/modules/dynamic_module/5_dynamic_project/widgets/common_header.dart';
 import 'package:salesachiever_mobile/modules/dynamic_module/5_dynamic_project/widgets/dynamic_project_view_related_records.dart';
 import 'package:salesachiever_mobile/shared/screens/dynamic_related_entity_screen.dart';
 import 'package:salesachiever_mobile/shared/screens/related_entity_screen.dart';
@@ -50,11 +51,11 @@ class _ProjectTabsState extends State<ProjectTabs> {
   DynamicProjectService service = DynamicProjectService();
   DynamicProjectApi service1 = DynamicProjectApi();
   bool _readonly = true;
-  dynamic _project;
+  dynamic _entity;
 
   @override
   void initState() {
-    _project = this.widget.project;
+    _entity = this.widget.project;
     print("check tge id");
     print(widget.moduleId);
     print(widget.tabId);
@@ -78,7 +79,7 @@ class _ProjectTabsState extends State<ProjectTabs> {
 
   @override
   Widget build(BuildContext context) {
-    print("project data ${_project["ACCT_TYPE_ID"]}");
+    print("project data ${_entity}");
     return PsaScaffold(
       title: "${capitalizeFirstLetter(widget.entityType)} Tabs" ,
       body: FutureBuilder(
@@ -86,24 +87,9 @@ class _ProjectTabsState extends State<ProjectTabs> {
           builder: (context, snapshot) {
             if (snapshot.hasData) {
               return Column(children: [
-                widget.entityType=="COMPANY"?DynamicPsaHeader(
-                  isVisible: true,
-                  icon: 'assets/images/company_icon.png',
-                  title: _project?['ACCTNAME'],
-                  projectID: _project?['ACCT_ID'],
-                  status: _project?['ACCT_TYPE_ID'],
-                  siteTown: _project?['ADDR1'],
-                  backgroundColor: Color(0xff3cab4f),
-                ):DynamicPsaHeader(
-                  isVisible: true,
-                  icon: 'assets/images/projects_icon.png',
-                  title: _project?['PROJECT_TITLE'] ??
-                      LangUtil.getString('Entities', 'Project.Create.Text'),
-                  projectID: _project?['PROJECT_ID'],
-                  status: _project?['SELLINGSTATUS_ID'],
-                  siteTown: _project?['OWNER_ID'],
-                  backgroundColor: Color(0xffE67E6B),
-                ),
+                Container(
+                  height: 61,
+                    child: CommonHeader(entityType: widget.entityType, entity: _entity)),
                 Container(
                   color: Colors.white,
                   child: ListView(
@@ -132,7 +118,7 @@ class _ProjectTabsState extends State<ProjectTabs> {
                                       .toString();
                                   return GestureDetector(
                                     onTap: () async {
-                                      context.loaderOverlay.show();
+                                      //context.loaderOverlay.show();
                                       if (jsonDecode(jsonEncode(snapshot.data))[
                                               index]['TAB_TYPE'] ==
                                           "C") {
@@ -184,7 +170,7 @@ class _ProjectTabsState extends State<ProjectTabs> {
                                                     snapshot.data))[index]
                                                 ['MODULE_ID'],
                                                 tabType:jsonDecode(jsonEncode(snapshot.data))[
-                                                index]['TAB_TYPE'],                                                  title: _project?['PROJECT_TITLE'] ??
+                                                index]['TAB_TYPE'],                                                  title: _entity?['PROJECT_TITLE'] ??
                                                     LangUtil.getString('Entities', 'Project.Create.Text'),
                                                 readonly: true, refresh: widget.refresh,
                                               );
@@ -202,13 +188,31 @@ class _ProjectTabsState extends State<ProjectTabs> {
                                               jsonEncode(snapshot
                                                   .data))[index]
                                           ['TAB_LIST'].replaceAll("@RECORDID",
-                                              _project?['ACCT_ID']);
+                                              _entity?['ACCT_ID']);
+                                        } else if(widget.entityType=="CONTACT"){
+                                          path = jsonDecode(
+                                              jsonEncode(snapshot
+                                                  .data))[index]
+                                          ['TAB_LIST'].replaceAll("@RECORDID",
+                                              _entity?['CONT_ID']);
+                                        } else if(widget.entityType=="ACTION"){
+                                          path = jsonDecode(
+                                              jsonEncode(snapshot
+                                                  .data))[index]
+                                          ['TAB_LIST'].replaceAll("@RECORDID",
+                                              _entity?['ACTION_ID']);
+                                        }else if(widget.entityType=="OPPORTUNITY"){
+                                          path = jsonDecode(
+                                              jsonEncode(snapshot
+                                                  .data))[index]
+                                          ['TAB_LIST'].replaceAll("@RECORDID",
+                                              _entity?['DEAL_ID']);
                                         }else {
                                           path = jsonDecode(
                                               jsonEncode(snapshot
                                                   .data))[index]
                                           ['TAB_LIST'].replaceAll("@RECORDID",
-                                              _project?['PROJECT_ID']);
+                                              _entity?['PROJECT_ID']);
                                         }
                                         print(path.replaceAll("&amp;", "&"));
                                         print("check the tab type${jsonDecode(jsonEncode(snapshot
@@ -223,8 +227,8 @@ class _ProjectTabsState extends State<ProjectTabs> {
                                           platformPageRoute(
                                             context: context,
                                             builder: (BuildContext context) => DynamicRelatedEntityScreen(
-                                              entity: _project,
-                                              project: _project,
+                                              entity: _entity,
+                                              project: _entity,
                                               entityType: widget.entityType,
                                               type:jsonDecode(
                                                   jsonEncode(snapshot

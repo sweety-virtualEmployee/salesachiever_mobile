@@ -80,10 +80,11 @@ class SelectFilterValueScreen extends StatelessWidget {
                         listName: list,
                       );
                     if (entity == 'CONTACT')
-                      return ContactListScreen(
+                      return DynamicProjectListScreen(
                         sortBy: sortBy,
                         filterBy: filter,
                         listName: list,
+                        listType: entity,
                       );
                     if (entity == 'PROJECT')
                       return DynamicProjectListScreen(
@@ -93,13 +94,15 @@ class SelectFilterValueScreen extends StatelessWidget {
                         listName: list,
                       );
                     if (entity == 'ACTION')
-                      return ActionListScreen(
+                      return DynamicProjectListScreen(
                         sortBy: sortBy,
                         filterBy: filter,
                         listName: list,
+                        listType: entity,
                       );
                     if (entity == 'DEAL')
-                      return OpportunityListScreen(
+                      return DynamicProjectListScreen(
+                        listType: entity,
                         sortBy: sortBy,
                         filterBy: filter,
                         listName: list,

@@ -10,6 +10,7 @@ class ListItemApi {
 
   Future<dynamic> getDefaultLists(String user) async {
     Response response = await Api().get('/User/User.DefaultLists?userid=$user');
+    print("default list${response.data}");
     return response.data;
   }
 

@@ -1,11 +1,12 @@
 import 'dart:developer';
 import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:intl/intl.dart';
+import 'package:flutter/material.dart';
 import 'package:loader_overlay/loader_overlay.dart';
 import 'package:salesachiever_mobile/modules/5_project/services/project_service.dart';
 import 'package:salesachiever_mobile/modules/dynamic_module/5_dynamic_project/api/dynamic_project_api.dart';
 import 'package:salesachiever_mobile/modules/dynamic_module/5_dynamic_project/screens/dynamic_psa_header.dart';
+import 'package:salesachiever_mobile/modules/dynamic_module/5_dynamic_project/widgets/common_header.dart';
 import 'package:salesachiever_mobile/modules/dynamic_module/5_dynamic_project/widgets/dynamicPsaLooksUp.dart';
 import 'package:salesachiever_mobile/shared/services/lookup_service.dart';
 import 'package:salesachiever_mobile/shared/widgets/buttons/psa_edit_button.dart';
@@ -20,7 +21,6 @@ import 'package:salesachiever_mobile/shared/widgets/forms/psa_textareafield_row.
 import 'package:salesachiever_mobile/shared/widgets/forms/psa_textfield_row.dart';
 import 'package:salesachiever_mobile/shared/widgets/forms/psa_timefield_row.dart';
 import 'package:salesachiever_mobile/shared/widgets/layout/psa_scaffold.dart';
-import 'package:salesachiever_mobile/shared/widgets/psa_header.dart';
 import 'package:salesachiever_mobile/utils/error_util.dart';
 import 'package:salesachiever_mobile/utils/lang_util.dart';
 import 'package:salesachiever_mobile/utils/message_util.dart';
@@ -98,6 +98,12 @@ class _DynamicProjectEditScreenState extends State<DynamicProjectEditScreen> {
     String id="";
     if(widget.entityType == "COMPANY"){
      id= _project['ACCT_ID'];
+    } else if(widget.entityType == "CONTACT"){
+      id= _project['CONT_ID'];
+    } else if(widget.entityType == "ACTION"){
+      id= _project['ACTION_ID'];
+    } else if(widget.entityType == "OPPORTUNITY"){
+      id= _project['DEAL_ID'];
     }
     else{
       id= _project['PROJECT_ID'];
@@ -118,6 +124,7 @@ class _DynamicProjectEditScreenState extends State<DynamicProjectEditScreen> {
 
   Future<List> getProjectForm(String id) async {
     print("LEt chech id$id");
+    print("LEt chech id${widget.tabId}");
 
     final dynamic response = await DynamicProjectApi().getProjectForm(widget.tabId.toString(), id);
     print("response${response}");
@@ -181,7 +188,7 @@ class _DynamicProjectEditScreenState extends State<DynamicProjectEditScreen> {
             } else {
               widgets.add(
                 PsaDropdownRow(
-                  type: type,
+                  type:type,
                   isRequired: isRequired,
                   tableName: field['TABLE_NAME'],
                   fieldName: field['FIELD_NAME'],
@@ -339,24 +346,9 @@ class _DynamicProjectEditScreenState extends State<DynamicProjectEditScreen> {
       body: Container(
         child: Column(
           children: [
-            widget.entityType=="COMPANY"?DynamicPsaHeader(
-              isVisible: true,
-              icon: 'assets/images/company_icon.png',
-              title: _project?['ACCTNAME'],
-              projectID: _project?['ACCT_ID'],
-              status: _project?['ACCT_TYPE_ID'],
-              siteTown: _project?['ADDR1'],
-              backgroundColor: Color(0xff3cab4f),
-            ):DynamicPsaHeader(
-              isVisible: true,
-              icon: 'assets/images/projects_icon.png',
-              title: _project?['PROJECT_TITLE'] ??
-                  LangUtil.getString('Entities', 'Project.Create.Text'),
-              projectID: _project?['PROJECT_ID'],
-              status: _project?['SELLINGSTATUS_ID'],
-              siteTown: _project?['OWNER_ID'],
-              backgroundColor: Color(0xffE67E6B),
-            ),
+            Container(
+        height:61,
+                child: CommonHeader(entityType: widget.entityType, entity: _project)),
             Expanded(
               child: SingleChildScrollView(
                 child: Column(
@@ -366,7 +358,7 @@ class _DynamicProjectEditScreenState extends State<DynamicProjectEditScreen> {
                         child: fieldData != null
                             ? generateFields(
                                 _key,
-                                "project",
+                            widget.entityType,
                                 _project,
                                 fieldData,
                                 mandatoryFields,

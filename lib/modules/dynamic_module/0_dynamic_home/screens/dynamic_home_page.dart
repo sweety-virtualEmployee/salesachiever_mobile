@@ -30,19 +30,29 @@ class DyanmicHomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<DyanmicHomeScreen> {
   String _selectedItem = 'HOME';
   CustomActiveFeature feature = CustomActiveFeature();
+  List<dynamic> defaultLists = [];
+
+  @override
+  void initState() {
+    callapi();
+    super.initState();
+  }
+
+  callapi() async{
+    defaultLists = await ListManagerService().getDefaultLists();
+  }
 
   Future<void> _navigate(String item) async {
     bool isContainActiveFeature = await feature.activeFeatures();
     try {
       context.loaderOverlay.show();
 
-      List<dynamic> defaultLists = [];
+
       if (item == 'COMPANY' ||
           item == 'CONTACT' ||
           item == 'PROJECT' ||
           item == 'OPPORTUNITY' ||
           item == 'ACTION')
-        defaultLists = await ListManagerService().getDefaultLists();
       context.loaderOverlay.hide();
 
       Navigator.push(
@@ -61,16 +71,9 @@ class _HomeScreenState extends State<DyanmicHomeScreen> {
                     'acsrch_api',
               );
             }
-
-           /* if (item == 'COMPANY')
-              return CompanyListScreen(
-                listName: defaultLists.firstWhere(
-                        (element) => element['SECTION'] == 'ACCOUNT',
-                        orElse: () => null)?['VAR_VALUE'] ??
-                    'acsrch_api',
-              );*/
             if (item == 'CONTACT')
-              return ContactListScreen(
+              return DynamicProjectListScreen(
+                listType:item,
                 listName: defaultLists.firstWhere(
                         (element) => element['SECTION'] == 'CONTACT',
                         orElse: () => null)?['VAR_VALUE'] ??
@@ -78,7 +81,8 @@ class _HomeScreenState extends State<DyanmicHomeScreen> {
               );
             if (isContainActiveFeature && item == 'PROJECT') {
               print("yesprojects");
-              // if(isContainActiveFeature && item == 'PROJECT'){
+              print("check${ defaultLists.firstWhere(
+                      (element) => element['SECTION'] == 'PROJECT',)}");
               return DynamicProjectListScreen(
                 listType:item,
                 listName: defaultLists.firstWhere(
@@ -88,29 +92,18 @@ class _HomeScreenState extends State<DyanmicHomeScreen> {
               );
             } else {
               print("error");
-              // ProjectListScreen(
-              //         listName: defaultLists.firstWhere(
-              //                 (element) => element['SECTION'] == 'PROJECT',
-              //                 orElse: () => null)?['VAR_VALUE'] ??
-              //             'pjfilt_api',
-              //       );
             }
-            // if (item == 'PROJECT' )
-            //   return ProjectListScreen(
-            //     listName: defaultLists.firstWhere(
-            //             (element) => element['SECTION'] == 'PROJECT',
-            //             orElse: () => null)?['VAR_VALUE'] ??
-            //         'pjfilt_api',
-            //   );
             if (item == 'OPPORTUNITY')
-              return OpportunityListScreen(
+              return DynamicProjectListScreen(
+              listType: item,
                 listName: defaultLists.firstWhere(
                         (element) => element['SECTION'] == 'DEAL',
                         orElse: () => null)?['VAR_VALUE'] ??
                     'ALLDE', //acsrch_api
               );
             if (item == 'ACTION')
-              return ActionListScreen(
+              return DynamicProjectListScreen(
+                listType:item,
                 listName: defaultLists.firstWhere(
                         (element) => element['SECTION'] == 'ACTION',
                         orElse: () => null)?['VAR_VALUE'] ??

@@ -18,14 +18,16 @@ class HiveUtil {
     var result = Hive.box<dynamic>('dataDictionaryLookups').values.firstWhere(
         (e) => e['TABLE_NAME'] == tableName && e['FIELD_NAME'] == fieldName,
         orElse: () => null);
+    print("lets check result$result");
+    print("lets check result$entityType");
 
     if (result == null) return '';
 
     if (result['LOOKUP_TABLE'] == 'USER_LOOKUP') {
       // var ufid = '';
-      var ufid = Hive.box<dynamic>('userFields_$entityType').values.firstWhere(
+      var ufid = Hive.box<dynamic>('userFields_${tableName.toLowerCase()}').values.firstWhere(
           (e) => e['FIELD_TABLE'] == tableName && e['FIELD_NAME'] == fieldName);
-
+      print("uufid$ufid");
       return '${result['LOOKUP_TABLE']}.${ufid['UDF_ID']}.${result['LOOKUP_KEYFIELD']}';
     } else
       return '${result['LOOKUP_TABLE']}.${result['LOOKUP_KEYFIELD']}';

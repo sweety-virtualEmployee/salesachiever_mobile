@@ -73,9 +73,10 @@ class SelectSortOrderScreen extends StatelessWidget {
                         listName: list,
                       );
                     if (entity == 'CONTACT')
-                      return ContactListScreen(
+                      return DynamicProjectListScreen(
                         sortBy: sort,
                         listName: list,
+                        listType: entity,
                       );
                     if (entity == 'PROJECT')
                       return DynamicProjectListScreen(
@@ -84,15 +85,17 @@ class SelectSortOrderScreen extends StatelessWidget {
                         listName: list,
                       );
                     if (entity == 'ACTION')
-                      return ActionListScreen(
+                      return DynamicProjectListScreen(
                         sortBy: sort,
+                        listType: entity,
                         listName: list,
                       );
 
                     if (entity == 'DEAL')
-                      return OpportunityListScreen(
+                      return DynamicProjectListScreen(
                         sortBy: sort,
                         listName: list,
+                        listType: entity,
                       );
 
                     return HomeScreen();
