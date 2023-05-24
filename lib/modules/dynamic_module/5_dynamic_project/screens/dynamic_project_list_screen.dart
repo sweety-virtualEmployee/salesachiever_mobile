@@ -80,16 +80,7 @@ class DynamicProjectListScreen extends StatelessWidget {
             );
           }
           else if(listType=="ACTION"){
-            Navigator.push(
-              context,
-              platformPageRoute(
-                context: context,
-                builder: (BuildContext context) => ActionEditScreen(
-                  action: {},
-                  readonly: false, popScreens: 1,
-                ),
-              ),
-            );
+            Navigator.pushNamed(context, '/action/type');
           }
           else if(listType=="OPPORTUNITY"){
             Navigator.push(

@@ -107,6 +107,7 @@ class _CompanyListItemWidgetState
       ),
       onTap: () async {
         if (widget.isSelectable) {
+          print("yes");
           Navigator.pop(context, {
             'ID': widget.entity['ACCT_ID'],
             'TEXT': widget.entity['ACCTNAME']

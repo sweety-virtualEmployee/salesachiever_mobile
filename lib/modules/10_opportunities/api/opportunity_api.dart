@@ -22,6 +22,8 @@ class OpportunityApi {
       List<dynamic>? sortBy, List<dynamic>? filterBy) async {
     List<dynamic> headers = [];
 
+
+    print("letscheck list name$listName");
     // bool classicSearch = StorageUtil.getBool('classicSearch', defValue: true);
 
     // if (!classicSearch && searchText != '%25') {
@@ -43,10 +45,11 @@ class OpportunityApi {
 
     if (filterBy != null)
       headers.add({'key': 'FilterSet', 'headers': jsonEncode(filterBy)});
-
-    return await _api.get(
+    dynamic response =  await _api.get(
         '/list/$listName?searchText=$searchText&pageSize=$pageSize&pageNumber=$pageNumber&systemLayout=true',
         headers);
+    print("response of the api$response");
+    return response;
   }
 
   Future<dynamic> getById(String oppurtunityId) async {

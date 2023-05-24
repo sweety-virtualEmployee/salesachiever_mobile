@@ -23,9 +23,10 @@ class PsaScaffold extends StatelessWidget {
   Widget build(BuildContext context) {
     return LoaderOverlay(
       useDefaultLoading: false,
+      closeOnBackButton: true,
       overlayWidget: Center(
         child: SizedBox(
-          width: 70, 
+          width: 70,
           height: 70,
           child: Container(
             decoration: BoxDecoration(
@@ -113,7 +114,7 @@ class _HomeButtonState extends State<HomeButton> {
          Navigator.pushAndRemoveUntil(
         context,
         PageRouteBuilder(
-          pageBuilder: (_, __, ___) => HomeScreen(),
+          pageBuilder: (_, __, ___) => DyanmicHomeScreen(),
           transitionDuration: Duration(seconds: 0),
         ),
         (route) => false,

@@ -16,6 +16,7 @@ import 'package:salesachiever_mobile/shared/widgets/forms/psa_county_dropdown_ro
 import 'package:salesachiever_mobile/shared/widgets/forms/psa_datefield_row.dart';
 import 'package:salesachiever_mobile/shared/widgets/forms/psa_dropdown_row.dart';
 import 'package:salesachiever_mobile/shared/widgets/forms/psa_floatfield_row.dart';
+import 'package:salesachiever_mobile/shared/widgets/forms/psa_multiselect_row.dart';
 import 'package:salesachiever_mobile/shared/widgets/forms/psa_numberfield_row.dart';
 import 'package:salesachiever_mobile/shared/widgets/forms/psa_textareafield_row.dart';
 import 'package:salesachiever_mobile/shared/widgets/forms/psa_textfield_row.dart';
@@ -317,6 +318,23 @@ class _DynamicProjectEditScreenState extends State<DynamicProjectEditScreen> {
                 title: LangUtil.getString(
                     field['TABLE_NAME'], field['FIELD_NAME']),
                 value: entity?[field['FIELD_NAME']]?.toString() ?? '',
+                readOnly: readonly ||
+                    (field['DISABLED'] != null && field['DISABLED']),
+                onChange: (_, __) => onChange(_, __, isRequired),
+              ),
+            );
+            break;
+          case 'V':
+            widgets.add(
+              PsaMultiSelectRow(
+                type:type,
+                isRequired: isRequired,
+                tableName: field['TABLE_NAME'],
+                fieldName: field['FIELD_NAME'],
+                selectedValue:field['Data_Value'],
+                title: LangUtil.getString(
+                    field['TABLE_NAME'], field['FIELD_NAME']),
+                value: entity?[field['Data_Value']]?.toString() ?? '',
                 readOnly: readonly ||
                     (field['DISABLED'] != null && field['DISABLED']),
                 onChange: (_, __) => onChange(_, __, isRequired),

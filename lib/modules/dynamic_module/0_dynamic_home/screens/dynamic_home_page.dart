@@ -45,22 +45,23 @@ class _HomeScreenState extends State<DyanmicHomeScreen> {
   Future<void> _navigate(String item) async {
     bool isContainActiveFeature = await feature.activeFeatures();
     try {
-      context.loaderOverlay.show();
+      print(item);
 
-
-      if (item == 'COMPANY' ||
+    /*  if (item == 'COMPANY' ||
           item == 'CONTACT' ||
           item == 'PROJECT' ||
           item == 'OPPORTUNITY' ||
-          item == 'ACTION')
-      context.loaderOverlay.hide();
+          item == 'ACTION')*/
 
       Navigator.push(
         context,
         platformPageRoute(
           context: context,
           builder: (BuildContext context) {
-            if (item == 'LISTMANAGER') return ListCategoryScreen();
+            if (item == 'LISTMANAGER') {
+              print("list hdcfgudgbc manager");
+              return ListCategoryScreen();
+            }
             if (item == 'COMPANY'){
               print("yes company");
               return DynamicProjectListScreen(

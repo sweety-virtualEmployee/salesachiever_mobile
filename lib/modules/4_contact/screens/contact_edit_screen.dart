@@ -19,11 +19,15 @@ import 'package:salesachiever_mobile/utils/message_util.dart';
 class ContactEditScreen extends StatefulWidget {
   final Map<String, dynamic> contact;
   final bool readonly;
+  final String accountName;
+  final String accountId;
 
   const ContactEditScreen({
     Key? key,
     required this.contact,
     required this.readonly,
+    this.accountId="",
+    this.accountName=""
   }) : super(key: key);
 
   @override
@@ -64,6 +68,9 @@ class _ContactEditScreenState extends State<ContactEditScreen> {
   }
 
   void _onChange(String key, dynamic value, bool isRequired) {
+    print("on change method");
+    print(key);
+    print(value);
     setState(() {
       _contact[key] = value;
 
@@ -130,7 +137,7 @@ class _ContactEditScreenState extends State<ContactEditScreen> {
                         visibleFields,
                         mandatoryFields,
                         _readonly,
-                        _onChange,
+                         _onChange,
                         _updatedFieldKey,
                       ),
                     ),
@@ -145,6 +152,7 @@ class _ContactEditScreenState extends State<ContactEditScreen> {
                     ContactViewRelatedRecords(
                       entity: _contact,
                       contactId: _contact['CONT_ID'] ?? '',
+                      onChange: onCompanySave,
                     ),
                     ContactCreateRelatedRecords(contact: _contact),
                   ],
@@ -156,6 +164,15 @@ class _ContactEditScreenState extends State<ContactEditScreen> {
       ),
     );
   }
+
+    onCompanySave(List<dynamic> entity) {
+      entity.forEach((prop) {
+          setState(() {
+            _contact[prop['KEY']] = prop['VALUE'];
+          });
+      });
+   }
+
 
   onInfoSave(dynamic contact) async {
     setState(() {
@@ -181,6 +198,7 @@ class _ContactEditScreenState extends State<ContactEditScreen> {
   Future<void> saveContact() async {
     try {
       context.loaderOverlay.show();
+      print("Conatct save${_contact}");
 
       if (_contact['CONT_ID'] != null) {
         await ContactService().updateEntity(_contact!['CONT_ID'], _contact);

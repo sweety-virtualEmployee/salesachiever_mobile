@@ -1,4 +1,3 @@
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -53,19 +52,21 @@ class _PsaButtonRowState extends State<PsaButtonRow> {
                   ? Expanded(
                       child: CircleAvatar(
                       radius: 10,
-                      backgroundColor: widget.title == "Companies"||widget.title == "Company"
-                          ? Colors.green
+                      backgroundColor: widget.title == "Companies" ||
+                              widget.title == "Company"
+                          ? Color(0xff3cab4f)
                           : widget.title == "Contacts"
-                              ? Colors.blue
+                              ? Color(0xff4C99E0)
                               : widget.title == "Projects"
-                                  ? Colors.red
+                                  ? Color(0xffE67E6B)
                                   : widget.title == "Actions"
-                                      ? Colors.yellow
-                                      : widget.title == "Opportunities"||widget.title == "Opportunity"
-                                          ? Colors.lightGreen
-                                          : Colors.grey.shade700,
+                                      ? Color(0xffae1a3e)
+                                      : widget.title == "Opportunities" ||
+                                              widget.title == "Opportunity"
+                                          ? Color(0xffA4C400)
+                                          : Color(0xffA4C400),
                       //backgroundColor:Color((math.Random().nextDouble() * 0xFFFFFF).toInt()).withOpacity(1.0),
-                     /* child: Text(
+                      /* child: Text(
                         "6",
                         style: TextStyle(color: Colors.black, fontSize: 12),
                       ),*/
@@ -83,7 +84,7 @@ class _PsaButtonRowState extends State<PsaButtonRow> {
                     ),
                     style: TextStyle(color: Colors.grey.shade700, fontSize: 15),
                     readOnly: true,
-                    suffix: widget .icon,
+                    suffix: widget.icon,
                   ),
                 ),
               ),

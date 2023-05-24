@@ -56,7 +56,7 @@ class _DynamicProjectNotesState extends State<DynamicProjectNotes> {
   }
 
   Future<void> saveProject() async {
-   // try {
+    try {
       print("UdateNotes${_updateNotes}");
       print("isNotes${_isNewNote}");
       context.loaderOverlay.show();
@@ -80,15 +80,15 @@ class _DynamicProjectNotesState extends State<DynamicProjectNotes> {
       }
 
       setState(() => _readonly = !_readonly);
-    //}
- /*   on DioError catch (e) {
+    }
+    on DioError catch (e) {
       print("error value$e");
       ErrorUtil.showErrorMessage(context, e.message);
     } catch (e) {
       ErrorUtil.showErrorMessage(context, MessageUtil.getMessage('500'));
-    } finally {*/
+    } finally {
       context.loaderOverlay.hide();
-    //}
+    }
   }
 
   @override

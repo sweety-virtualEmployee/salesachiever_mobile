@@ -66,7 +66,7 @@ class DynamicPsaHeader extends StatelessWidget {
                         children: [
                           status.isNotEmpty?Expanded(
                             child: Text(
-                              "Status: ${status}",
+                              "${status}",
                               style: TextStyle(
                                 fontWeight: FontWeight.w400,
                                 fontSize: 16,

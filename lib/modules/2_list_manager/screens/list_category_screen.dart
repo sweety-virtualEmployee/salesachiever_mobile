@@ -21,10 +21,10 @@ class ListCategoryScreen extends StatelessWidget {
       {'contextId': 'LIST_CATEGORY.CATEGORY_ID', 'itemId': 'PJ'}
     ];
 
-   /* if (AuthUtil.hasAccess(int.parse(ACCESS_CODES['OPPORTUNTIY'].toString()))) {
+    if (AuthUtil.hasAccess(int.parse(ACCESS_CODES['OPPORTUNTIY'].toString()))) {
       _listItems
           .add({'contextId': 'LIST_CATEGORY.CATEGORY_ID', 'itemId': 'DE'});
-    }*/
+    }
 
     return _listItems
         .map(
@@ -46,23 +46,11 @@ class ListCategoryScreen extends StatelessWidget {
         .toList();
   }
 
-  checkTimeRemaining() async {
-    final prefs = await SharedPreferences.getInstance();
-    int? timestamp = prefs.getInt('myTimestampKey');
-
-    DateTime dateTime = DateTime.fromMillisecondsSinceEpoch(timestamp!);
-    var currentTime = DateTime.now();
-    var diff = currentTime.difference(dateTime).inSeconds;
-    print("difference${diff}");
-    print("difference${currentTime}");
-    print("difference${dateTime}");
-  }
 
 
   @override
   Widget build(BuildContext context) {
     print("hy");
-    checkTimeRemaining();
     return PsaScaffold(
       title: LangUtil.getString('Application', 'MainMenu.ListManager.Header'),
       body: ListView(

@@ -36,6 +36,19 @@ class LangUtil {
     return result.length > 0 ? result.first.displayValue : '';
   }
 
+  static String getMultiListValue(String contextId, String itemId) {
+    print("item id check${itemId}");
+    print("item id check${contextId}");
+    List<Locale> result = Hive.box<Locale>('locales')
+        .values
+        .where((locale) => locale.contextId == contextId && itemId.contains(locale.itemId))
+        .toList();
+
+    print("result$result");
+
+    return result.length > 0 ? result.map((e) => e.displayValue).join(",") : '';
+  }
+
   static List<Locale> getLocaleList(String contextId) {
     print("conetxexid$contextId");
     List<Locale> result = Hive.box<Locale>('locales')
