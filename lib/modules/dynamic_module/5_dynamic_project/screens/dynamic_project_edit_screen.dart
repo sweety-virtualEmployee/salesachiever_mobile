@@ -2,8 +2,11 @@ import 'dart:developer';
 import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:loader_overlay/loader_overlay.dart';
+import 'package:salesachiever_mobile/modules/3_company/services/company_service.dart';
 import 'package:salesachiever_mobile/modules/5_project/services/project_service.dart';
+import 'package:salesachiever_mobile/modules/6_action/widgets/associated_entity_widget.dart';
 import 'package:salesachiever_mobile/modules/dynamic_module/5_dynamic_project/api/dynamic_project_api.dart';
 import 'package:salesachiever_mobile/modules/dynamic_module/5_dynamic_project/screens/dynamic_psa_header.dart';
 import 'package:salesachiever_mobile/modules/dynamic_module/5_dynamic_project/widgets/common_header.dart';
@@ -18,6 +21,7 @@ import 'package:salesachiever_mobile/shared/widgets/forms/psa_dropdown_row.dart'
 import 'package:salesachiever_mobile/shared/widgets/forms/psa_floatfield_row.dart';
 import 'package:salesachiever_mobile/shared/widgets/forms/psa_multiselect_row.dart';
 import 'package:salesachiever_mobile/shared/widgets/forms/psa_numberfield_row.dart';
+import 'package:salesachiever_mobile/shared/widgets/forms/psa_related_value_record.dart';
 import 'package:salesachiever_mobile/shared/widgets/forms/psa_textareafield_row.dart';
 import 'package:salesachiever_mobile/shared/widgets/forms/psa_textfield_row.dart';
 import 'package:salesachiever_mobile/shared/widgets/forms/psa_timefield_row.dart';
@@ -26,6 +30,8 @@ import 'package:salesachiever_mobile/utils/error_util.dart';
 import 'package:salesachiever_mobile/utils/lang_util.dart';
 import 'package:salesachiever_mobile/utils/message_util.dart';
 import 'package:salesachiever_mobile/utils/text_formatting_util.dart';
+
+import '../../../3_company/screens/company_edit_screen.dart';
 
 class DynamicProjectEditScreen extends StatefulWidget {
   final Map<String, dynamic> project;
@@ -156,6 +162,7 @@ class _DynamicProjectEditScreenState extends State<DynamicProjectEditScreen> {
           case 'L':
             if (field['TABLE_NAME'] == 'ACCOUNT' &&
                 field['FIELD_NAME'] == 'COUNTY') {
+              print("yes");
               widgets.add(
                 PsaCountyDropdownRow(
                   isRequired: isRequired,
@@ -172,6 +179,7 @@ class _DynamicProjectEditScreenState extends State<DynamicProjectEditScreen> {
               );
             } else if (field['TABLE_NAME'] == 'PROJECT' &&
                 field['FIELD_NAME'] == 'SITE_COUNTY') {
+              print("thsi");
               widgets.add(
                 PsaCountyDropdownRow(
                   isRequired: isRequired,
@@ -187,6 +195,7 @@ class _DynamicProjectEditScreenState extends State<DynamicProjectEditScreen> {
                 ),
               );
             } else {
+              print("no");
               widgets.add(
                 PsaDropdownRow(
                   type:type,
@@ -341,6 +350,16 @@ class _DynamicProjectEditScreenState extends State<DynamicProjectEditScreen> {
               ),
             );
             break;
+          case 'Z':
+            widgets.add(
+                PsaRelatedValueRow(title: LangUtil.getString(
+                field['TABLE_NAME'], field['FIELD_NAME']),
+                 value:field['Data_Value'],
+                 type:field['FIELD_NAME'],
+                 onTap: () {},
+                 isVisible: true,
+
+                ));
         }
       }
     } else {

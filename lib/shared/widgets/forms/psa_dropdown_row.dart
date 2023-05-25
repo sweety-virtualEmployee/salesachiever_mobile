@@ -38,6 +38,8 @@ class _PsaDropdownRowState extends State<PsaDropdownRow> {
   @override
   void initState() {
     print("valueof dropdown${widget.value}");
+    print("valueof fieldName${widget.fieldName}");
+    print("valueof titke${widget.title}");
     selectedValue = widget.value;
     super.initState();
   }
