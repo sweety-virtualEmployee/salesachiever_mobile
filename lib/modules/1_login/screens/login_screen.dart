@@ -161,15 +161,6 @@ class _LoginScreenState extends State<LoginScreen> {
         ),
         (route) => false,
       );
-      //  print("error");
-      //    Navigator.pushAndRemoveUntil(
-      //   context,
-      //   PageRouteBuilder(
-      //     pageBuilder: (_, __, ___) => HomeScreen(),
-      //     transitionDuration: Duration(seconds: 0),
-      //   ),
-      //   (route) => false,
-      // );
       }
       else{
         print("error");

@@ -61,9 +61,10 @@ class ProjectService extends EntityService {
   List<dynamic> getActiveFields() {
     List<dynamic> items =
         Hive.box<dynamic>('activeFields_project').values.toList();
+    print("length of items");
+    print(items.length);
 
     items.sort((a, b) => a['ORDER_NUM'].compareTo(b['ORDER_NUM']));
-    log("activefields-----${items.toString()}");
 
     return items.where((e) => e['FIELD_NAME'] != 'PROJECT_TYPE_ID').toList();
     

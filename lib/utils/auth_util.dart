@@ -7,6 +7,9 @@ class AuthUtil {
   }
 
   static bool hasAccess(int propertyId) {
+    print("acces");
+    print(Hive.box<dynamic>('features')
+        .values);
     dynamic feature = Hive.box<dynamic>('features')
         .values
         .firstWhere((e) => e['PROPERTY_ID'] == propertyId, orElse: () => null);

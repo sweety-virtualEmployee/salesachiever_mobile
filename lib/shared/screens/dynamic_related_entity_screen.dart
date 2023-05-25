@@ -60,6 +60,7 @@ class _DynamicRelatedEntityScreenState
     _project = this.widget.project;
     list = widget.list;
     print("dynamic listValue${widget.entity}");
+    print("dynamic type${widget.type}");
     super.initState();
   }
 
@@ -163,10 +164,16 @@ class _DynamicRelatedEntityScreenState
                                           null
                                           ? '${widget.entity['FIRSTNAME'] ?? ''} ${widget.entity['SURNAME'] ?? ''}'
                                           : null,
+                                      'PROJECT_ID': widget.entity['PROJECT_ID'],
+                                      'PROJECT_TITLE':
+                                      widget.entity['PROJECT_TITLE'],
+                                      'DEAL_ID': widget.entity['DEAL_ID'],
+                                      'DEAL_DESCRIPTION':
+                                      widget.entity['DEAL_ID'] != null
+                                          ? widget.entity['DESCRIPTION']
+                                          : '',
                                     },
                                     readonly: false,
-                                    accountId: widget.entity['ACCT_ID'],
-                                    accountName: widget.entity['ACCTNAME'],
                                   ),
                                 ),
                               );
@@ -203,7 +210,7 @@ class _DynamicRelatedEntityScreenState
                               ),
                             ),
                           )
-                        : (widget.type ==
+                        : (widget.type == 'opportunities' ||widget.type ==
                                 'OpportunityLinks?pageSize=1000&pageNumber=1')
                             ? PsaAddButton(
                                 onTap: () async {
@@ -243,17 +250,6 @@ class _DynamicRelatedEntityScreenState
                                         ),
                                       ),
                                     );
-                                    // Navigator.push(
-                                    //   context,
-                                    //   platformPageRoute(
-                                    //     context: context,
-                                    //     builder: (BuildContext context) =>
-                                    //         OpportunityEditScreen(
-                                    //             deal: {},
-                                    //             project: widget.entity,
-                                    //             readonly: false),
-                                    //   ),
-                                    // );
                                   } else {
                                     Navigator.push(
                                       context,

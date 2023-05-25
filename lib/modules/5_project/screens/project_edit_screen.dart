@@ -92,12 +92,10 @@ class _ProjectEditScreenState extends State<ProjectEditScreen> {
 
   @override
   Widget build(BuildContext context) {
+    print("active field lenth");
+    print(activeFields.length);
     var visibleFileds = activeFields.where((e) => e['COLVAL']).toList();
-    log("Sweety----");
-    log("project----$_project");
-    log("visible----$visibleFileds");
-    log("mandatory-----$mandatoryFields");
-    return PsaScaffold(
+     return PsaScaffold(
       action: PsaEditButton(
         text: _readonly ? 'Edit' : 'Save',
         onTap: (_isValid || _readonly) ? onTap : null,

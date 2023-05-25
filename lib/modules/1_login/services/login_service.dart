@@ -101,7 +101,9 @@ class LoginService {
 
   Future<void> _fetchIpadFields() async {
     //check 50013 enabled
-    bool dynmaicUIEnabled = AuthUtil.hasAccess(50013);
+    bool dynmaicUIEnabled = AuthUtil.hasAccess(60012);
+    print("DynamicUIenabled");
+    print(dynmaicUIEnabled);
 
     LookupService lookupService = LookupService();
     await lookupService.getIpadFields('account', dynmaicUIEnabled);

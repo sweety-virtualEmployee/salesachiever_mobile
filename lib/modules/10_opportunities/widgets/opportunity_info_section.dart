@@ -131,9 +131,6 @@ class _OpportunityInfoSectionState extends State<OpportunityInfoSection> {
             'OpportunityEditWindow',
             'PotentialTab.Header',
           ),
-          color: OpportunityService().validateUserFields(widget._deal)
-              ? null
-              : Colors.red,
           icon: Icon(context.platformIcons.rightChevron),
           onTap: () {
             if (widget._deal['DEAL_ID'] == null || widget._readonly ||

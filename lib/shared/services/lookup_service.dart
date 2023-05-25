@@ -51,6 +51,8 @@ class LookupService {
 
     if (dynmaicUIEnabled) {
       final dynamic response = await LookupApi().getIpadFields(entityType);
+      print("response of the value");
+      print(response);
 
       if (response != null) {
         iPadFields = response['Items'];

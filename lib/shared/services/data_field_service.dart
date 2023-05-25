@@ -23,12 +23,16 @@ class DataFieldService {
       Function onChange,
       [String? updatedFieldKey]) {
     List<Widget> widgets = [];
-
     for (dynamic field in filedList) {
+      print("length");
+      print(field['FIELD_NAME']);
       var isRequired = mandatoryFields.any((e) =>
           e['TABLE_NAME'] == field['TABLE_NAME'] &&
           e['FIELD_NAME'] == field['FIELD_NAME']);
-
+      if(field['FIELD_TYPE']=="B"){
+        print("check the condition");
+        print(field["FIELD_NAME"]);
+      }
       switch (field['FIELD_TYPE']) {
         case 'L':
           if (field['TABLE_NAME'] == 'ACCOUNT' &&
@@ -99,7 +103,7 @@ class DataFieldService {
               fieldKey: field['FIELD_NAME'],
               title:
                   LangUtil.getString(field['TABLE_NAME'], field['FIELD_NAME']),
-              value: entity?[field['FIELD_NAME']],
+              value: 0,
               keyboardType: TextInputType.number,
               readOnly: readonly || (field['DISABLED'] != null && field['DISABLED']),
               onChange: (_, __) => onChange(_, __, isRequired),
@@ -113,7 +117,7 @@ class DataFieldService {
               fieldKey: field['FIELD_NAME'],
               title:
                   LangUtil.getString(field['TABLE_NAME'], field['FIELD_NAME']),
-              value: entity?[field['FIELD_NAME']],
+              value: 0.0,
               keyboardType: TextInputType.numberWithOptions(decimal: true),
               readOnly: readonly || (field['DISABLED'] != null && field['DISABLED']),
               onChange: (_, __) => onChange(_, __, isRequired),
@@ -140,7 +144,7 @@ class DataFieldService {
               fieldKey: field['FIELD_NAME'],
               title:
                   LangUtil.getString(field['TABLE_NAME'], field['FIELD_NAME']),
-              value: entity?[field['FIELD_NAME']],
+              value: false,
               readOnly: readonly || (field['DISABLED'] != null && field['DISABLED']),
               onChange: (_, __) => onChange(_, __, isRequired),
             ),

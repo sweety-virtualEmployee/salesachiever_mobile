@@ -96,7 +96,7 @@ class OpportunityService extends EntityService {
   }
 
   bool validateEntity(dynamic deal) {
-    return validateActiveFields(deal) && validateUserFields(deal);
+    return validateActiveFields(deal);
   }
 
   bool validateActiveFields(dynamic deal) {
@@ -116,6 +116,8 @@ class OpportunityService extends EntityService {
   }
 
   bool validateUserFields(dynamic deal) {
+    print("dealof valide suer");
+    print(deal);
     LookupService _lookupService = LookupService();
 
     var userFields = getuserFields();
@@ -130,10 +132,10 @@ class OpportunityService extends EntityService {
         .where((userField) => visibleUserFields.any((visibleUserFields) =>
             userField['UDF_ID'] == visibleUserFields['UDF_ID'] &&
             visibleUserFields['TYPE_ID'] == dealId))
-        /*.where((activeField) =>
+      /*  .where((activeField) =>
             dealId[activeField['FIELD_NAME']] == null
-                //||
-           // dealId[activeField['FIELD_NAME']].toString() == ''
+                ||
+            dealId[activeField['FIELD_NAME']].toString() == ''
     )*/
         .toList();
 

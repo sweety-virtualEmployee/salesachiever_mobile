@@ -25,6 +25,8 @@ class InfoFieldService {
     filedList.sort((a, b) => a['ORDER_NUM'].compareTo(b['ORDER_NUM']));
 
     for (dynamic field in filedList) {
+      print("fieldl list");
+      print(field);
       var isRequired = field['ISREQUIRED'];
 
       switch (field['FIELD_TYPE']) {
@@ -119,7 +121,7 @@ class InfoFieldService {
               fieldKey: field['FIELD_NAME'],
               title:
                   LangUtil.getString(field['FIELD_TABLE'], field['FIELD_NAME']),
-              value: entity?[field['FIELD_NAME']],
+              value: false,
               readOnly: readonly,
               onChange: (_, __) => onChange(_, __, isRequired),
             ),
