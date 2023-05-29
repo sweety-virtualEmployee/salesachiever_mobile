@@ -219,38 +219,6 @@ if(projectLink['ROLE_TYPE_ID'] != null){
                   }
                 },
               ),
-              if (type == null)
-                PsaRelatedEntityRow(
-                  isVisible: false,
-                  title: LangUtil.getString('ProjectAccountLinkEditWindow',
-                      'RoleLabelTextBlock.Text'),
-                  isRequired: role == null,
-                  entity: {
-                    'ID': role != null ? role['ID'] : '',
-                    'TEXT': role != null
-                        ? LangUtil.getListValue(
-                            'ROLE_TYPE.ROLE_TYPE_ID', role['ID'])
-                        : '',
-                  },
-                  onTap: () async {
-                    var result = await Navigator.push(
-                      context,
-                      platformPageRoute(
-                        context: context,
-                        builder: (BuildContext context) => PsaListPicker(
-                          title: '',
-                          contextId: 'ROLE_TYPE.ROLE_TYPE_ID',
-                        ),
-                      ),
-                    );
-
-                    if (result != null && result != '') {
-                      setState(() {
-                        role = result;
-                      });
-                    }
-                  },
-                ),
               if (type != null)
                 PsaRelatedEntityRow(
                   isVisible: false,
@@ -278,7 +246,39 @@ if(projectLink['ROLE_TYPE_ID'] != null){
                       });
                     }
                   },
-                )
+                ),
+              if (type == null||type=="opp")
+                PsaRelatedEntityRow(
+                  isVisible: false,
+                  title: LangUtil.getString('ProjectAccountLinkEditWindow',
+                      'RoleLabelTextBlock.Text'),
+                  isRequired: role == null,
+                  entity: {
+                    'ID': role != null ? role['ID'] : '',
+                    'TEXT': role != null
+                        ? LangUtil.getListValue(
+                        'ROLE_TYPE.ROLE_TYPE_ID', role['ID'])
+                        : '',
+                  },
+                  onTap: () async {
+                    var result = await Navigator.push(
+                      context,
+                      platformPageRoute(
+                        context: context,
+                        builder: (BuildContext context) => PsaListPicker(
+                          title: '',
+                          contextId: 'ROLE_TYPE.ROLE_TYPE_ID',
+                        ),
+                      ),
+                    );
+
+                    if (result != null && result != '') {
+                      setState(() {
+                        role = result;
+                      });
+                    }
+                  },
+                ),
             ],
           ),
         ),

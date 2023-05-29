@@ -39,7 +39,7 @@ class CommonHeader extends StatelessWidget {
         icon: 'assets/images/actions_icon.png',
         title: entity?['DESCRIPTION'],
         projectID: "",
-        status: entity?['ACTION_ID'],
+        status: "",
         siteTown: entity?['ACTION_TIME'],
         backgroundColor: Color(0xffae1a3e).withOpacity(0.1),
       ):DynamicPsaHeader(

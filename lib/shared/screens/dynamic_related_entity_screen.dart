@@ -59,7 +59,7 @@ class _DynamicRelatedEntityScreenState
   void initState() {
     _project = this.widget.project;
     list = widget.list;
-    print("dynamic listValue${widget.entity}");
+    print("dynamic listValue${list}");
     print("dynamic type${widget.type}");
     super.initState();
   }
@@ -221,32 +221,26 @@ class _DynamicRelatedEntityScreenState
                                       platformPageRoute(
                                         context: context,
                                         builder: (BuildContext context) =>
-                                            AddRelatedEntityScreen(
-                                          multiId: widget.entity['MULTI_ID'],
+                                            OpportunityEditScreen(
                                           deal: {
-                                            'ID': widget.entity['DEAL_ID'],
-                                            'TEXT': widget.entity['DEAL_NAME'],
+                                            'ACCT_ID': widget.entity['ACCT_ID'],
+                                            'ACCTNAME': widget.entity['ACCTNAME'],
+                                            'CONT_ID': widget.entity['CONT_ID'],
+                                            'CONTACT_NAME': widget.entity['CONT_ID'] !=
+                                                null
+                                                ? '${widget.entity['FIRSTNAME'] ?? ''} ${widget.entity['SURNAME'] ?? ''}'
+                                                : null,
+                                            'PROJECT_ID': widget.entity['PROJECT_ID'],
+                                            'PROJECT_TITLE':
+                                            widget.entity['PROJECT_TITLE'],
+                                            'DEAL_ID': widget.entity['DEAL_ID'],
+                                            'DEAL_DESCRIPTION':
+                                            widget.entity['DEAL_ID'] != null
+                                                ? widget.entity['DESCRIPTION']
+                                                : '',
                                           },
                                           // project: widget.entity,
-                                          account: widget.entity['ACCT_ID'] !=
-                                                  null
-                                              ? {
-                                                  'ID':
-                                                      widget.entity['ACCT_ID'],
-                                                  'TEXT':
-                                                      widget.entity['ACCTNAME'],
-                                                }
-                                              : {},
-                                          contact: widget.entity['CONT_ID'] !=
-                                                  null
-                                              ? {
-                                                  'ID':
-                                                      widget.entity['CONT_ID'],
-                                                  'TEXT':
-                                                      '${widget.entity['FIRSTNAME'] ?? ''} ${widget.entity['SURNAME'] ?? ''}',
-                                                }
-                                              : {},
-                                          type: "opp",
+                                         readonly: false,
                                         ),
                                       ),
                                     );
@@ -327,6 +321,8 @@ class _DynamicRelatedEntityScreenState
                   itemCount: list.length,
                   itemBuilder: (BuildContext context, int index) {
                     final item = list[index];
+                    print("itewbdfaskmgnvkdbh");
+                    print(item);
                     return InkWell(
                       onTap: () async {
                         context.loaderOverlay.show();
@@ -374,8 +370,9 @@ class _DynamicRelatedEntityScreenState
                             ),
                           );
                         } else if (widget.type == "opportunities") {
+                          print("deal id valeudifgc${widget.entity['DEAL_DEAL_ID']}");
                           dynamic deal = await OpportunityService()
-                              .getEntity(widget.entity['DEAL_ID'].toString());
+                              .getEntity(item['DEAL_ID'].toString());
                           Navigator.push(
                             context,
                             MaterialPageRoute(
@@ -432,19 +429,18 @@ class _DynamicRelatedEntityScreenState
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     for (final entry in item.entries)
-                                      Padding(
+                                      entry.key.contains("_ID")||entry.key.contains("__")?SizedBox():Padding(
                                         padding: const EdgeInsets.only(
                                             left: 20.0, right: 20, top: 10),
                                         child: Row(
                                           children: [
-                                            SizedBox(
-                                              width: 130,
+                                            Expanded(
                                               child: Padding(
                                                   padding:
                                                       const EdgeInsets.fromLTRB(
                                                           0, 4, 0, 4),
                                                   child: Text(
-                                                    '${entry.key} :',
+                                                    '${LangUtil.getLocaleString('${entry.key}')} :',
                                                     style: TextStyle(
                                                         fontWeight:
                                                             FontWeight.w700,
@@ -479,7 +475,7 @@ class _DynamicRelatedEntityScreenState
                                                     const EdgeInsets.fromLTRB(
                                                         0, 4, 0, 4),
                                                 child: Text(
-                                                  '${entry.value.toString()}',
+                                                  entry.value!=null?'${entry.value.toString()}':"",
                                                   overflow:
                                                       TextOverflow.ellipsis,
                                                   softWrap: false,
@@ -542,7 +538,22 @@ class _DynamicRelatedEntityScreenState
                                               },
                                             ),
                                           );
-                                        } else if (widget.type
+                                        } else if (widget.type == "opportunities") {
+                                          print("deal id valeudifgc${widget.entity['DEAL_DEAL_ID']}");
+                                          dynamic deal = await OpportunityService()
+                                              .getEntity(item['DEAL_ID'].toString());
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (context) {
+                                                return OpportunityEditScreen(
+                                                  deal: deal.data,
+                                                  readonly: true,
+                                                );
+                                              },
+                                            ),
+                                          );
+                                        }else if (widget.type
                                             .contains("notes")) {
                                           dynamic response =
                                               await DynamicProjectService()

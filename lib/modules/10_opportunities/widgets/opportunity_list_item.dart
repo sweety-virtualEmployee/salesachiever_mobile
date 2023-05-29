@@ -228,7 +228,7 @@ class _OpportunityListItemWidgetState
         if (widget.isSelectable) {
           Navigator.pop(context, {
             'ID': widget.entity['DEAL_ID'],
-            'TEXT': widget.entity['DESCRIPTION']
+            'TEXT': widget.entity['DEAL_DESCRIPTION']
           });
           return;
         }

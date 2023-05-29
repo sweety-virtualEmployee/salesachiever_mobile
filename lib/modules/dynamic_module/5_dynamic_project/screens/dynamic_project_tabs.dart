@@ -80,6 +80,7 @@ class _ProjectTabsState extends State<ProjectTabs> {
   @override
   Widget build(BuildContext context) {
     print("project data ${_entity}");
+    print("project data ${widget.entityType}");
     return PsaScaffold(
       title: "${capitalizeFirstLetter(widget.entityType)} Tabs" ,
       body: FutureBuilder(
@@ -181,8 +182,7 @@ class _ProjectTabsState extends State<ProjectTabs> {
                                       else if (jsonDecode(jsonEncode(snapshot.data))[
                                       index]['TAB_TYPE'] ==
                                           "L"){
-                                        print("true");
-                                        String path;
+                                        String path="";
                                         if(widget.entityType=="COMPANY"){
                                           path = jsonDecode(
                                               jsonEncode(snapshot
@@ -202,26 +202,25 @@ class _ProjectTabsState extends State<ProjectTabs> {
                                           ['TAB_LIST'].replaceAll("@RECORDID",
                                               _entity?['ACTION_ID']);
                                         }else if(widget.entityType=="OPPORTUNITY"){
+                                          print("opportunity module ${_entity?['DEAL_ID']}");
                                           path = jsonDecode(
                                               jsonEncode(snapshot
                                                   .data))[index]
                                           ['TAB_LIST'].replaceAll("@RECORDID",
                                               _entity?['DEAL_ID']);
-                                        }else {
+                                        }else if(widget.entityType=="PROJECT"){
                                           path = jsonDecode(
                                               jsonEncode(snapshot
                                                   .data))[index]
                                           ['TAB_LIST'].replaceAll("@RECORDID",
                                               _entity?['PROJECT_ID']);
+                                        } else{
+                                          path = jsonDecode(
+                                              jsonEncode(snapshot
+                                                  .data))[index]
+                                          ['TAB_LIST'];
                                         }
-                                        print(path.replaceAll("&amp;", "&"));
-                                        print("check the tab type${jsonDecode(jsonEncode(snapshot
-                                                .data))[index]
-                                        ['TAB_LIST_MODULE']
-                                            .toString().toLowerCase()}");
-
                                         var result = await service.getTabListEntityApi(path.replaceAll("&amp;", "&"));
-
                                         Navigator.push(
                                           context,
                                           platformPageRoute(
@@ -291,12 +290,6 @@ class _ProjectTabsState extends State<ProjectTabs> {
                                                                 .data))[
                                                     index]['TAB_HEX']
                                                         .toString())),
-                                             /*   child: Padding(
-                                                  padding: const EdgeInsets.all(10.0),
-                                                  child: Text(service.getTabsListCount( _project?['PROJECT_ID'], "type").then((value){
-                                                    value["Count"];
-                                                  }).toString()),
-                                                ),*/
                                               )
                                             ),
                                           ]

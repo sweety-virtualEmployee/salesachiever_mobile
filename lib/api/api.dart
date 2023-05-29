@@ -73,14 +73,13 @@ class Api {
     final prefs = await SharedPreferences.getInstance();
     prefs.remove('myTimestampKey');
     try {
-      //log(path);
+      print("checking of headers");
+      print(headers);
        headers?.forEach(
           (header) => _dio.options.headers[header['key']] = header['headers']);
       companyModule = await _dio.get(path,options: Options(headers: {"TableName":"ACCOUNT","FieldName":"ACCTNAME","SortOrder":2,"SortIndex":0},
 
       ));
-         // log("-----header info--------");
-      //log(companyModule.data.toString());
        int timestamp = DateTime.now().millisecondsSinceEpoch;
 
        final prefs = await SharedPreferences.getInstance();
@@ -103,19 +102,14 @@ class Api {
     final prefs = await SharedPreferences.getInstance();
     prefs.remove('myTimestampKey');
     try {
-      //log(path);
     var  token =  StorageUtil.getString('token');
       companyModule = await _dio.get(path,options: Options(method: "GET", headers: { "Authorization": "Token $token","Accept": "application/json" }));
-         // log("-----header info--------");
-      //log(companyModule.data.toString());
     int timestamp = DateTime.now().millisecondsSinceEpoch;
 
     final prefs = await SharedPreferences.getInstance();
     prefs.setInt('myTimestampKey', timestamp);
 
     DateTime dateTime = DateTime.fromMillisecondsSinceEpoch(timestamp);
-    print("dateTime${dateTime}");
-    print("dateTime${timestamp}");
       return companyModule;
     } catch (e) {
       print(e);

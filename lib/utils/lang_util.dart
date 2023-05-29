@@ -5,16 +5,45 @@ import 'package:salesachiever_mobile/utils/storage_util.dart';
 class LangUtil {
   static String getString(String contextId, String itemId, {Box<Locale>? box}) {
     if (box == null) box = Hive.box<Locale>('locales');
-
+    print("localesvalue  ${box.values}");
     List<Locale> result = box.values
         .where((locale) =>
     locale.contextId == contextId && locale.itemId == itemId)
         .toList();
     var localeId = StorageUtil.getString('localeId');
+    print("result");
+    print(result);
+
+    if(result.isNotEmpty){
+      return result.length > 0
+          ? result.first.displayValue
+          : 'E:$localeId:$contextId:$itemId';
+    }else{
+      List<Locale> result = box.values
+          .where((locale) =>
+      locale.localeId == localeId && locale.itemId == itemId)
+          .toList();
+
+      return result.length > 0
+          ? result.first.displayValue
+          : 'E:$localeId:$contextId:$itemId';
+    }
+
+  }
+
+  static String getLocaleString(String itemId, {Box<Locale>? box}) {
+    var localeId = StorageUtil.getString('localeId');
+
+    if (box == null) box = Hive.box<Locale>('locales');
+    print("localesvalue  ${box.values}");
+    List<Locale> result = box.values
+        .where((locale) =>
+    locale.localeId == localeId && locale.itemId == itemId)
+        .toList();
 
     return result.length > 0
         ? result.first.displayValue
-        : 'E:$localeId:$contextId:$itemId';
+        : 'E:$localeId:$localeId:$itemId';
   }
   static String getStringNew(var fieldData,int i) {
     String first = fieldData[i]['FIELD_TABLE']!=null?fieldData[i]['FIELD_TABLE']:"";

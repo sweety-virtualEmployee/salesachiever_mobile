@@ -41,127 +41,72 @@ class DynamicProjectListItemWidget extends EntityListItemWidget {
 
 class _ProjectListItemWidgetState
     extends EntityListItemWidgetState<DynamicProjectListItemWidget> {
+  Map<String,dynamic> map= Map<String,dynamic>();
   @override
   void initState() {
-   print("listitem:type ${widget.type}");
-    print("entity${widget.entity}");
+    map = widget.entity;
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
+    print("entity data${map}");
     if (widget.type == 'COMPANY') {
       return ListTile(
-      subtitle: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(0, 4, 12, 4),
-                    child: Text(
-                      'Account Name :',
-                      style: TextStyle(fontWeight: FontWeight.w700,color: Colors.green),
-                      overflow: TextOverflow.ellipsis,
-                      softWrap: false,
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(0, 4, 12, 4),
-                    child: Text(
-                      'Address :',
-                      style: TextStyle(fontWeight: FontWeight.w700,color: Colors.green),
-                      overflow: TextOverflow.ellipsis,
-                      softWrap: false,
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(0, 4, 12, 4),
-                    child: Text(
-                      'Town :',
-                      style: TextStyle(fontWeight: FontWeight.w700,color: Colors.green),
-                      overflow: TextOverflow.ellipsis,
-                      softWrap: false,
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(0, 4, 12, 4),
-                    child: Text(
-                      'Account_Type :',
-                      style: TextStyle(fontWeight: FontWeight.w700,color: Colors.green),
-                      overflow: TextOverflow.ellipsis,
-                      softWrap: false,
-                    ),
-                  ),
-                ],
-              ),
-              SizedBox(width: 50,),
-              Expanded(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(0, 4, 0, 4),
-                      child: Text(
-                        widget.entity['ACCOUNT_ACCTNAME'],
-                        overflow: TextOverflow.ellipsis,
-                        softWrap: false,
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(0, 4, 0, 4),
-                      child: Text(
-                        widget.entity['ACCOUNT_ADDR1']!=null?widget.entity['ACCOUNT_ADDR1']:"",
-                        overflow: TextOverflow.ellipsis,
-                        softWrap: false,
-                        maxLines: 1,
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(0, 4, 0, 4),
-                      child: Text(
-                        widget.entity['ACCOUNT_TOWN'] != null
-                            ? widget.entity['ACCOUNT_TOWN']
-                            : '',
-                        overflow: TextOverflow.ellipsis,
-                        softWrap: false,
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(0, 4, 0, 4),
-                      child: Text(
-                        widget.entity['ACCOUNT_ACCT_TYPE_ID'] != null
-                            ? widget.entity['ACCOUNT_ACCT_TYPE_ID']
-                            : '',
-                        overflow: TextOverflow.ellipsis,
-                        softWrap: false,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-          if (widget.isEditable)
-            Row(
-              mainAxisAlignment: MainAxisAlignment.end,
+      subtitle: ListView.builder(
+        itemCount: map.length,
+        shrinkWrap: true,
+        itemBuilder: (BuildContext context, int index) {
+          final key = map.keys.elementAt(index);
+          final value = map[key];
+          String contextId = key.substring(0,key.indexOf('_'));
+          String itemId = key.contains("_")?key.substring(key.indexOf("_")+1):key;
+          List<String> parts = key.split('_');
+          print("parts$key${parts.length}");
+          print("conetxtsdbid${contextId}");
+          print("erfafxsgasjf${itemId}");
+          if(key.contains("_ID")&&parts.length<3){
+            return SizedBox();
+          }
+          else {
+            return Row(
               children: [
-                TextButton(
-                  onPressed: widget.onEdit,
-                  child: Text('Edit'),
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(0, 4, 12, 4),
+                    child: Column(
+                      crossAxisAlignment:CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          '${LangUtil.getString(contextId,itemId) } :',
+                          style: TextStyle(fontWeight: FontWeight.w700,color: Colors.red),
+                          overflow: TextOverflow.ellipsis,
+                          softWrap: false,
+                        ),
+                      ],
+                    ),
+                  ),
                 ),
-                TextButton(
-                  onPressed: widget.onDelete,
-                  child: Text('Delete'),
-                )
+                SizedBox(width: 50,),
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(0, 4, 0, 4),
+                    child: Column(
+                      crossAxisAlignment:CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          value!=null?value.toString():"",
+                          overflow: TextOverflow.ellipsis,
+                          softWrap: false,
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
               ],
-            )
-        ],
+            );
+          }
+        },
       ),
       trailing: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -208,116 +153,58 @@ class _ProjectListItemWidgetState
     } else {
       if (widget.type == 'OPPORTUNITY') {
         return ListTile(
-      subtitle: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(0, 4, 12, 4),
-                    child: Text(
-                      'Deal Id :',
-                      style: TextStyle(fontWeight: FontWeight.w700,color: Color(0xffA4C400)),
-                      overflow: TextOverflow.ellipsis,
-                      softWrap: false,
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(0, 4, 12, 4),
-                    child: Text(
-                      'Deal Creator :',
-                      style: TextStyle(fontWeight: FontWeight.w700,color: Color(0xffA4C400)),
-                      overflow: TextOverflow.ellipsis,
-                      softWrap: false,
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(0, 4, 12, 4),
-                    child: Text(
-                      'Deal Description :',
-                      style: TextStyle(fontWeight: FontWeight.w700,color: Color(0xffA4C400)),
-                      overflow: TextOverflow.ellipsis,
-                      softWrap: false,
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(0, 4, 12, 4),
-                    child: Text(
-                      'Created On :',
-                      style: TextStyle(fontWeight: FontWeight.w700,color: Color(0xffA4C400)),
-                      overflow: TextOverflow.ellipsis,
-                      softWrap: false,
-                    ),
-                  ),
-                ],
-              ),
-              SizedBox(width: 50,),
-              Expanded(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(0, 4, 0, 4),
-                      child: Text(
-                        widget.entity['DEAL_ID'],
-                        overflow: TextOverflow.ellipsis,
-                        softWrap: false,
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(0, 4, 0, 4),
-                      child: Text(
-                        widget.entity['DEAL_CREATOR_ID']!=null?widget.entity['DEAL_CREATOR_ID']:"",
-                        overflow: TextOverflow.ellipsis,
-                        softWrap: false,
-                        maxLines: 1,
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(0, 4, 0, 4),
-                      child: Text(
-                        widget.entity['DEAL_DESCRIPTION'] != null
-                            ? widget.entity['DEAL_DESCRIPTION']
-                            : '',
-                        overflow: TextOverflow.ellipsis,
-                        softWrap: false,
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(0, 4, 0, 4),
-                      child: Text(
-                        widget.entity['DEAL_CREATED_ON'] != null
-                            ? widget.entity['DEAL_CREATED_ON']
-                            : '',
-                        overflow: TextOverflow.ellipsis,
-                        softWrap: false,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-          if (widget.isEditable)
-            Row(
-              mainAxisAlignment: MainAxisAlignment.end,
+      subtitle:ListView.builder(
+        itemCount: map.length,
+        shrinkWrap: true,
+        itemBuilder: (BuildContext context, int index) {
+          final key = map.keys.elementAt(index);
+          final value = map[key];
+          String contextId = key.substring(0,key.indexOf('_'));
+          String itemId = key.contains("_")?key.substring(key.indexOf("_")+1):key;
+          List<String> parts = key.split('_');
+          print("parts$key${parts.length}");
+          print("conetxtsdbid${contextId}");
+          print("erfafxsgasjf${itemId}");
+          if(key.contains("_ID")&&parts.length<4){
+            return SizedBox();
+          }
+          else {
+            return Row(
               children: [
-                TextButton(
-                  onPressed: widget.onEdit,
-                  child: Text('Edit'),
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(0, 4, 12, 4),
+                    child: Column(
+                      crossAxisAlignment:CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          '${LangUtil.getString(contextId,itemId) } :',
+                          style: TextStyle(fontWeight: FontWeight.w700,color: Colors.red),
+                        ),
+                      ],
+                    ),
+                  ),
                 ),
-                TextButton(
-                  onPressed: widget.onDelete,
-                  child: Text('Delete'),
-                )
+                SizedBox(width: 50,),
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(0, 4, 0, 4),
+                    child: Column(
+                      crossAxisAlignment:CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          value!=null?value.toString():"",
+                          overflow: TextOverflow.ellipsis,
+                          softWrap: false,
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
               ],
-            )
-        ],
+            );
+          }
+        },
       ),
       trailing: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -363,116 +250,60 @@ class _ProjectListItemWidgetState
     );
       } else {
         return widget.type=='CONTACT'? ListTile(
-      subtitle: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(0, 4, 12, 4),
-                    child: Text(
-                      'First Name :',
-                      style: TextStyle(fontWeight: FontWeight.w700,color: Color(0xff4C99E0)),
-                      overflow: TextOverflow.ellipsis,
-                      softWrap: false,
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(0, 4, 12, 4),
-                    child: Text(
-                      'Last Name:',
-                      style: TextStyle(fontWeight: FontWeight.w700,color: Colors.blue),
-                      overflow: TextOverflow.ellipsis,
-                      softWrap: false,
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(0, 4, 12, 4),
-                    child: Text(
-                      'Account Id :',
-                      style: TextStyle(fontWeight: FontWeight.w700,color: Color(0xff4C99E0)),
-                      overflow: TextOverflow.ellipsis,
-                      softWrap: false,
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(0, 4, 12, 4),
-                    child: Text(
-                      'Telephone :',
-                      style: TextStyle(fontWeight: FontWeight.w700,color: Color(0xff4C99E0)),
-                      overflow: TextOverflow.ellipsis,
-                      softWrap: false,
-                    ),
-                  ),
-                ],
-              ),
-              SizedBox(width: 50,),
-              Expanded(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(0, 4, 0, 4),
-                      child: Text(
-                        widget.entity['FIRSTNAME']!=null?widget.entity['FIRSTNAME']:"",
-                        overflow: TextOverflow.ellipsis,
-                        softWrap: false,
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(0, 4, 0, 4),
-                      child: Text(
-                        widget.entity['SURNAME']!=null?widget.entity['SURNAME']:"",
-                        overflow: TextOverflow.ellipsis,
-                        softWrap: false,
-                        maxLines: 1,
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(0, 4, 0, 4),
-                      child: Text(
-                        widget.entity['ACCT_ID'] != null
-                            ? widget.entity['ACCT_ID']
-                            : '',
-                        overflow: TextOverflow.ellipsis,
-                        softWrap: false,
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(0, 4, 0, 4),
-                      child: Text(
-                        widget.entity['TEL_DIRECT'] != null
-                            ? widget.entity['TEL_DIRECT']
-                            : '',
-                        overflow: TextOverflow.ellipsis,
-                        softWrap: false,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-          if (widget.isEditable)
-            Row(
-              mainAxisAlignment: MainAxisAlignment.end,
+      subtitle:ListView.builder(
+        itemCount: map.length,
+        shrinkWrap: true,
+        itemBuilder: (BuildContext context, int index) {
+          final key = map.keys.elementAt(index);
+          final value = map[key];
+          List<String> parts = key.split('_');
+          print("sadrtfYDJHSCF${key}${parts.length}");
+          String contextId = parts.length==2?"CONTACT":key.contains("_")?key.substring(0,key.indexOf('_')):"CONTACT";
+          String itemId = parts.length==2?key:key.contains("_")?key.substring(key.indexOf("_")+1):key;
+          print("conetxtchvs$contextId");
+          print("itemID$itemId");
+          if(key.contains("_ID")&&parts.length<3){
+            return SizedBox();
+          }
+          else {
+            return Row(
               children: [
-                TextButton(
-                  onPressed: widget.onEdit,
-                  child: Text('Edit'),
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(0, 4, 12, 4),
+                    child: Column(
+                      crossAxisAlignment:CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          '${LangUtil.getString(contextId,itemId) } :',
+                          style: TextStyle(fontWeight: FontWeight.w700,color: Colors.red),
+                          overflow: TextOverflow.ellipsis,
+                          softWrap: false,
+                        ),
+                      ],
+                    ),
+                  ),
                 ),
-                TextButton(
-                  onPressed: widget.onDelete,
-                  child: Text('Delete'),
-                )
+                SizedBox(width: 50,),
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(0, 4, 0, 4),
+                    child: Column(
+                      crossAxisAlignment:CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          value!=null?value.toString():"",
+                          overflow: TextOverflow.ellipsis,
+                          softWrap: false,
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
               ],
-            )
-        ],
+            );
+          }
+        },
       ),
       trailing: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -516,116 +347,60 @@ class _ProjectListItemWidgetState
         ).then((value) => widget.refresh());
       },
     ): widget.type == 'PROJECT'? ListTile(
-      subtitle: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(0, 4, 12, 4),
-                    child: Text(
-                      '${LangUtil.getString('PROJECT', 'PROJECT_ID')} :',
-                      style: TextStyle(fontWeight: FontWeight.w700,color: Colors.red),
-                      overflow: TextOverflow.ellipsis,
-                      softWrap: false,
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(0, 4, 12, 4),
-                    child: Text(
-                      '${LangUtil.getString('PROJECT', 'PROJECT_TITLE')} :',
-                      style: TextStyle(fontWeight: FontWeight.w700,color: Colors.red),
-                      overflow: TextOverflow.ellipsis,
-                      softWrap: false,
-                    ),
-                  ),
-                  Padding(
-                          padding: const EdgeInsets.fromLTRB(0, 4, 12, 4),
-                          child: Text(
-                            '${LangUtil.getString('PROJECT', 'OWNER_ID')} :',
-                            style: TextStyle(fontWeight: FontWeight.w700,color: Colors.red),
-                            overflow: TextOverflow.ellipsis,
-                            softWrap: false,
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.fromLTRB(0, 4, 12, 4),
-                          child: Text(
-                            '${LangUtil.getString('PROJECT', 'SELLINGSTATUS_ID')} :',
-                            style: TextStyle(fontWeight: FontWeight.w700,color: Colors.red),
-                            overflow: TextOverflow.ellipsis,
-                            softWrap: false,
-                          ),
-                        ),
-                ],
-              ),
-              SizedBox(width: 50,),
-              Expanded(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(0, 4, 0, 4),
-                      child: Text(
-                        widget.entity['PROJECT_ID'],
-                        overflow: TextOverflow.ellipsis,
-                        softWrap: false,
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(0, 4, 0, 4),
-                      child: Text(
-                        widget.entity['PROJECT_PROJECT_TITLE']!=null?widget.entity['PROJECT_PROJECT_TITLE']:"",
-                        overflow: TextOverflow.ellipsis,
-                        softWrap: false,
-                        maxLines: 1,
-                      ),
-                    ),
-                    Padding(
-                              padding: const EdgeInsets.fromLTRB(0, 4, 0, 4),
-                              child: Text(
-                                widget.entity['PROJECT_OWNER_ID'] != null
-                                    ? widget.entity['PROJECT_OWNER_ID']
-                                    : '',
-                                overflow: TextOverflow.ellipsis,
-                                softWrap: false,
-                              ),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.fromLTRB(0, 4, 0, 4),
-                              child: Text(
-                                widget.entity['PROJECT_SELLINGSTATUS_ID'] != null
-                                    ? widget.entity['PROJECT_SELLINGSTATUS_ID']
-                                    : '',
-                                overflow: TextOverflow.ellipsis,
-                                softWrap: false,
-                              ),
-                            ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-          if (widget.isEditable)
-            Row(
-              mainAxisAlignment: MainAxisAlignment.end,
+      subtitle:ListView.builder(
+        itemCount: map.length,
+        shrinkWrap: true,
+        itemBuilder: (BuildContext context, int index) {
+          final key = map.keys.elementAt(index);
+          final value = map[key];
+          String contextId = key.substring(0,key.indexOf('_'));
+          String itemId = key.contains("_")?key.substring(key.indexOf("_")+1):key;
+          List<String> parts = key.split('_');
+          print("parts$key${parts.length}");
+          print("conetxtsdbid${contextId}");
+          print("erfafxsgasjf${itemId}");
+          if(key.contains("_ID")&&parts.length<3){
+            return SizedBox();
+          }
+          else {
+            return Row(
               children: [
-                TextButton(
-                  onPressed: widget.onEdit,
-                  child: Text('Edit'),
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(0, 4, 12, 4),
+                    child: Column(
+                      crossAxisAlignment:CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          '${LangUtil.getString(contextId,itemId) } :',
+                          style: TextStyle(fontWeight: FontWeight.w700,color: Colors.red),
+                          overflow: TextOverflow.ellipsis,
+                          softWrap: false,
+                        ),
+                      ],
+                    ),
+                  ),
                 ),
-                TextButton(
-                  onPressed: widget.onDelete,
-                  child: Text('Delete'),
-                )
+                SizedBox(width: 50,),
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(0, 4, 0, 4),
+                    child: Column(
+                      crossAxisAlignment:CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          value!=null?value.toString():"",
+                          overflow: TextOverflow.ellipsis,
+                          softWrap: false,
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
               ],
-            )
-        ],
+            );
+          }
+        },
       ),
       trailing: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -670,116 +445,60 @@ class _ProjectListItemWidgetState
         ).then((value) => widget.refresh());
       },
     ):widget.type=='ACTION'?ListTile(
-      subtitle: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(0, 4, 12, 4),
-                    child: Text(
-                      'Cont Id :',
-                      style: TextStyle(fontWeight: FontWeight.w700,color: Color(0xffae1a3e)),
-                      overflow: TextOverflow.ellipsis,
-                      softWrap: false,
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(0, 4, 12, 4),
-                    child: Text(
-                      'Action Type :',
-                      style: TextStyle(fontWeight: FontWeight.w700,color: Color(0xffae1a3e)),
-                      overflow: TextOverflow.ellipsis,
-                      softWrap: false,
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(0, 4, 12, 4),
-                    child: Text(
-                      'Description :',
-                      style: TextStyle(fontWeight: FontWeight.w700,color: Color(0xffae1a3e)),
-                      overflow: TextOverflow.ellipsis,
-                      softWrap: false,
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(0, 4, 12, 4),
-                    child: Text(
-                      'Account Date :',
-                      style: TextStyle(fontWeight: FontWeight.w700,color: Color(0xffae1a3e)),
-                      overflow: TextOverflow.ellipsis,
-                      softWrap: false,
-                    ),
-                  ),
-                ],
-              ),
-              SizedBox(width: 50,),
-              Expanded(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(0, 4, 0, 4),
-                      child: Text(
-                        widget.entity['CONT_ID']!=null?widget.entity['CONT_ID']:"",
-                        overflow: TextOverflow.ellipsis,
-                        softWrap: false,
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(0, 4, 0, 4),
-                      child: Text(
-                        widget.entity['ACTION_TYPE_ID']!=null?widget.entity['ACTION_TYPE_ID']:"",
-                        overflow: TextOverflow.ellipsis,
-                        softWrap: false,
-                        maxLines: 1,
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(0, 4, 0, 4),
-                      child: Text(
-                        widget.entity['DESCRIPTION'] != null
-                            ? widget.entity['DESCRIPTION']
-                            : '',
-                        overflow: TextOverflow.ellipsis,
-                        softWrap: false,
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(0, 4, 0, 4),
-                      child: Text(
-                        widget.entity['ACTION_DATE'] != null
-                            ? widget.entity['ACTION_DATE']
-                            : '',
-                        overflow: TextOverflow.ellipsis,
-                        softWrap: false,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-          if (widget.isEditable)
-            Row(
-              mainAxisAlignment: MainAxisAlignment.end,
+      subtitle: ListView.builder(
+        itemCount: map.length,
+        shrinkWrap: true,
+        itemBuilder: (BuildContext context, int index) {
+          final key = map.keys.elementAt(index);
+          final value = map[key];
+          List<String> parts = key.split('_');
+          print("sadrtfYDJHSCF${key}${parts.length-1}");
+          String contextId = key.contains("__")?"ACTION":key.contains("_")?key.substring(0,key.indexOf('_')):"ACTION";
+          String itemId = key.contains("_")?key.substring(key.indexOf("_")+1):key;
+          print("conetxtchvs$contextId");
+          print("itemID$itemId");
+          if((key.contains("_ID")&&parts.length<3)||key.contains("__")){
+            return SizedBox();
+          }
+          else {
+            return Row(
               children: [
-                TextButton(
-                  onPressed: widget.onEdit,
-                  child: Text('Edit'),
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(0, 4, 12, 4),
+                    child: Column(
+                      crossAxisAlignment:CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          '${LangUtil.getString(contextId,itemId) } :',
+                          style: TextStyle(fontWeight: FontWeight.w700,color: Colors.red),
+                          overflow: TextOverflow.ellipsis,
+                          softWrap: false,
+                        ),
+                      ],
+                    ),
+                  ),
                 ),
-                TextButton(
-                  onPressed: widget.onDelete,
-                  child: Text('Delete'),
-                )
+                SizedBox(width: 50,),
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(0, 4, 0, 4),
+                    child: Column(
+                      crossAxisAlignment:CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          value!=null?value.toString():"",
+                          overflow: TextOverflow.ellipsis,
+                          softWrap: false,
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
               ],
-            )
-        ],
+            );
+          }
+        },
       ),
       trailing: Column(
         mainAxisAlignment: MainAxisAlignment.center,

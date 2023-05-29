@@ -59,8 +59,8 @@ class _LoginScreenState extends State<LoginScreen> {
    else{
      apiController.text = firstUrl;
    }
-   
-    // if(data == 'https://dev.psacrm.com/API_423'){apiController..text =StorageUtil.getString('url');}else{apiController..text = 'https://dev.psacrm.com/API_423';} 
+
+    // if(data == 'https://dev.psacrm.com/API_423'){apiController..text =StorageUtil.getString('url');}else{apiController..text = 'https://dev.psacrm.com/API_423';}
     //  ..text = 'https://dev.psacrm.com/API_423';
     //  ..text = api.isEmpty ? 'https://salesachievermobile.com/' : api;
     loginNameController..text = StorageUtil.getString('loginName');
@@ -70,32 +70,6 @@ class _LoginScreenState extends State<LoginScreen> {
     if (savedLocaleId != '') localeId = savedLocaleId;
     super.initState();
   }
-    // @override
-  // void initState() {
-  //   final String api = StorageUtil.getString('api');
-  //   apiController
-  //    ..text = 'https://dev.psacrm.com/API_423';
-  //   //  ..text = api.isEmpty ? 'https://salesachievermobile.com/' : api;
-  //   bool firstTime = StorageUtil.getBool('first');
-  //   if(firstTime == false){
-  //   loginNameController..text = StorageUtil.getString('loginName');
-  //   companyController..text = StorageUtil.getString('company');
-  //   var savedLocaleId = StorageUtil.getString('localeId');
-  //   if (savedLocaleId != '') localeId = savedLocaleId;
-      
-  //   // var savedLocaleId = StorageUtil.getString('localeId');
-  //   // if (savedLocaleId != '') localeId = savedLocaleId;
-
-  //   }else{
-  //   loginNameController.clear();
-  //   companyController.clear();
-      
-
-
-  //   }
-   
-  //   super.initState(); 
-  // }
 
   void _login(
     BuildContext context,

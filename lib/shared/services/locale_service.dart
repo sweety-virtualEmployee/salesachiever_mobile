@@ -7,6 +7,7 @@ class LocaleService {
     print("locale id");
     print(localeId);
     final List<dynamic> response = await LocaleApi().localization(localeId);
+    print("respoivgfdsghvnse${response}");
 
     List<Locale> locales =
         response.map((locale) => Locale.fromJson(locale)).toList();
