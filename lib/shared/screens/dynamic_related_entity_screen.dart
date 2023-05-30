@@ -59,7 +59,6 @@ class _DynamicRelatedEntityScreenState
   void initState() {
     _project = this.widget.project;
     list = widget.list;
-    print("dynamic listValue${list}");
     print("dynamic type${widget.type}");
     super.initState();
   }
@@ -239,12 +238,22 @@ class _DynamicRelatedEntityScreenState
                                                 ? widget.entity['DESCRIPTION']
                                                 : '',
                                           },
-                                          // project: widget.entity,
                                          readonly: false,
                                         ),
                                       ),
                                     );
                                   } else {
+                                    if(widget.entity['ACCT_ID']!=null) {
+                                      var project = await DynamicProjectService()
+                                          .getEntityById(
+                                          "COMPANY", widget.entity['ACCT_ID']);
+                                      print("project data value get${project
+                                          .data}");
+                                      print(project.data["ACCTNAME"]);
+                                      setState(() {
+                                        widget.entity["ACCTNAME"] =project.data["ACCTNAME"];
+                                      });
+                                    }
                                     Navigator.push(
                                       context,
                                       platformPageRoute(
@@ -256,7 +265,11 @@ class _DynamicRelatedEntityScreenState
                                             'ID': widget.entity['DEAL_ID'],
                                             'TEXT': widget.entity['DEAL_NAME'],
                                           },
-                                          account: widget.entity['ACCT_ID'] !=
+                                              project: {
+                                                'ID': widget.entity['PROJECT_ID'],
+                                                'TEXT': widget.entity['PROJECT_TITLE'],
+                                              },
+                                            account: widget.entity['ACCT_ID'] !=
                                                   null
                                               ? {
                                                   'ID':
@@ -401,7 +414,9 @@ class _DynamicRelatedEntityScreenState
                               },
                             ),
                           );
-                        } else {
+                        } else if (widget.type == "opp history") {
+
+                        }else {
                           dynamic project = await ProjectService()
                               .getEntity(item['PROJECT_ID']);
                           print("projectbalue$project");
@@ -429,7 +444,7 @@ class _DynamicRelatedEntityScreenState
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     for (final entry in item.entries)
-                                      entry.key.contains("_ID")||entry.key.contains("__")?SizedBox():Padding(
+                                      entry.key.contains("_ID")||entry.key.contains("__")||entry.key.contains("_DORMANT")||entry.key.contains("DORMANT")?SizedBox():Padding(
                                         padding: const EdgeInsets.only(
                                             left: 20.0, right: 20, top: 10),
                                         child: Row(
@@ -440,7 +455,7 @@ class _DynamicRelatedEntityScreenState
                                                       const EdgeInsets.fromLTRB(
                                                           0, 4, 0, 4),
                                                   child: Text(
-                                                    '${LangUtil.getLocaleString('${entry.key}')} :',
+                                                    '${LangUtil.getString('${entry.key.contains("_")?entry.key.substring(0,entry.key.indexOf('_')):""}','${entry.key.split('_').length<3?entry.key:entry.key.contains("_")?entry.key.substring(entry.key.indexOf("_")+1):entry.key}')} :',
                                                     style: TextStyle(
                                                         fontWeight:
                                                             FontWeight.w700,
@@ -452,7 +467,7 @@ class _DynamicRelatedEntityScreenState
                                                                 ? Color(
                                                                     0xff4C99E0)
                                                                 : widget.type ==
-                                                                        "opportunities"
+                                                                        "opportunities"||widget.type =="opp history"
                                                                     ? Color(
                                                                         0xffA4C400)
                                                                     : widget.type ==
@@ -476,6 +491,9 @@ class _DynamicRelatedEntityScreenState
                                                         0, 4, 0, 4),
                                                 child: Text(
                                                   entry.value!=null?'${entry.value.toString()}':"",
+                                                  style: TextStyle(
+                                                    color: widget.type=="opp history"?Colors.grey:Colors.black
+                                                  ),
                                                   overflow:
                                                       TextOverflow.ellipsis,
                                                   softWrap: false,
@@ -491,7 +509,7 @@ class _DynamicRelatedEntityScreenState
                               Column(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  IconButton(
+                                  widget.type == "opp history"?SizedBox(): IconButton(
                                       onPressed: () async {
                                         if (widget.type == "companies") {
                                           dynamic company =
@@ -573,7 +591,9 @@ class _DynamicRelatedEntityScreenState
                                               },
                                             ),
                                           );
-                                        } else {
+                                        } else if (widget.type == "opp history") {
+
+                                        }else {
                                           dynamic project =
                                               await ProjectService().getEntity(
                                                   item['PROJECT_ID']);
@@ -600,7 +620,7 @@ class _DynamicRelatedEntityScreenState
                           if ((widget.type == 'company' ||
                               widget.type == 'companies' ||
                               widget.type ==
-                                  'companies?pageSize=1000&pageNumber=1'))
+                                  'companies?pageSize=1000&pageNumber=1')&&list[index]['LINK_ID']!=null)
                             Row(
                               mainAxisAlignment: MainAxisAlignment.end,
                               children: [
@@ -731,6 +751,7 @@ class _DynamicRelatedEntityScreenState
           PlatformDialogAction(
             child: PlatformText('Delete'),
             onPressed: () async {
+              print('linkgdehrf id${list[index]['LINK_ID']}');
               await DynamicProjectService()
                   .deleteProjectAccountLink(list[index]['LINK_ID']);
 

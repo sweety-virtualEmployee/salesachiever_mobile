@@ -56,7 +56,8 @@ class _ProjectTabsState extends State<ProjectTabs> {
   @override
   void initState() {
     _entity = this.widget.project;
-    print("check tge id");
+    print("account name sche");
+    print(_entity["ACCTNAME"]);
     print(widget.moduleId);
     print(widget.tabId);
     if(widget.tabType == "P"){
@@ -183,6 +184,8 @@ class _ProjectTabsState extends State<ProjectTabs> {
                                       index]['TAB_TYPE'] ==
                                           "L"){
                                         String path="";
+                                        String tableName="";
+                                        String id="";
                                         if(widget.entityType=="COMPANY"){
                                           path = jsonDecode(
                                               jsonEncode(snapshot
@@ -190,37 +193,69 @@ class _ProjectTabsState extends State<ProjectTabs> {
                                           ['TAB_LIST'].replaceAll("@RECORDID",
                                               _entity?['ACCT_ID']);
                                         } else if(widget.entityType=="CONTACT"){
-                                          path = jsonDecode(
+                                          print("i am in contact");
+                                          if(jsonDecode(
                                               jsonEncode(snapshot
                                                   .data))[index]
-                                          ['TAB_LIST'].replaceAll("@RECORDID",
-                                              _entity?['CONT_ID']);
+                                          ['TAB_LIST'].contains("@RECORDID")) {
+                                            path = jsonDecode(
+                                                jsonEncode(snapshot
+                                                    .data))[index]
+                                            ['TAB_LIST'].replaceAll("@RECORDID",
+                                                _entity?['CONT_ID']);
+                                          }
+                                          else{
+                                            print("ConteID${ _entity?['CONT_ID']}");
+                                            path = jsonDecode(
+                                                jsonEncode(snapshot
+                                                    .data))[index]
+                                            ['TAB_LIST'];
+                                            id=_entity?['CONT_ID'];
+                                            tableName = "CONTACT";
+                                          }
                                         } else if(widget.entityType=="ACTION"){
                                           path = jsonDecode(
                                               jsonEncode(snapshot
                                                   .data))[index]
                                           ['TAB_LIST'].replaceAll("@RECORDID",
                                               _entity?['ACTION_ID']);
-                                        }else if(widget.entityType=="OPPORTUNITY"){
-                                          print("opportunity module ${_entity?['DEAL_ID']}");
+                                        }else if(widget.entityType=="OPPORTUNITY") {
+                                          print(
+                                              "opportunity module ${_entity?['DEAL_ID']}");
+                                          if (jsonDecode(
+                                              jsonEncode(snapshot
+                                                  .data))[index]
+                                          ['TAB_LIST'].contains("@RECORDID")) {
                                           path = jsonDecode(
                                               jsonEncode(snapshot
                                                   .data))[index]
                                           ['TAB_LIST'].replaceAll("@RECORDID",
                                               _entity?['DEAL_ID']);
-                                        }else if(widget.entityType=="PROJECT"){
+                                        }
+                                        else{
                                           path = jsonDecode(
                                               jsonEncode(snapshot
                                                   .data))[index]
-                                          ['TAB_LIST'].replaceAll("@RECORDID",
-                                              _entity?['PROJECT_ID']);
+                                          ['TAB_LIST'];
+                                          id = _entity?['DEAL_ID'];
+                                          tableName = "DEAL";
+                                          print("check here id$id");
+                                        }
+                                        }else if(widget.entityType=="PROJECT"){
+                                            path = jsonDecode(
+                                                jsonEncode(snapshot
+                                                    .data))[index]
+                                            ['TAB_LIST'].replaceAll("@RECORDID",
+                                                _entity?['PROJECT_ID']);
                                         } else{
                                           path = jsonDecode(
                                               jsonEncode(snapshot
                                                   .data))[index]
                                           ['TAB_LIST'];
+                                          id=   _entity?['CONT_ID'];
+                                          tableName = "CONTACT";
                                         }
-                                        var result = await service.getTabListEntityApi(path.replaceAll("&amp;", "&"));
+                                        var result = await service.getTabListEntityApi(path.replaceAll("&amp;", "&"),tableName,id);
                                         Navigator.push(
                                           context,
                                           platformPageRoute(

@@ -64,15 +64,30 @@ class DynamicProjectApi {
   }
 
   Future<dynamic> getTabListEntityApi(
-      String path) async {
+      String path,String tableName,String id) async {
     print("path$path");
+    print("tableName${tableName}");
+    print("tableName${id}");
     List<dynamic> headers = [];
-    var filter = [{
-      'TableName': 'VW_CONTACT_DEAL_HISTORY',
-     'FieldName': 'CONT_ID',
-     'Comparison': '5',
-     'ItemValue': '000000404274'
-    }] ;
+    var filter;
+    if(tableName =="DEAL"){
+      filter = [{
+        'TableName': 'DEAL',
+        'FieldName': 'DEAL_ID',
+        'Comparison': '5',
+        'ItemValue': id
+      }];
+    }
+    else if(tableName == "CONTACT"){
+      filter =[
+        {
+          'TableName': 'VW_CONTACT_DEAL_HISTORY',
+          'FieldName': 'CONT_ID',
+          'Comparison': '5',
+          'ItemValue': id
+        }
+      ];
+    }
     headers.add({'key': 'filterset', 'headers': jsonEncode(filter)});
     Response response = await  Api().get('/${path}?pageSize=10&pageNumber=1',headers);
     print(response.data);

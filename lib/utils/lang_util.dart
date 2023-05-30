@@ -6,6 +6,8 @@ class LangUtil {
   static String getString(String contextId, String itemId, {Box<Locale>? box}) {
     if (box == null) box = Hive.box<Locale>('locales');
     print("localesvalue  ${box.values}");
+    print("context id$contextId");
+    print(itemId);
     List<Locale> result = box.values
         .where((locale) =>
     locale.contextId == contextId && locale.itemId == itemId)

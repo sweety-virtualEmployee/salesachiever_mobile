@@ -7,10 +7,11 @@ import 'package:salesachiever_mobile/modules/3_company/screens/company_list_scre
 import 'package:salesachiever_mobile/modules/3_company/services/company_service.dart';
 import 'package:salesachiever_mobile/modules/5_project/screens/project_list_screen.dart';
 import 'package:salesachiever_mobile/modules/5_project/services/project_service.dart';
+import 'package:salesachiever_mobile/modules/dynamic_module/5_dynamic_project/services/dynamic_project_service.dart';
 import 'package:salesachiever_mobile/shared/screens/related_entity_screen.dart';
 import 'package:salesachiever_mobile/shared/widgets/buttons/psa_edit_button.dart';
 import 'package:salesachiever_mobile/shared/widgets/forms/psa_list_picker.dart';
-import 'package:salesachiever_mobile/shared/widgets/forms/psa_related_entity_row.dart';  
+import 'package:salesachiever_mobile/shared/widgets/forms/psa_related_entity_row.dart';
 import 'package:salesachiever_mobile/shared/widgets/layout/psa_scaffold.dart';
 import 'package:salesachiever_mobile/utils/lang_util.dart';
 
@@ -60,6 +61,8 @@ class _AddRelatedEntityScreenState extends State<AddRelatedEntityScreen> {
     super.initState();
   }
 
+
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -78,7 +81,7 @@ class _AddRelatedEntityScreenState extends State<AddRelatedEntityScreen> {
                       "ACLOOKUP_ID": account != null ? account['ID'] : null,
                       "PROJECT_ID": project != null ? project['ID'] : null,
                     };
-                    
+
 
                     if (contact != null) projectLink['CONT_ID'] = contact['ID'];
                     if (role != null) projectLink['ROLE_TYPE_ID'] = role['ID'];
@@ -89,7 +92,7 @@ class _AddRelatedEntityScreenState extends State<AddRelatedEntityScreen> {
                      if (deal != null) deal['DEAL_ID'] = deal['ID'];
                      if (account != null && deal != null ) deal['ACCT_ID'] = account['ID'];
                     // if (account != null) deal['ACCT_ID'] = account['ID'];
-                    
+
                     // if (project != null) deal['PROJECT_ID'] = project['ID'];
                     // if (role != null) deal['ROLE_ID'] = role['ID'];
 
@@ -126,7 +129,7 @@ if(projectLink['ROLE_TYPE_ID'] != null){
         body: Container(
           child: CupertinoFormSection(
             children: [
-              if (type == null)
+              if (type == null||type=="opp")
                 PsaRelatedEntityRow(
                   isVisible: false,
                   title: LangUtil.getString('ProjectAccountLinkEditWindow',
@@ -242,7 +245,7 @@ if(projectLink['ROLE_TYPE_ID'] != null){
 
                     if (result != null && result != '') {
                       setState(() {
-                        deal = result; 
+                        deal = result;
                       });
                     }
                   },
