@@ -120,22 +120,22 @@ class DynamicProjectApi {
   //   return response.data;
   // }
 
-  Future<dynamic> getById(String type,String projectId) async {
+  Future<dynamic> getById(String type,String id) async {
     if(type=="COMPANY"){
-      final response = await Api().get('/company/$projectId');
+      final response = await Api().get('/company/$id');
       return response;
     } else if(type=="CONTACT"){
-      final response = await Api().get('/contact/$projectId');
+      final response = await Api().get('/contact/$id');
       return response;
     }else if(type=="ACTION"){
-      final response = await Api().get('/action/$projectId');
+      final response = await Api().get('/action/$id');
       return response;
     }else if(type=="OPPORTUNITY"){
-      final response = await Api().get('/opportunity/$projectId');
+      final response = await Api().get('/opportunity/$id');
       return response;
     }
     else{
-      final response = await Api().get('/projects/$projectId');
+      final response = await Api().get('/projects/$id');
       return response;
     }
 

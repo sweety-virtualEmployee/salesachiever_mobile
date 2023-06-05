@@ -82,15 +82,16 @@ class _AddRelatedEntityScreenState extends State<AddRelatedEntityScreen> {
                       "PROJECT_ID": project != null ? project['ID'] : null,
                     };
 
-
                     if (contact != null) projectLink['CONT_ID'] = contact['ID'];
                     if (role != null) projectLink['ROLE_TYPE_ID'] = role['ID'];
                     if (deal != null) projectLink['DEAL_ID'] = deal['ID'];
-                   // if (contact != null) deal['CONT_ID'] = contact['ID'];
-                   if (contact != null && deal != null ) deal['CONT_ID'] = contact['ID'];
+                    // if (contact != null) deal['CONT_ID'] = contact['ID'];
+                    if (contact != null && deal != null)
+                      deal['CONT_ID'] = contact['ID'];
                     if (contact != null) deal['CONTACT_NAME'] = contact['TEXT'];
-                     if (deal != null) deal['DEAL_ID'] = deal['ID'];
-                     if (account != null && deal != null ) deal['ACCT_ID'] = account['ID'];
+                    if (deal != null) deal['DEAL_ID'] = deal['ID'];
+                    if (account != null && deal != null)
+                      deal['ACCT_ID'] = account['ID'];
                     // if (account != null) deal['ACCT_ID'] = account['ID'];
 
                     // if (project != null) deal['PROJECT_ID'] = project['ID'];
@@ -104,15 +105,14 @@ class _AddRelatedEntityScreenState extends State<AddRelatedEntityScreen> {
                         await OpportunityService().addCompanyOppLink(deal);
                       }
                     }
-if(projectLink['ROLE_TYPE_ID'] != null){
-
-
-                    if (widget.linkId != null)
-                      await ProjectService().updateProjectAccountLink(
-                          widget.linkId!, projectLink);
-                    else
-                      await ProjectService()
-                          .createProjectAccountLink(projectLink);}
+                    if (projectLink['ROLE_TYPE_ID'] != null) {
+                      if (widget.linkId != null)
+                        await ProjectService().updateProjectAccountLink(
+                            widget.linkId!, projectLink);
+                      else
+                        await ProjectService()
+                            .createProjectAccountLink(projectLink);
+                    }
 
                     Navigator.pop(context);
 
@@ -129,7 +129,7 @@ if(projectLink['ROLE_TYPE_ID'] != null){
         body: Container(
           child: CupertinoFormSection(
             children: [
-              if (type == null||type=="opp")
+              if (type == null || type == "opp")
                 PsaRelatedEntityRow(
                   isVisible: false,
                   title: LangUtil.getString('ProjectAccountLinkEditWindow',
@@ -250,7 +250,7 @@ if(projectLink['ROLE_TYPE_ID'] != null){
                     }
                   },
                 ),
-              if (type == null||type=="opp")
+              if (type == null || type == "opp")
                 PsaRelatedEntityRow(
                   isVisible: false,
                   title: LangUtil.getString('ProjectAccountLinkEditWindow',
@@ -260,7 +260,7 @@ if(projectLink['ROLE_TYPE_ID'] != null){
                     'ID': role != null ? role['ID'] : '',
                     'TEXT': role != null
                         ? LangUtil.getListValue(
-                        'ROLE_TYPE.ROLE_TYPE_ID', role['ID'])
+                            'ROLE_TYPE.ROLE_TYPE_ID', role['ID'])
                         : '',
                   },
                   onTap: () async {

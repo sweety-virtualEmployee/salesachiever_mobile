@@ -79,7 +79,8 @@ class _ProjectListItemWidgetState
                       children: [
                         Text(
                           '${LangUtil.getString(contextId,itemId) } :',
-                          style: TextStyle(fontWeight: FontWeight.w700,color: Colors.red),
+                          style: TextStyle(fontWeight: FontWeight.w700,
+                              color: Color(0xff3cab4f)),
                           overflow: TextOverflow.ellipsis,
                           softWrap: false,
                         ),
@@ -179,7 +180,7 @@ class _ProjectListItemWidgetState
                       children: [
                         Text(
                           '${LangUtil.getString(contextId,itemId) } :',
-                          style: TextStyle(fontWeight: FontWeight.w700,color: Colors.red),
+                          style: TextStyle(fontWeight: FontWeight.w700,color: Color(0xffA4C400)),
                         ),
                       ],
                     ),
@@ -257,11 +258,8 @@ class _ProjectListItemWidgetState
           final key = map.keys.elementAt(index);
           final value = map[key];
           List<String> parts = key.split('_');
-          print("sadrtfYDJHSCF${key}${parts.length}");
-          String contextId = parts.length==2?"CONTACT":key.contains("_")?key.substring(0,key.indexOf('_')):"CONTACT";
-          String itemId = parts.length==2?key:key.contains("_")?key.substring(key.indexOf("_")+1):key;
-          print("conetxtchvs$contextId");
-          print("itemID$itemId");
+          String contextId = key.contains("_")?key.substring(0,key.indexOf('_')):"CONTACT";
+          String itemId = key.contains("_")?key.substring(key.indexOf("_")+1):key;
           if(key.contains("_ID")&&parts.length<3){
             return SizedBox();
           }
@@ -276,7 +274,7 @@ class _ProjectListItemWidgetState
                       children: [
                         Text(
                           '${LangUtil.getString(contextId,itemId) } :',
-                          style: TextStyle(fontWeight: FontWeight.w700,color: Colors.red),
+                          style: TextStyle(fontWeight: FontWeight.w700,color: Color(0xff4C99E0)),
                           overflow: TextOverflow.ellipsis,
                           softWrap: false,
                         ),
@@ -373,7 +371,7 @@ class _ProjectListItemWidgetState
                       children: [
                         Text(
                           '${LangUtil.getString(contextId,itemId) } :',
-                          style: TextStyle(fontWeight: FontWeight.w700,color: Colors.red),
+                          style: TextStyle(fontWeight: FontWeight.w700,color: Color(0xffE67E6B)),
                           overflow: TextOverflow.ellipsis,
                           softWrap: false,
                         ),
@@ -457,7 +455,7 @@ class _ProjectListItemWidgetState
           String itemId = key.contains("_")?key.substring(key.indexOf("_")+1):key;
           print("conetxtchvs$contextId");
           print("itemID$itemId");
-          if((key.contains("_ID")&&parts.length<3)||key.contains("__")){
+          if((key.contains("_ID")&&parts.length<3)||key.contains("__")||key.contains("ACTION_SAUSER")){
             return SizedBox();
           }
           else {
@@ -471,7 +469,7 @@ class _ProjectListItemWidgetState
                       children: [
                         Text(
                           '${LangUtil.getString(contextId,itemId) } :',
-                          style: TextStyle(fontWeight: FontWeight.w700,color: Colors.red),
+                          style: TextStyle(fontWeight: FontWeight.w700,color: Color(0xffae1a3e)),
                           overflow: TextOverflow.ellipsis,
                           softWrap: false,
                         ),

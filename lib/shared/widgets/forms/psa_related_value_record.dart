@@ -250,7 +250,118 @@ class _PsaRelatedValueRowState extends State<PsaRelatedValueRow> {
                       child: Padding(
                         padding: const EdgeInsets.only(left: 12.0, right: 12.0),
                         child: CupertinoTextField(
-                          onTap: () => widget.onTap(),
+                          onTap: () async {
+                            if (widget.type == "ACCT_ID") {
+                              if (companyData != null) {
+                                await Navigator.push(
+                                  context,
+                                  platformPageRoute(
+                                    context: context,
+                                    builder: (BuildContext context) =>
+                                        CompanyEditScreen(
+                                            company: companyData, readonly: false),
+                                  ),
+                                );
+                              }
+                              else if (widget.entity['DEAL_ID'] != null) {
+                                context.loaderOverlay.show();
+
+                                var result = await CompanyService().getRelatedEntity(
+                                    'Opportunity',
+                                    widget.entity['DEAL_ID'],
+                                    'companies?pageSize=1000&pageNumber=1');
+
+                                context.loaderOverlay.hide();
+
+                                var company = await Navigator.push(
+                                  context,
+                                  platformPageRoute(
+                                    context: context,
+                                    builder: (BuildContext context) => RelatedEntityScreen(
+                                      entity:  widget.entity,
+                                      type: 'companies',
+                                      title: '',
+                                      list: result,
+                                      isSelectable: true,
+                                      isEditable: false,
+                                    ),
+                                  ),
+                                );
+
+                                if (company != null) {
+                                  widget.onChange([
+                                    {'KEY': 'ACCT_ID', 'VALUE': company['ID']},
+                                    {'KEY': 'ACCTNAME', 'VALUE': company['TEXT']},
+                                  ]);
+                                  setState(() {
+                                    selectedCompany = company['TEXT'];
+                                  });
+                                }
+                              } else {
+                                if (widget.entity['ACTION_ID'] != null) return;
+
+                                if (widget.entity['PROJECT_ID'] == null) {
+                                  var company = await Navigator.push(
+                                    context,
+                                    platformPageRoute(
+                                      context: context,
+                                      builder: (BuildContext context) => CompanyListScreen(
+                                        listName: 'acsrch_api',
+                                        isSelectable: true,
+                                      ),
+                                    ),
+                                  );
+
+                                  if (company != null) {
+                                    widget.onChange([
+                                      {'KEY': 'ACCT_ID', 'VALUE': company['ID']},
+                                      {'KEY': 'ACCTNAME', 'VALUE': company['TEXT']},
+                                      {'KEY': 'CONT_ID', 'VALUE': null},
+                                      {'KEY': 'CONTACT_NAME', 'VALUE': null},
+                                      {'KEY': 'PROJECT_ID', 'VALUE': null},
+                                      {'KEY': 'PROJECT_TITLE', 'VALUE': null},
+                                      // {'KEY': 'DESCRIPTION', 'VALUE': company['TEXT']},
+                                    ]);
+                                    setState(() {
+                                      selectedCompany = company['TEXT'];
+                                    });
+                                  }
+                                } else {
+                                  context.loaderOverlay.show();
+
+                                  var result = await CompanyService().getRelatedEntity(
+                                      'project', widget.entity['PROJECT_ID'], 'companies');
+
+                                  context.loaderOverlay.hide();
+
+                                  var company = await Navigator.push(
+                                    context,
+                                    platformPageRoute(
+                                      context: context,
+                                      builder: (BuildContext context) => RelatedEntityScreen(
+                                        entity: widget.entity,
+                                        type: 'companies',
+                                        title: '',
+                                        list: result,
+                                        isSelectable: true,
+                                        isEditable: false,
+                                      ),
+                                    ),
+                                  );
+
+                                  if (company != null) {
+                                    widget.onChange([
+                                      {'KEY': 'ACCT_ID', 'VALUE': company['ID']},
+                                      {'KEY': 'ACCTNAME', 'VALUE': company['TEXT']},
+                                    ]);
+                                    setState(() {
+                                      selectedCompany = company['TEXT'];
+                                    });
+                                  }
+                                }
+                              }
+                            }
+                          },
                           controller: TextEditingController()
                             ..text = selectedCompany,
                           readOnly: true,
@@ -259,7 +370,7 @@ class _PsaRelatedValueRowState extends State<PsaRelatedValueRow> {
                           ),
                           style: TextStyle(
                               color: Colors.grey.shade700, fontSize: 15),
-                          suffix: Icon(context.platformIcons.rightChevron),
+                          suffix: Icon(context.platformIcons.rightChevron,color: Colors.grey,),
                         ),
                       ),
                     ),
@@ -380,7 +491,94 @@ class _PsaRelatedValueRowState extends State<PsaRelatedValueRow> {
                             padding:
                                 const EdgeInsets.only(left: 12.0, right: 12.0),
                             child: CupertinoTextField(
-                              onTap: () => widget.onTap(),
+                              onTap: () async {
+                                if (widget.type == "CONT_ID") {
+                                  if(contactData!=null) {
+                                    await Navigator.push(
+                                      context,
+                                      platformPageRoute(
+                                        context: context,
+                                        builder: (BuildContext context) =>
+                                            ContactEditScreen(
+                                                contact: contactData, readonly: false),
+                                      ),
+                                    );
+                                  }
+                                  else {
+                                    if (widget.entity['ACCT_ID'] == null) {
+                                      var contact = await Navigator.push(
+                                        context,
+                                        platformPageRoute(
+                                          context: context,
+                                          builder: (BuildContext context) => ContactListScreen(
+                                            listName: 'cont_api',
+                                            isSelectable: true,
+                                          ),
+                                        ),
+                                      );
+
+                                      if (contact != null) {
+                                        widget.onChange([
+                                          {
+                                            'KEY': 'ACCT_ID',
+                                            'VALUE': contact['DATA']['ACCT_ID']
+                                          },
+                                          {
+                                            'KEY': 'ACCTNAME',
+                                            'VALUE': contact['DATA']['ACCTNAME']
+                                          },
+                                          {'KEY': 'CONT_ID', 'VALUE': contact['ID']},
+                                          {'KEY': 'CONTACT_NAME', 'VALUE': contact['TEXT']},
+                                        ]);
+                                        setState(() {
+                                          selectedContact = contact['TEXT'];
+                                        });
+                                      }
+                                    } else {
+                                      context.loaderOverlay.show();
+
+                                      var result = await CompanyService().getRelatedEntity(
+                                          'company', widget.entity['ACCT_ID'], 'contacts');
+
+                                      context.loaderOverlay.hide();
+
+                                      var contact = await Navigator.push(
+                                        context,
+                                        platformPageRoute(
+                                          context: context,
+                                          builder: (BuildContext context) =>
+                                              RelatedEntityScreen(
+                                                entity: widget.entity,
+                                                type: 'contacts',
+                                                title: '',
+                                                list: result,
+                                                isSelectable: true,
+                                                isEditable: false,
+                                              ),
+                                        ),
+                                      );
+
+                                      if (contact != null) {
+                                        widget.onChange([
+                                          {
+                                            'KEY': 'ACCT_ID',
+                                            'VALUE': contact['DATA']['ACCT_ID']
+                                          },
+                                          {
+                                            'KEY': 'ACCTNAME',
+                                            'VALUE': contact['DATA']['ACCTNAME']
+                                          },
+                                          {'KEY': 'CONT_ID', 'VALUE': contact['ID']},
+                                          {'KEY': 'CONTACT_NAME', 'VALUE': contact['TEXT']},
+                                        ]);
+                                        setState(() {
+                                          selectedContact = contact['TEXT'];
+                                        });
+                                      }
+                                    }
+                                  }
+                                }
+                              },
                               controller: TextEditingController()
                                 ..text = selectedContact,
                               readOnly: true,
@@ -389,7 +587,7 @@ class _PsaRelatedValueRowState extends State<PsaRelatedValueRow> {
                               ),
                               style: TextStyle(
                                   color: Colors.grey.shade700, fontSize: 15),
-                              suffix: Icon(context.platformIcons.rightChevron),
+                              suffix: Icon(context.platformIcons.rightChevron,color: Colors.grey,),
                             ),
                           ),
                         ),
@@ -409,7 +607,7 @@ class _PsaRelatedValueRowState extends State<PsaRelatedValueRow> {
                               context: context,
                               builder: (BuildContext context) =>
                                   ProjectEditScreen(
-                                      project: projectData, readonly: false),
+                                      project: projectData, readonly: false,),
                             ),
                           );
                         } else {
@@ -501,8 +699,85 @@ class _PsaRelatedValueRowState extends State<PsaRelatedValueRow> {
                                 padding: const EdgeInsets.only(
                                     left: 12.0, right: 12.0),
                                 child: CupertinoTextField(
-                                  onTap: () => widget.onTap(),
-                                  controller: TextEditingController()
+                                  onTap: () async {
+                                    if (widget.type == "PROJECT_ID") {
+                                      if (projectData != null) {
+                                        await Navigator.push(
+                                          context,
+                                          platformPageRoute(
+                                            context: context,
+                                            builder: (BuildContext context) =>
+                                                ProjectEditScreen(
+                                                  project: projectData, readonly: false,),
+                                          ),
+                                        );
+                                      } else {
+                                        if (widget.entity['ACCT_ID'] == null) {
+                                          var project = await Navigator.push(
+                                            context,
+                                            platformPageRoute(
+                                              context: context,
+                                              builder: (BuildContext context) =>
+                                                  ProjectListScreen(
+                                                    listName: 'pjfilt_api',
+                                                    isSelectable: true,
+                                                  ),
+                                            ),
+                                          );
+
+                                          if (project != null) {
+                                            widget.onChange([
+                                              {'KEY': 'PROJECT_ID', 'VALUE': project['ID']},
+                                              {
+                                                'KEY': 'PROJECT_TITLE',
+                                                'VALUE': project['TEXT']
+                                              },
+                                            ]);
+                                            setState(() {
+                                              selectedProject = project['TEXT'];
+                                            });
+                                          }
+                                        } else {
+                                          context.loaderOverlay.show();
+
+                                          var result = await CompanyService()
+                                              .getRelatedEntity('company',
+                                              widget.entity['ACCT_ID'], 'projects');
+
+                                          context.loaderOverlay.hide();
+
+                                          var project = await Navigator.push(
+                                            context,
+                                            platformPageRoute(
+                                              context: context,
+                                              builder: (BuildContext context) =>
+                                                  RelatedEntityScreen(
+                                                    entity: widget.entity,
+                                                    type: 'projects',
+                                                    title: '',
+                                                    list: result,
+                                                    isSelectable: true,
+                                                    isEditable: false,
+                                                  ),
+                                            ),
+                                          );
+
+                                          if (project != null) {
+                                            widget.onChange([
+                                              {'KEY': 'PROJECT_ID', 'VALUE': project['ID']},
+                                              {
+                                                'KEY': 'PROJECT_TITLE',
+                                                'VALUE': project['TEXT']
+                                              },
+                                            ]);
+                                            setState(() {
+                                              selectedProject = project['TEXT'];
+                                            });
+                                          }
+                                        }
+                                      }
+                                    }
+                                  },                                  controller: TextEditingController()
                                     ..text = selectedProject,
                                   readOnly: true,
                                   decoration: new BoxDecoration(
@@ -512,7 +787,7 @@ class _PsaRelatedValueRowState extends State<PsaRelatedValueRow> {
                                       color: Colors.grey.shade700,
                                       fontSize: 15),
                                   suffix:
-                                      Icon(context.platformIcons.rightChevron),
+                                      Icon(context.platformIcons.rightChevron,color: Colors.grey,),
                                 ),
                               ),
                             ),
@@ -632,8 +907,92 @@ class _PsaRelatedValueRowState extends State<PsaRelatedValueRow> {
                                     padding: const EdgeInsets.only(
                                         left: 12.0, right: 12.0),
                                     child: CupertinoTextField(
-                                      onTap: () => widget.onTap(),
-                                      controller: TextEditingController()
+                                      onTap: () async {
+                                        if (widget.type == "DEAL_ID") {
+                                          if (opportunityData != null) {
+                                            await Navigator.push(
+                                              context,
+                                              platformPageRoute(
+                                                context: context,
+                                                builder: (BuildContext context) =>
+                                                    OpportunityEditScreen(
+                                                        deal: opportunityData,
+                                                        readonly: false),
+                                              ),
+                                            );
+                                          }
+                                          else {
+                                            if (widget.entity['ACCT_ID'] == null) {
+                                              var deal = await Navigator.push(
+                                                context,
+                                                platformPageRoute(
+                                                  context: context,
+                                                  builder: (BuildContext context) =>
+                                                      OpportunityListScreen(
+                                                        listName: 'ALLDE',
+                                                        isSelectable: true,
+                                                      ),
+                                                ),
+                                              );
+
+                                              if (deal != null) {
+                                                print("deal is not null");
+                                                print(deal);
+                                                print(deal['TEXT']);
+                                                widget.onChange([
+                                                  {'KEY': 'DEAL_ID', 'VALUE': deal['ID']},
+                                                  {
+                                                    'KEY': 'DEAL_DESCRIPTION',
+                                                    'VALUE': deal['TEXT']
+                                                  },
+                                                ]);
+                                                setState(() {
+                                                  selectedOpportunity = deal['TEXT'];
+                                                });
+                                              }
+                                            } else {
+                                              context.loaderOverlay.show();
+
+                                              var result = await CompanyService()
+                                                  .getRelatedEntity(
+                                                  'company',
+                                                  widget.entity['ACCT_ID'],
+                                                  'OpportunityLinks?pageSize=1000&pageNumber=1');
+
+                                              context.loaderOverlay.hide();
+
+                                              var deal = await Navigator.push(
+                                                context,
+                                                platformPageRoute(
+                                                  context: context,
+                                                  builder: (BuildContext context) =>
+                                                      RelatedEntityScreen(
+                                                        entity: widget.entity,
+                                                        type: 'OpportunityLinks?pageSize=1000&pageNumber=1',
+                                                        title: '',
+                                                        list: result,
+                                                        isSelectable: true,
+                                                        isEditable: false,
+                                                      ),
+                                                ),
+                                              );
+
+                                              if (deal != null) {
+                                                widget.onChange([
+                                                  {'KEY': 'DEAL_ID', 'VALUE': deal['ID']},
+                                                  {
+                                                    'KEY': 'DEAL_DESCRIPTION',
+                                                    'VALUE': deal['TEXT']
+                                                  },
+                                                ]);
+                                                setState(() {
+                                                  selectedOpportunity = deal['TEXT'];
+                                                });
+                                              }
+                                            }
+                                          }
+                                        }
+                                      },                                      controller: TextEditingController()
                                         ..text = selectedOpportunity,
                                       readOnly: true,
                                       decoration: new BoxDecoration(
@@ -643,7 +1002,7 @@ class _PsaRelatedValueRowState extends State<PsaRelatedValueRow> {
                                           color: Colors.grey.shade700,
                                           fontSize: 15),
                                       suffix: Icon(
-                                          context.platformIcons.rightChevron),
+                                          context.platformIcons.rightChevron,color: Colors.grey,),
                                     ),
                                   ),
                                 ),
