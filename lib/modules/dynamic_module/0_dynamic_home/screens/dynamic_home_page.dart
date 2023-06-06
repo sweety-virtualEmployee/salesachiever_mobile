@@ -34,36 +34,28 @@ class _HomeScreenState extends State<DyanmicHomeScreen> {
 
   @override
   void initState() {
-    callapi();
+    callApi();
     super.initState();
   }
 
-  callapi() async{
+  callApi() async{
     defaultLists = await ListManagerService().getDefaultLists();
+    print("let check default list$defaultLists");
   }
 
   Future<void> _navigate(String item) async {
     bool isContainActiveFeature = await feature.activeFeatures();
     try {
       print(item);
-
-    /*  if (item == 'COMPANY' ||
-          item == 'CONTACT' ||
-          item == 'PROJECT' ||
-          item == 'OPPORTUNITY' ||
-          item == 'ACTION')*/
-
       Navigator.push(
         context,
         platformPageRoute(
           context: context,
           builder: (BuildContext context) {
             if (item == 'LISTMANAGER') {
-              print("list hdcfgudgbc manager");
               return ListCategoryScreen();
             }
             if (item == 'COMPANY'){
-              print("yes company");
               return DynamicProjectListScreen(
                 listType:item,
                 listName: defaultLists.firstWhere(

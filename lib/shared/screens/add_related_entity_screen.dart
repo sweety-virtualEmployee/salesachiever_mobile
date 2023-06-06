@@ -115,6 +115,7 @@ class _AddRelatedEntityScreenState extends State<AddRelatedEntityScreen> {
                     }
 
                     Navigator.pop(context);
+                    Navigator.pop(context);
 
                     context.loaderOverlay.hide();
                   } catch (e) {
