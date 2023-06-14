@@ -6,6 +6,7 @@ import 'package:loader_overlay/loader_overlay.dart';
 import 'package:salesachiever_mobile/modules/dynamic_module/5_dynamic_project/api/dynamic_project_api.dart';
 import 'package:salesachiever_mobile/modules/dynamic_module/5_dynamic_project/screens/dynamic_project_edit_screen.dart';
 import 'package:salesachiever_mobile/modules/dynamic_module/5_dynamic_project/screens/dynamic_psa_header.dart';
+import 'package:salesachiever_mobile/modules/dynamic_module/5_dynamic_project/screens/dynamic_report_pdf_screen.dart';
 import 'package:salesachiever_mobile/modules/dynamic_module/5_dynamic_project/services/dynamic_project_service.dart';
 import 'package:salesachiever_mobile/modules/dynamic_module/5_dynamic_project/widgets/common_header.dart';
 import 'package:salesachiever_mobile/modules/dynamic_module/5_dynamic_project/widgets/dynamic_project_view_related_records.dart';
@@ -14,6 +15,7 @@ import 'package:salesachiever_mobile/shared/screens/related_entity_screen.dart';
 import 'package:salesachiever_mobile/shared/widgets/elements/psa_progress_indicator.dart';
 import 'package:salesachiever_mobile/shared/widgets/layout/psa_scaffold.dart';
 import 'package:salesachiever_mobile/shared/widgets/psa_header.dart';
+import 'package:salesachiever_mobile/utils/decode_base64_util.dart';
 import 'package:salesachiever_mobile/utils/lang_util.dart';
 import 'package:salesachiever_mobile/utils/text_formatting_util.dart';
 
@@ -353,7 +355,43 @@ class _ProjectTabsState extends State<ProjectTabs> {
                       ),
                     ],
                   ),
-                )
+                ),
+                Spacer(),
+                widget.entityType=="COMPANY"?GestureDetector(
+                  onTap: () async {
+                    var data = await service.getSubScribedReports();
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                        builder: (context) {
+                      return DynamicReportScreen(
+                         reports: data,
+                        id:_entity?['ACCT_ID']
+                      );
+                    },
+                    ));
+                  },
+                  child: Container(
+                    padding: EdgeInsets.all(6),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      border: Border.all(color: Colors.grey)
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.only(left: 60.0),
+                          child: PlatformText("Profile Reports"),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(right: 20.0),
+                          child: Icon(Icons.file_copy_rounded,color: Colors.grey,),
+                        )
+                      ],
+                    ),
+                  ),
+                ):SizedBox()
               ]);
             }
             return Center(

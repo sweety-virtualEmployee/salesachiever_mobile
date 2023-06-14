@@ -115,10 +115,6 @@ class DynamicProjectApi {
     print(response);
     return response.data;
   }
-  //  Future<dynamic> getActiveFeaturesEntity() async {
-  //   final response = await Api().getResult('$api/System/System.CustomFunctionList?FunctionName=GetFieldDataByForm&Param1=P001&Param2=000000000065');
-  //   return response.data;
-  // }
 
   Future<dynamic> getById(String type,String id) async {
     if(type=="COMPANY"){
@@ -215,6 +211,22 @@ class DynamicProjectApi {
 
   Future<dynamic> deleteProjectAccountLink(String linkId) async {
     Response response = await _api.delete('/ProjectAccountLink/$linkId');
+    return response.data;
+  }
+
+  Future<dynamic> getSubscribedReports() async {
+    final response = await Api().getResult('$api/Report/Report.SubscribedReports/dba?Area=Account&Type=Profile');
+    print("subscribed reports");
+    print(response);
+    return response.data;
+  }
+
+  Future<dynamic> getGeneratedReports(String reportId,String reportTitle,String id) async {
+    String localeId = StorageUtil.getString('localeId');
+    print("localedID$localeId");
+    final response = await Api().getResult('$api/Report/Report.GenerateReport?ReportId=$reportId&ReportTitle=$reportTitle&ACCT_ID=$id&LOCALE_ID=$localeId');
+    print("generated reports");
+    print(response);
     return response.data;
   }
 }

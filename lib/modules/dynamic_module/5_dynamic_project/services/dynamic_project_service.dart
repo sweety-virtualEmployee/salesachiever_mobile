@@ -206,4 +206,18 @@ class DynamicProjectService extends EntityService {
 
     return invalidUserFields.length <= 0;
   }
+
+  Future<List> getSubScribedReports() async {
+    final dynamic response = await DynamicProjectApi().getSubscribedReports();
+    final List<dynamic> dataResult = response;
+    log("subscripbed values ---$dataResult");
+    return dataResult;
+  }
+
+  Future<String> getGeneratedReports(String reportId,String reportTitle,String id) async {
+    final dynamic response = await DynamicProjectApi().getGeneratedReports(reportId,reportTitle,id);
+    final String dataResult = response;
+    log("subscripbed values ---$dataResult");
+    return dataResult;
+  }
 }
