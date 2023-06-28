@@ -18,6 +18,14 @@ class CommonHeader extends StatelessWidget {
         status: entity?['TOWN'],
         siteTown: entity?['ADDR1'],
         backgroundColor: Color(0xff3cab4f),
+      ):entityType=="QUOTATION"?DynamicPsaHeader(
+        isVisible: true,
+        icon: 'assets/images/Quote.png',
+        title: entity?['DESCRIPTION'],
+        projectID: "",
+        status: "",
+        siteTown: entity?['QUOTE_CATEGORY'],
+        backgroundColor: Color(0xff00aba9),
       ):entityType=="OPPORTUNITY"?DynamicPsaHeader(
         isVisible: true,
         icon: 'assets/images/opportunity_icon.png',

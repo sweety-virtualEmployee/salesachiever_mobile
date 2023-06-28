@@ -49,6 +49,8 @@ class _ListViewScreenState extends State<ListViewScreen> {
                               return ContactListScreen(listName: e['LIST_ID']);
                             if (widget.category == 'PJ')
                               return ProjectListScreen(listName: e['LIST_ID']);
+                            if (widget.category == 'QU')
+                              return ProjectListScreen(listName: e['LIST_ID']);
                             else
                               return ListViewScreen(
                                 category: widget.category,
@@ -69,6 +71,7 @@ class _ListViewScreenState extends State<ListViewScreen> {
                   if (widget.category == 'AC') category = 'ACCOUNT';
                   if (widget.category == 'CN') category = 'CONTACT';
                   if (widget.category == 'PJ') category = 'PROJECT';
+                  if (widget.category == 'QU') category = 'QUOTATION';
 
                   ListManagerService()
                       .setDefaultLists(category, e['LIST_ID'])

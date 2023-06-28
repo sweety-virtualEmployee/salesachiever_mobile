@@ -24,11 +24,10 @@ class DataFieldService {
       [String? updatedFieldKey]) {
     List<Widget> widgets = [];
     for (dynamic field in filedList) {
-      print("length");
-      print(field['FIELD_NAME']);
       var isRequired = mandatoryFields.any((e) =>
           e['TABLE_NAME'] == field['TABLE_NAME'] &&
           e['FIELD_NAME'] == field['FIELD_NAME']);
+      print("isRqurierdds${isRequired} field name${field['FIELD_NAME']}${field["TABLE_NAME"]}");
       if(field['FIELD_TYPE']=="B"){
         print("check the condition");
         print(field["FIELD_NAME"]);

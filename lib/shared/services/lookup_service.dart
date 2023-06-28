@@ -68,6 +68,8 @@ class LookupService {
         iPadFields = actionFileds;
       else if(entityType.toLowerCase() == 'deal')
         iPadFields = opportunityFields;
+      else if(entityType.toLowerCase() == 'quotation')
+        iPadFields = opportunityFields;
       else if(entityType.toLowerCase() == 'deal_potential')
         iPadFields = potentialFields;
     }
@@ -78,7 +80,7 @@ class LookupService {
 
   Future<void> getUserFields(String entityType) async {
     final dynamic response = await LookupApi().getUserFields(entityType);
-
+    print("entutyyype${entityType}resposne$response");
     if (response != null) {
       final List<dynamic> userFields = response['Items'];
 
@@ -92,6 +94,8 @@ class LookupService {
 
     if (response != null) {
       final List<dynamic> userFieldProperties = response['Items'];
+
+      log("useertfirekl,gsdf${userFieldProperties.toString()}");
 
       await Hive.box<dynamic>('userFieldProperties').clear();
       await Hive.box<dynamic>('userFieldProperties')
@@ -128,8 +132,11 @@ class LookupService {
   List<dynamic> getMandatoryFields() {
     List<dynamic> items =
         Hive.box<dynamic>('userFieldProperties').values.toList();
-        log("mendataory fields ${items.toString()}");
-
+        log("mendataory fields of check ${items
+            .where((e) =>
+        e['PROPERTY_ID'].toString() == '2' &&
+            e['PROPERTY_VALUE'].toString() == 'Y'&&e['TABLE_NAME']=="ACCOUNT")
+            .toList()}");
     return items
         .where((e) =>
             e['PROPERTY_ID'].toString() == '2' &&

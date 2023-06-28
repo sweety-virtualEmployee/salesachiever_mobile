@@ -10,6 +10,7 @@ import 'package:salesachiever_mobile/modules/3_company/screens/company_list_scre
 import 'package:salesachiever_mobile/modules/4_contact/screens/contact_list_screen.dart';
 import 'package:salesachiever_mobile/modules/5_project/screens/project_list_screen.dart';
 import 'package:salesachiever_mobile/modules/6_action/screens/action_list_screen.dart';
+import 'package:salesachiever_mobile/modules/dynamic_module/5_dynamic_project/screens/quotation_list_screen.dart';
 import 'package:salesachiever_mobile/shared/widgets/elements/psa_progress_indicator.dart';
 import 'package:salesachiever_mobile/shared/widgets/layout/psa_scaffold.dart';
 import 'package:salesachiever_mobile/shared/widgets/psa_menu_item.dart';
@@ -50,6 +51,9 @@ class _ListManagerListScreenState extends State<ListManagerListScreen> {
         break;
       case "DE":
         category = 'DEAL';
+        break;
+      case "QU":
+        category = 'QUOTATION';
         break;
       default:
         break;
@@ -157,6 +161,8 @@ class _ListManagerListScreenState extends State<ListManagerListScreen> {
               return ProjectListScreen(listName: e['LIST_ID']);
             else if (widget.categoryCode == 'DE')
               return OpportunityListScreen(listName: e['LIST_ID']);
+            else if (widget.categoryCode == 'QU')
+              return QuotationListScreen(listName: e['LIST_ID']);
             return ListViewScreen(
               category: widget.categoryCode,
               title: widget.title,

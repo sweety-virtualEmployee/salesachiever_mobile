@@ -31,6 +31,7 @@ void main() async {
   await Hive.openBox<dynamic>('activeFields_account');
   await Hive.openBox<dynamic>('activeFields_contact');
   await Hive.openBox<dynamic>('activeFields_project');
+  await Hive.openBox<dynamic>('activeFields_quotation');
   await Hive.openBox<dynamic>('activeFields_action');
   await Hive.openBox<dynamic>('activeFields_deal');
   await Hive.openBox<dynamic>('activeFields_deal_potential');
@@ -39,6 +40,7 @@ void main() async {
   await Hive.openBox<dynamic>('userFields_project');
   await Hive.openBox<dynamic>('userFields_action');
   await Hive.openBox<dynamic>('userFields_deal');
+  await Hive.openBox<dynamic>('userFields_quotation');
   await Hive.openBox<dynamic>('userFields_deal_potential');
   await Hive.openBox<dynamic>('accessRights');
   await Hive.openBox<dynamic>('county');

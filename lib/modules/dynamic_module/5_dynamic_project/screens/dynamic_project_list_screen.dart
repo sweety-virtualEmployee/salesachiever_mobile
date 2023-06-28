@@ -5,6 +5,8 @@ import 'package:salesachiever_mobile/modules/3_company/screens/company_edit_scre
 import 'package:salesachiever_mobile/modules/4_contact/screens/contact_edit_screen.dart';
 import 'package:salesachiever_mobile/modules/5_project/screens/project_edit_screen.dart';
 import 'package:salesachiever_mobile/modules/6_action/screens/action_edit_screen.dart';
+import 'package:salesachiever_mobile/modules/dynamic_module/5_dynamic_project/screens/dynamic_project_add.dart';
+import 'package:salesachiever_mobile/modules/dynamic_module/5_dynamic_project/screens/dynamic_quotation_add.dart';
 import 'package:salesachiever_mobile/modules/dynamic_module/5_dynamic_project/services/dynamic_project_service.dart';
 import 'package:salesachiever_mobile/modules/dynamic_module/5_dynamic_project/widgets/dynamic_project_list_item.dart';
 import 'package:salesachiever_mobile/shared/widgets/buttons/psa_add_button.dart';
@@ -89,6 +91,18 @@ class DynamicProjectListScreen extends StatelessWidget {
                 context: context,
                 builder: (BuildContext context) => OpportunityEditScreen(
                   deal: {},
+                  readonly: false,
+                ),
+              ),
+            );
+          }
+          else if(listType=="QUOTATION"){
+            Navigator.push(
+              context,
+              platformPageRoute(
+                context: context,
+                builder: (BuildContext context) => DynamicQuotationAddScreen(
+                  quotation: {},
                   readonly: false,
                 ),
               ),

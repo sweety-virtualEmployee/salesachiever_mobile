@@ -357,19 +357,79 @@ class _ProjectTabsState extends State<ProjectTabs> {
                   ),
                 ),
                 Spacer(),
-                widget.entityType=="COMPANY"?GestureDetector(
+              GestureDetector(
                   onTap: () async {
-                    var data = await service.getSubScribedReports();
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                        builder: (context) {
-                      return DynamicReportScreen(
-                         reports: data,
-                        id:_entity?['ACCT_ID']
-                      );
-                    },
-                    ));
+                    String area="";
+                    if(widget.entityType=="COMPANY"){
+                      area = "Account";
+                      var data = await service.getSubScribedReports(area);
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) {
+                              return DynamicReportScreen(
+                                  reports: data,
+                                  id:_entity?['ACCT_ID']
+                              );
+                            },
+                          ));
+                    }
+                   else if(widget.entityType=="PROJECT"){
+                      area = "Project";
+                      var data = await service.getSubScribedReports(area);
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) {
+                              return DynamicReportScreen(
+                                  reports: data,
+                                  id:_entity?['PROJECT_ID']
+                              );
+                            },
+                          ));
+                    }
+                    else if(widget.entityType=="CONTACT"){
+                      area = "Contact";
+                      var data = await service.getSubScribedReports(area);
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) {
+                              return DynamicReportScreen(
+                                  reports: data,
+                                  id:_entity?['CONT_ID']
+                              );
+                            },
+                          ));
+                    }
+                    else if(widget.entityType=="OPPORTUNITY"){
+                      area = "Opportunity";
+                      var data = await service.getSubScribedReports(area);
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) {
+                              return DynamicReportScreen(
+                                  reports: data,
+                                  id:_entity?['DEAL_ID']
+                              );
+                            },
+                          ));
+                    }
+                    else if(widget.entityType=="ACTION"){
+                      area = "Action";
+                      var data = await service.getSubScribedReports(area);
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) {
+                              return DynamicReportScreen(
+                                  reports: data,
+                                  id:_entity?['ACTION_ID']
+                              );
+                            },
+                          ));
+                    }
                   },
                   child: Container(
                     padding: EdgeInsets.all(6),
@@ -391,7 +451,7 @@ class _ProjectTabsState extends State<ProjectTabs> {
                       ],
                     ),
                   ),
-                ):SizedBox()
+                )
               ]);
             }
             return Center(

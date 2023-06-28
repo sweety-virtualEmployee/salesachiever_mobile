@@ -111,6 +111,7 @@ class LoginService {
     await lookupService.getIpadFields('project', dynmaicUIEnabled);
     await lookupService.getIpadFields('action', dynmaicUIEnabled);
     await lookupService.getIpadFields('deal', dynmaicUIEnabled);
+    await lookupService.getIpadFields('quotation', dynmaicUIEnabled);
   }
 
   Future<void> _fetchUserFields() async {
@@ -120,6 +121,7 @@ class LoginService {
     await lookupService.getUserFields('project');
     await lookupService.getUserFields('action');
     await lookupService.getUserFields('deal');
+    await lookupService.getUserFields('quotation');
   }
 
   Future<void> _fetchUserFieldProperties() async {

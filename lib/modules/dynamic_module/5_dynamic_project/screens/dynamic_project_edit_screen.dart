@@ -69,7 +69,7 @@ class _DynamicProjectEditScreenState extends State<DynamicProjectEditScreen> {
   void initState() {
     _readonly = this.widget.readonly;
     _entity = this.widget.project;
-    print("sweety***----${widget.entityType}");
+    print("sweety***----${_entity['QUOTE_ID']}");
     callApi();
     validate();
 
@@ -101,6 +101,8 @@ class _DynamicProjectEditScreenState extends State<DynamicProjectEditScreen> {
       id = _entity['ACTION_ID'];
     } else if (widget.entityType == "OPPORTUNITY") {
       id = _entity['DEAL_ID'];
+    } else if (widget.entityType == "QUOTATION") {
+      id = _entity['QUOTE_ID'];
     } else {
       id = _entity['PROJECT_ID'];
     }

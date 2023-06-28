@@ -87,12 +87,12 @@ class DynamicProjectService extends EntityService {
 
   @override
   Future<dynamic> addNewEntity(dynamic entity) async {
-    return await _projectApi.create(entity);
+    return await DynamicProjectApi().create(entity);
   }
 
   @override
   Future<dynamic> updateEntity(String id, dynamic entity) async {
-    await _projectApi.update(id, entity);
+    await DynamicProjectApi().update(id, entity);
   }
 
   @override
@@ -190,7 +190,7 @@ class DynamicProjectService extends EntityService {
     var mandatoryFields = _lookupService.getMandatoryFields();
     var visibleUserFields = _lookupService.getVisibleUserFields();
 
-    String projectTypeId = project['PROJECT_TYPE_ID'] ?? 'STD';
+    String projectTypeId = project['QUOTE_TYPE_ID'] ?? 'STD';
 
     var invalidUserFields = userFields
         .where((userField) => mandatoryFields.any((mandatoryField) =>
@@ -207,8 +207,8 @@ class DynamicProjectService extends EntityService {
     return invalidUserFields.length <= 0;
   }
 
-  Future<List> getSubScribedReports() async {
-    final dynamic response = await DynamicProjectApi().getSubscribedReports();
+  Future<List> getSubScribedReports(String area) async {
+    final dynamic response = await DynamicProjectApi().getSubscribedReports(area);
     final List<dynamic> dataResult = response;
     log("subscripbed values ---$dataResult");
     return dataResult;
@@ -219,5 +219,17 @@ class DynamicProjectService extends EntityService {
     final String dataResult = response;
     log("subscripbed values ---$dataResult");
     return dataResult;
+  }
+
+  List<dynamic> getDynamicActiveFields() {
+    List<dynamic> items =
+    Hive.box<dynamic>('activeFields_quotation').values.toList();
+    print("length of items");
+    print(items.length);
+
+    items.sort((a, b) => a['ORDER_NUM'].compareTo(b['ORDER_NUM']));
+
+    return items.where((e) => e['FIELD_NAME'] != 'QUOTE_TYPE_ID').toList();
+
   }
 }

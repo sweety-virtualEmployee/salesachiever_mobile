@@ -40,13 +40,15 @@ class _HomeScreenState extends State<DyanmicHomeScreen> {
 
   callApi() async{
     defaultLists = await ListManagerService().getDefaultLists();
-    print("let check default list$defaultLists");
   }
 
   Future<void> _navigate(String item) async {
     bool isContainActiveFeature = await feature.activeFeatures();
     try {
-      print(item);
+      print("item$item");
+      if(item == "Quotes"){
+        print("yes it is");
+      }
       Navigator.push(
         context,
         platformPageRoute(
@@ -73,9 +75,6 @@ class _HomeScreenState extends State<DyanmicHomeScreen> {
                     'cont_api',
               );
             if (isContainActiveFeature && item == 'PROJECT') {
-              print("yesprojects");
-              print("check${ defaultLists.firstWhere(
-                      (element) => element['SECTION'] == 'PROJECT',)}");
               return DynamicProjectListScreen(
                 listType:item,
                 listName: defaultLists.firstWhere(
@@ -83,8 +82,6 @@ class _HomeScreenState extends State<DyanmicHomeScreen> {
                         orElse: () => null)?['VAR_VALUE'] ??
                     'pjfilt_api',
               );
-            } else {
-              print("error");
             }
             if (item == 'OPPORTUNITY')
               return DynamicProjectListScreen(
@@ -94,6 +91,16 @@ class _HomeScreenState extends State<DyanmicHomeScreen> {
                         orElse: () => null)?['VAR_VALUE'] ??
                     'ALLDE', //acsrch_api
               );
+            if (item == 'QUOTATION') {
+              print("we are the quotaion module");
+              return DynamicProjectListScreen(
+                listType: item,
+                listName: defaultLists.firstWhere(
+                        (element) => element['SECTION'] == 'QUOTATION',
+                    orElse: () => null)?['VAR_VALUE'] ??
+                    'quote_api', //acsrch_api
+              );
+               }
             if (item == 'ACTION')
               return DynamicProjectListScreen(
                 listType:item,
@@ -130,6 +137,7 @@ class _HomeScreenState extends State<DyanmicHomeScreen> {
           setState(() {
             _selectedItem = item;
           });
+          print("item shfv$item");
 
           if (item == 'HOME') {
             // _resetScreen();

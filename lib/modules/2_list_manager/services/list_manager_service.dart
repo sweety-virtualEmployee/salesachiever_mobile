@@ -11,7 +11,6 @@ class ListManagerService {
 
   Future<List<dynamic>> getSubscribedLists(String category) async {
     var data = await _listItemApi.getSubscribedLists();
-    print("data$data");
     List<dynamic> items = data['Items'];
 
     return items

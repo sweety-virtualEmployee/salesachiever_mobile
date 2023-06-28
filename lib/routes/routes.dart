@@ -14,6 +14,7 @@ import 'package:salesachiever_mobile/modules/2_list_manager/screens/list_view_sc
 import 'package:salesachiever_mobile/modules/1_login/screens/login_screen.dart';
 import 'package:salesachiever_mobile/modules/5_project/screens/project_edit_screen.dart';
 import 'package:salesachiever_mobile/modules/5_project/screens/project_list_screen.dart';
+import 'package:salesachiever_mobile/modules/dynamic_module/5_dynamic_project/screens/dynamic_quotation_add.dart';
 
 var routes = <String, WidgetBuilder>{
   '/': (context) => LoginScreen(),
@@ -55,4 +56,7 @@ var routes = <String, WidgetBuilder>{
         deal: {},
         readonly: false,
       ),
+  '/quotation/edit': (context) => DynamicQuotationAddScreen(
+    readonly: false, quotation: {},
+  ),
 };

@@ -13,6 +13,8 @@ class DynamicProjectApi {
   DynamicProjectApi({this.listName}) : _api = Api();
 
    final String api = StorageUtil.getString('api');
+
+
   Future<dynamic> getProjectTabs(String moduleId) async {
     print("api$moduleId");
     final response = await Api().getResult('$api/System/System.CustomFunctionList?FunctionName=GetEntityTabs&Param1=$moduleId');
@@ -130,6 +132,10 @@ class DynamicProjectApi {
       final response = await Api().get('/opportunity/$id');
       return response;
     }
+    else if(type=="QUOTATION"){
+      final response = await Api().get('/Quotation/$id');
+      return response;
+    }
     else{
       final response = await Api().get('/projects/$id');
       return response;
@@ -138,12 +144,12 @@ class DynamicProjectApi {
   }
 
   Future<dynamic> create(dynamic project) async {
-    Response response = await _api.post('/project/', project);
+    Response response = await _api.post('/quotation/', project);
     return response.data;
   }
 
   Future<dynamic> update(String projectId, dynamic project) async {
-    Response response = await _api.put('/project/$projectId', project);
+    Response response = await _api.put('/quotation/$projectId', project);
     return response.data;
   }
 
@@ -214,8 +220,9 @@ class DynamicProjectApi {
     return response.data;
   }
 
-  Future<dynamic> getSubscribedReports() async {
-    final response = await Api().getResult('$api/Report/Report.SubscribedReports/dba?Area=Account&Type=Profile');
+  Future<dynamic> getSubscribedReports(String area) async {
+    print("area$area");
+    final response = await Api().getResult('$api/Report/Report.SubscribedReports/dba?Area=$area&Type=Profile');
     print("subscribed reports");
     print(response);
     return response.data;
@@ -224,7 +231,7 @@ class DynamicProjectApi {
   Future<dynamic> getGeneratedReports(String reportId,String reportTitle,String id) async {
     String localeId = StorageUtil.getString('localeId');
     print("localedID$localeId");
-    final response = await Api().getResult('$api/Report/Report.GenerateReport?ReportId=$reportId&ReportTitle=$reportTitle&ACCT_ID=$id&LOCALE_ID=$localeId');
+    final response = await Api().getResult('$api/Report/Report.GenerateReport?ReportId=$reportId&ReportTitle=$reportTitle&ACCT_ID=$id&PROJECT_ID=$id&CONTACT_ID=$id&DEAL_ID=$id&ACTION_ID$id&LOCALE_ID=$localeId');
     print("generated reports");
     print(response);
     return response.data;

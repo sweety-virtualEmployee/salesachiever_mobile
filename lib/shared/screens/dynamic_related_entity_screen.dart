@@ -460,7 +460,7 @@ class _DynamicRelatedEntityScreenState
                             context,
                             MaterialPageRoute(
                               builder: (context) {
-                                return DynamicProjectAddScreen(
+                                return  DynamicProjectAddScreen(
                                   project: project.data,
                                   readonly: true,
                                 );

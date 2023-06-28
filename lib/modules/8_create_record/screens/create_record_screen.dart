@@ -16,6 +16,7 @@ class CreateRecordScreen extends StatelessWidget {
       'Account.Description',
       'Project.Description',
       'Action.Description',
+      'Quotation.Description',
     ];
 
     if (AuthUtil.hasAccess(int.parse(ACCESS_CODES['OPPORTUNTIY'].toString()))) {
@@ -53,6 +54,9 @@ class CreateRecordScreen extends StatelessWidget {
         break;
       case 'Action.Description':
         Navigator.pushNamed(context, '/action/type');
+        break;
+      case 'Quotation.Description':
+        Navigator.pushNamed(context, '/quotation/edit');
         break;
       case 'Opportunity.Description':
         Navigator.pushNamed(context, '/oppertunity/edit');

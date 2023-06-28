@@ -16,7 +16,7 @@ class PsaDropdownRow extends StatefulWidget {
   final Function? onChange;
   final bool? isRequired;
 
-  const PsaDropdownRow({
+  const  PsaDropdownRow({
     Key? key,
     required this.type,
     required this.tableName,
@@ -48,6 +48,8 @@ class _PsaDropdownRowState extends State<PsaDropdownRow> {
   Widget build(BuildContext context) {
     var contextId =
         HiveUtil.getContextId(widget.type, widget.tableName, widget.fieldName);
+
+    print("contezt$contextId");
 
     _onTap() async {
       if (!widget.readOnly) {

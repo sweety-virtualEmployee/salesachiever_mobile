@@ -18,7 +18,8 @@ class ListCategoryScreen extends StatelessWidget {
       {'contextId': 'LIST_CATEGORY.CATEGORY_ID', 'itemId': 'AC'},
       {'contextId': 'LIST_CATEGORY.CATEGORY_ID', 'itemId': 'CN'},
       {'contextId': 'LIST_CATEGORY.CATEGORY_ID', 'itemId': 'DI'},
-      {'contextId': 'LIST_CATEGORY.CATEGORY_ID', 'itemId': 'PJ'}
+      {'contextId': 'LIST_CATEGORY.CATEGORY_ID', 'itemId': 'PJ'},
+      {'contextId': 'LIST_CATEGORY.CATEGORY_ID', 'itemId': 'QU'},
     ];
 
     if (AuthUtil.hasAccess(int.parse(ACCESS_CODES['OPPORTUNTIY'].toString()))) {
