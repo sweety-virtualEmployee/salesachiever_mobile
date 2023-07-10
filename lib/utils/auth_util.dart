@@ -8,11 +8,14 @@ class AuthUtil {
 
   static bool hasAccess(int propertyId) {
     print("acces");
+    print("property id$propertyId");
+    print("role sbjfhb");
     print(Hive.box<dynamic>('features')
         .values);
     dynamic feature = Hive.box<dynamic>('features')
         .values
         .firstWhere((e) => e['PROPERTY_ID'] == propertyId, orElse: () => null);
+    print(feature?['ACTIVE']);
 
     return feature?['ACTIVE'] ?? false;
   }

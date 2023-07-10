@@ -62,7 +62,7 @@ class _ProjectListItemWidgetState
           itemBuilder: (BuildContext context, int index) {
             final key = map.keys.elementAt(index);
             final value = map[key];
-            String contextId = key.substring(0, key.indexOf('_'));
+            String contextId = key.contains("_") ?key.substring(0, key.indexOf('_')):key;
             String itemId =
                 key.contains("_") ? key.substring(key.indexOf("_") + 1) : key;
             List<String> parts = key.split('_');

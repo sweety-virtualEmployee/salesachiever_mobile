@@ -3,6 +3,7 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:loader_overlay/loader_overlay.dart';
 import 'package:salesachiever_mobile/CustomWidgets/customactivefeature.dart';
+import 'package:salesachiever_mobile/data/access_codes.dart';
 import 'package:salesachiever_mobile/modules/10_opportunities/screens/opportunity_list_screen.dart';
 import 'package:salesachiever_mobile/modules/2_list_manager/screens/list_category_screen.dart';
 import 'package:salesachiever_mobile/modules/2_list_manager/services/list_manager_service.dart';
@@ -16,6 +17,7 @@ import 'package:salesachiever_mobile/modules/dynamic_module/0_dynamic_home/widge
 import 'package:salesachiever_mobile/modules/dynamic_module/5_dynamic_project/screens/dynamic_project_list_screen.dart';
 import 'package:salesachiever_mobile/shared/services/lookup_service.dart';
 import 'package:salesachiever_mobile/shared/widgets/layout/psa_scaffold.dart';
+import 'package:salesachiever_mobile/utils/auth_util.dart';
 import 'package:salesachiever_mobile/utils/lang_util.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -35,10 +37,14 @@ class _HomeScreenState extends State<DyanmicHomeScreen> {
   @override
   void initState() {
     callApi();
+    print("Check role");
+
     super.initState();
   }
 
   callApi() async{
+    print(AuthUtil.hasAccess(
+        int.parse(ACCESS_CODES['ROLE'].toString())));
     defaultLists = await ListManagerService().getDefaultLists();
   }
 

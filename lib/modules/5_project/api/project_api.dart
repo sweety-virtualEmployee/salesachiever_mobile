@@ -97,7 +97,6 @@ return await _api.get('/project/$projectId');
 
   Future<dynamic> getProjectAccountLink(String linkId) async {
     Response response = await _api.get('/ProjectAccountLink/$linkId');
-   // log("response of get project link${response.data}");
     return response.data;
   }
 
@@ -105,7 +104,6 @@ return await _api.get('/project/$projectId');
       String linkId, dynamic projectAccountLink) async {
     Response response =
         await _api.put('/ProjectAccountLink/$linkId', projectAccountLink);
-      //  log("response of update project link${response.data}");
     return response.data;
   }
 

@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:loader_overlay/loader_overlay.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
+import 'package:salesachiever_mobile/data/access_codes.dart';
 import 'package:salesachiever_mobile/modules/10_opportunities/screens/opportunity_list_screen.dart';
 import 'package:salesachiever_mobile/modules/10_opportunities/services/opportunity_service.dart';
 import 'package:salesachiever_mobile/modules/3_company/screens/company_list_screen.dart';
@@ -13,6 +14,7 @@ import 'package:salesachiever_mobile/shared/widgets/buttons/psa_edit_button.dart
 import 'package:salesachiever_mobile/shared/widgets/forms/psa_list_picker.dart';
 import 'package:salesachiever_mobile/shared/widgets/forms/psa_related_entity_row.dart';
 import 'package:salesachiever_mobile/shared/widgets/layout/psa_scaffold.dart';
+import 'package:salesachiever_mobile/utils/auth_util.dart';
 import 'package:salesachiever_mobile/utils/lang_util.dart';
 
 class AddRelatedEntityScreen extends StatefulWidget {
@@ -57,6 +59,7 @@ class _AddRelatedEntityScreenState extends State<AddRelatedEntityScreen> {
     role = widget.role;
     deal = widget.deal;
     type = widget.type;
+    print("multi id will be shown here${widget.multiId}");
 
     super.initState();
   }
@@ -85,19 +88,17 @@ class _AddRelatedEntityScreenState extends State<AddRelatedEntityScreen> {
                     if (contact != null) projectLink['CONT_ID'] = contact['ID'];
                     if (role != null) projectLink['ROLE_TYPE_ID'] = role['ID'];
                     if (deal != null) projectLink['DEAL_ID'] = deal['ID'];
-                    // if (contact != null) deal['CONT_ID'] = contact['ID'];
+                    if (role != null && deal != null)
+                      deal['ROLE_TYPE_ID'] = role['ID'];
                     if (contact != null && deal != null)
                       deal['CONT_ID'] = contact['ID'];
                     if (contact != null) deal['CONTACT_NAME'] = contact['TEXT'];
                     if (deal != null) deal['DEAL_ID'] = deal['ID'];
                     if (account != null && deal != null)
                       deal['ACCT_ID'] = account['ID'];
-                    // if (account != null) deal['ACCT_ID'] = account['ID'];
-
-                    // if (project != null) deal['PROJECT_ID'] = project['ID'];
-                    // if (role != null) deal['ROLE_ID'] = role['ID'];
 
                     if (widget.multiId != null) {
+                      print("this api pof oop called${widget.multiId.toString()}");
                       await OpportunityService().updateCompanyOppLink(
                           widget.multiId.toString(), deal);
                     } else {
@@ -106,6 +107,7 @@ class _AddRelatedEntityScreenState extends State<AddRelatedEntityScreen> {
                       }
                     }
                     if (projectLink['ROLE_TYPE_ID'] != null) {
+                      print("this api called");
                       if (widget.linkId != null)
                         await ProjectService().updateProjectAccountLink(
                             widget.linkId!, projectLink);
@@ -130,7 +132,7 @@ class _AddRelatedEntityScreenState extends State<AddRelatedEntityScreen> {
         body: Container(
           child: CupertinoFormSection(
             children: [
-              if (type == null || type == "opp")
+              if (type == null)
                 PsaRelatedEntityRow(
                   isVisible: false,
                   title: LangUtil.getString('ProjectAccountLinkEditWindow',
@@ -251,7 +253,7 @@ class _AddRelatedEntityScreenState extends State<AddRelatedEntityScreen> {
                     }
                   },
                 ),
-              if (type == null || type == "opp")
+              if (type == null || type == "opp"||AuthUtil.hasAccess(int.parse(ACCESS_CODES['ROLE'].toString())))
                 PsaRelatedEntityRow(
                   isVisible: false,
                   title: LangUtil.getString('ProjectAccountLinkEditWindow',

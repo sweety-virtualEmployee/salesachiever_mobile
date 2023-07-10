@@ -44,12 +44,17 @@ class CommonHeader extends StatelessWidget {
         backgroundColor: Color(0xff4C99E0),
       ): entityType=="ACTION"?DynamicPsaHeader(
         isVisible: true,
-        icon: 'assets/images/actions_icon.png',
+        icon:entity["CLASS"]=="A"?"assets/images/new_apmt_action.png":
+        entity["CLASS"]=="T"? "assets/images/new_phone_action.png":
+        entity["CLASS"]=="E"?"assets/images/new_email_action.png":
+        entity["CLASS"]=="L"?"assets/images/new_doc_action.png":
+        entity["CLASS"]=="G"?"assets/images/new_general_action.png":
+            'assets/images/actions_icon.png',
         title: entity?['DESCRIPTION'],
         projectID: "",
         status: "",
         siteTown: entity?['ACTION_TIME'],
-        backgroundColor: Color(0xffae1a3e).withOpacity(0.1),
+        backgroundColor: Colors.white,
       ):DynamicPsaHeader(
         isVisible: true,
         icon: 'assets/images/projects_icon.png',

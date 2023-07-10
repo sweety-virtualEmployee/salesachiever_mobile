@@ -357,7 +357,7 @@ class _ProjectTabsState extends State<ProjectTabs> {
                   ),
                 ),
                 Spacer(),
-              GestureDetector(
+             /* GestureDetector(
                   onTap: () async {
                     String area="";
                     if(widget.entityType=="COMPANY"){
@@ -451,7 +451,7 @@ class _ProjectTabsState extends State<ProjectTabs> {
                       ],
                     ),
                   ),
-                )
+                )*/
               ]);
             }
             return Center(

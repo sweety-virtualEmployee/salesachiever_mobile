@@ -98,7 +98,7 @@ class _DynamicRelatedEntityScreenState
                                           '${widget.entity['FIRSTNAME'] ?? ''} ${widget.entity['SURNAME'] ?? ''}',
                                     }
                                   : {},
-                              type: "opp",
+                              type: "",
                             ),
                           ),
                         )
@@ -721,6 +721,8 @@ class _DynamicRelatedEntityScreenState
   }
 
   onLinkEdit(int index) async {
+
+    print("check the multi id${list[index]['MULTI_ID']}");
     context.loaderOverlay.show();
     String type = widget.type;
     var linkedEntity = list[index]['LINK_ID'] != null
