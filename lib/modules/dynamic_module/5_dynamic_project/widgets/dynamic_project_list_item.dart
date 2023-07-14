@@ -58,6 +58,7 @@ class _ProjectListItemWidgetState
       return ListTile(
         subtitle: ListView.builder(
           itemCount: map.length,
+          physics: NeverScrollableScrollPhysics(),
           shrinkWrap: true,
           itemBuilder: (BuildContext context, int index) {
             final key = map.keys.elementAt(index);
@@ -165,6 +166,7 @@ class _ProjectListItemWidgetState
         return ListTile(
           subtitle: ListView.builder(
             itemCount: map.length,
+            physics: NeverScrollableScrollPhysics(),
             shrinkWrap: true,
             itemBuilder: (BuildContext context, int index) {
               final key = map.keys.elementAt(index);
@@ -270,6 +272,7 @@ class _ProjectListItemWidgetState
             ? ListTile(
                 subtitle: ListView.builder(
                   itemCount: map.length,
+                  physics: NeverScrollableScrollPhysics(),
                   shrinkWrap: true,
                   itemBuilder: (BuildContext context, int index) {
                     final key = map.keys.elementAt(index);
@@ -376,6 +379,7 @@ class _ProjectListItemWidgetState
                 ? ListTile(
                     subtitle: ListView.builder(
                       itemCount: map.length,
+                      physics: NeverScrollableScrollPhysics(),
                       shrinkWrap: true,
                       itemBuilder: (BuildContext context, int index) {
                         final key = map.keys.elementAt(index);
@@ -487,6 +491,7 @@ class _ProjectListItemWidgetState
                     ? ListTile(
                         subtitle: ListView.builder(
                           itemCount: map.length,
+                          physics: NeverScrollableScrollPhysics(),
                           shrinkWrap: true,
                           itemBuilder: (BuildContext context, int index) {
                             final key = map.keys.elementAt(index);
@@ -607,6 +612,7 @@ class _ProjectListItemWidgetState
                         ? ListTile(
                             subtitle: ListView.builder(
                               itemCount: map.length,
+                              physics: NeverScrollableScrollPhysics(),
                               shrinkWrap: true,
                               itemBuilder: (BuildContext context, int index) {
                                 final key = map.keys.elementAt(index);

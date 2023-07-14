@@ -357,12 +357,49 @@ class _ProjectTabsState extends State<ProjectTabs> {
                   ),
                 ),
                 Spacer(),
-             /* GestureDetector(
+                widget.entityType=="QUOTATION" ?GestureDetector(
+                  onTap: () async {
+                    print("yes tab");
+                    String area="Quotation";
+                    var data = await service.getSubScribedReports(area,"6");
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) {
+                            return DynamicReportScreen(
+                                reports: data,
+                                id:_entity?['QUOTE_ID']
+                            );
+                          },
+                        ));
+                  },
+                  child: Container(
+                    padding: EdgeInsets.all(6),
+                    decoration: BoxDecoration(
+                        color: Colors.white,
+                        border: Border.all(color: Colors.grey)
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.only(left: 60.0),
+                          child: PlatformText("Issue"),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(right: 20.0),
+                          child: Icon(Icons.file_copy_rounded,color: Colors.grey,),
+                        )
+                      ],
+                    ),
+                  ),
+                ):SizedBox(),
+                GestureDetector(
                   onTap: () async {
                     String area="";
                     if(widget.entityType=="COMPANY"){
                       area = "Account";
-                      var data = await service.getSubScribedReports(area);
+                      var data = await service.getSubScribedReports(area,"Profile");
                       Navigator.push(
                           context,
                           MaterialPageRoute(
@@ -374,9 +411,9 @@ class _ProjectTabsState extends State<ProjectTabs> {
                             },
                           ));
                     }
-                   else if(widget.entityType=="PROJECT"){
+                    else if(widget.entityType=="PROJECT"){
                       area = "Project";
-                      var data = await service.getSubScribedReports(area);
+                      var data = await service.getSubScribedReports(area,"Profile");
                       Navigator.push(
                           context,
                           MaterialPageRoute(
@@ -390,7 +427,7 @@ class _ProjectTabsState extends State<ProjectTabs> {
                     }
                     else if(widget.entityType=="CONTACT"){
                       area = "Contact";
-                      var data = await service.getSubScribedReports(area);
+                      var data = await service.getSubScribedReports(area,"Profile");
                       Navigator.push(
                           context,
                           MaterialPageRoute(
@@ -404,7 +441,7 @@ class _ProjectTabsState extends State<ProjectTabs> {
                     }
                     else if(widget.entityType=="OPPORTUNITY"){
                       area = "Opportunity";
-                      var data = await service.getSubScribedReports(area);
+                      var data = await service.getSubScribedReports(area,"Profile");
                       Navigator.push(
                           context,
                           MaterialPageRoute(
@@ -418,7 +455,7 @@ class _ProjectTabsState extends State<ProjectTabs> {
                     }
                     else if(widget.entityType=="ACTION"){
                       area = "Action";
-                      var data = await service.getSubScribedReports(area);
+                      var data = await service.getSubScribedReports(area,"Profile");
                       Navigator.push(
                           context,
                           MaterialPageRoute(
@@ -434,8 +471,8 @@ class _ProjectTabsState extends State<ProjectTabs> {
                   child: Container(
                     padding: EdgeInsets.all(6),
                     decoration: BoxDecoration(
-                      color: Colors.white,
-                      border: Border.all(color: Colors.grey)
+                        color: Colors.white,
+                        border: Border.all(color: Colors.grey)
                     ),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -451,7 +488,7 @@ class _ProjectTabsState extends State<ProjectTabs> {
                       ],
                     ),
                   ),
-                )*/
+                ),
               ]);
             }
             return Center(

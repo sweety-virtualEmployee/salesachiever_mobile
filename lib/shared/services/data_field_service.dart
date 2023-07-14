@@ -23,6 +23,7 @@ class DataFieldService {
       Function onChange,
       [String? updatedFieldKey]) {
     List<Widget> widgets = [];
+    print("filedList of the projecy$filedList");
     for (dynamic field in filedList) {
       var isRequired = mandatoryFields.any((e) =>
           e['TABLE_NAME'] == field['TABLE_NAME'] &&

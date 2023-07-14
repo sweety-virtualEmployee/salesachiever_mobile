@@ -48,7 +48,7 @@ class LookupService {
 
   Future<void> getIpadFields(String entityType, bool dynmaicUIEnabled) async {
     List<dynamic> iPadFields = [];
-
+    print("check the dynamic ui enable for this section$dynmaicUIEnabled$entityType");
     if (dynmaicUIEnabled) {
       final dynamic response = await LookupApi().getIpadFields(entityType);
       print("response of the value");
