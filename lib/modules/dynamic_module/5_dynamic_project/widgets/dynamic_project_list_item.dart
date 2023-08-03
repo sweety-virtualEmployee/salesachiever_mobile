@@ -700,7 +700,7 @@ class _ProjectListItemWidgetState
                               dynamic project  = await DynamicProjectService()
                                   .getEntityById(
                                   widget.type, widget.entity['QUOTATION_QUOTE_ID']);
-                              print("project list");
+                              print("project list value");
                               log("${project.data.toString()}");
 
                               context.loaderOverlay.hide();

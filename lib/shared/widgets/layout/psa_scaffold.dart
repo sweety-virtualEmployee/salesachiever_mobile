@@ -114,7 +114,7 @@ class _HomeButtonState extends State<HomeButton> {
          Navigator.pushAndRemoveUntil(
         context,
         PageRouteBuilder(
-          pageBuilder: (_, __, ___) => DyanmicHomeScreen(),
+          pageBuilder: (_, __, ___) => HomeScreen(),
           transitionDuration: Duration(seconds: 0),
         ),
         (route) => false,

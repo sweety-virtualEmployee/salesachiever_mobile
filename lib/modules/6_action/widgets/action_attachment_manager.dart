@@ -25,7 +25,7 @@ class _ActionAttachmentManagerState extends State<ActionAttachmentManager> {
       children: [
         PsaButtonRow(
           isVisible: false,
-          title: 'Photos',
+          title: 'Documents',
           onTap: () => Navigator.push(
             context,
             platformPageRoute(

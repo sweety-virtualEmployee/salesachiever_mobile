@@ -218,6 +218,7 @@ class _LoginScreenState extends State<LoginScreen> {
             scale: MediaQuery.of(context).size.width > 480 ? 1 : 1.4,
           ),
         ),
+
         child: SafeArea(
           child: Padding(
             padding: const EdgeInsets.only(top: 20, left: 20, right: 20),

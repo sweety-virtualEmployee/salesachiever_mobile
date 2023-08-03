@@ -236,4 +236,32 @@ class DynamicProjectApi {
     print(response);
     return response.data;
   }
+
+  Future<dynamic> markIssueAsApproved(String quoteId) async {
+    final response = await Api().getResult('$api/System/System.CustomFunction?FunctionName=MarkQuoteAsIssued&Param1=$quoteId');
+    print("marked issued reports");
+    print(response);
+    return response.data;
+  }
+
+  Future<dynamic> documentMapping(String encodedFile,String projectId, String note,String description) async {
+    Response response =
+    await Api().post('$api/BlobStore/CreateDocumentEntityMapping', {
+    "ENTITY_ID": "0000680221",
+    "ENTITY_NAME": "ACTION",
+    "BLOB_TYPE": "1",
+    "BLOB_DATA": encodedFile,
+    "FILENAME": "image001.jpg*0000680215",
+    "DESCRIPTION": "image001.jpg",
+    });
+    return response.data;
+  }
+
+
+  Future<dynamic> getDocumentAction(String entityId) async {
+    print("api$entityId");
+    final response = await Api().getResult('$api/Document/$entityId;');
+    print(response);
+    return response.data;
+  }
 }

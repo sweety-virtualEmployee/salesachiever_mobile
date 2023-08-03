@@ -22,3 +22,10 @@ import 'package:salesachiever_mobile/CustomWidgets/pdf_screen.dart';
    ),
   );
 }
+
+String encodeFileToBase64(File file) {
+ List<int> fileBytes = file.readAsBytesSync();
+ String base64File = base64Encode(fileBytes);
+ print("base64fileString $base64File");
+ return base64File;
+}

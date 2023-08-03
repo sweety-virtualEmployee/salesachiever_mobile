@@ -221,6 +221,12 @@ class DynamicProjectService extends EntityService {
     return dataResult;
   }
 
+  Future<dynamic> markQuoteAsIssued(String quoteId) async {
+    final dynamic response = await DynamicProjectApi().markIssueAsApproved(quoteId);
+    return response;
+  }
+
+
   List<dynamic> getDynamicActiveFields() {
     List<dynamic> items =
     Hive.box<dynamic>('activeFields_quotation').values.toList();
@@ -231,5 +237,11 @@ class DynamicProjectService extends EntityService {
 
     return items.where((e) => e['FIELD_NAME'] != 'QUOTE_TYPE_ID').toList();
 
+  }
+
+  Future<dynamic> getDocuments(String entityId) async {
+    final dynamic response = await DynamicProjectApi().getDocumentAction(entityId);
+    log("document section$response");
+    return response;
   }
 }

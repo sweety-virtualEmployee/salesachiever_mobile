@@ -172,8 +172,7 @@ class _ActionEditScreenState extends State<ActionEditScreen> {
                       ),
                       if ((_action['CLASS'] == 'L' ||
                               _action['CLASS'] == 'A') &&
-                          _action['ACTION_ID'] != null &&
-                          AuthUtil.hasAccess(50021))
+                          _action['ACTION_ID'] != null )
                         ActionAttachmentManager(action: _action),
                       if (_action['CLASS'] != 'G')
                         ActionViewRelatedRecords(

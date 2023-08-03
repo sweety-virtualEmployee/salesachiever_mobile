@@ -1,25 +1,22 @@
 import 'dart:convert';
+import 'dart:io';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:loader_overlay/loader_overlay.dart';
 import 'package:salesachiever_mobile/modules/dynamic_module/5_dynamic_project/api/dynamic_project_api.dart';
 import 'package:salesachiever_mobile/modules/dynamic_module/5_dynamic_project/screens/dynamic_project_edit_screen.dart';
-import 'package:salesachiever_mobile/modules/dynamic_module/5_dynamic_project/screens/dynamic_psa_header.dart';
 import 'package:salesachiever_mobile/modules/dynamic_module/5_dynamic_project/screens/dynamic_report_pdf_screen.dart';
 import 'package:salesachiever_mobile/modules/dynamic_module/5_dynamic_project/services/dynamic_project_service.dart';
 import 'package:salesachiever_mobile/modules/dynamic_module/5_dynamic_project/widgets/common_header.dart';
-import 'package:salesachiever_mobile/modules/dynamic_module/5_dynamic_project/widgets/dynamic_project_view_related_records.dart';
 import 'package:salesachiever_mobile/shared/screens/dynamic_related_entity_screen.dart';
-import 'package:salesachiever_mobile/shared/screens/related_entity_screen.dart';
 import 'package:salesachiever_mobile/shared/widgets/elements/psa_progress_indicator.dart';
 import 'package:salesachiever_mobile/shared/widgets/layout/psa_scaffold.dart';
-import 'package:salesachiever_mobile/shared/widgets/psa_header.dart';
 import 'package:salesachiever_mobile/utils/decode_base64_util.dart';
 import 'package:salesachiever_mobile/utils/lang_util.dart';
 import 'package:salesachiever_mobile/utils/text_formatting_util.dart';
 
-import '../../../3_company/services/company_service.dart';
 
 class ProjectTabs extends StatefulWidget {
   // final List <ProjectForm>projectData;
@@ -59,7 +56,7 @@ class _ProjectTabsState extends State<ProjectTabs> {
   void initState() {
     _entity = this.widget.project;
     print("account name sche");
-    print(_entity["ACCTNAME"]);
+    print(_entity);
     print(widget.moduleId);
     print(widget.tabId);
     if(widget.tabType == "P"){
@@ -357,7 +354,7 @@ class _ProjectTabsState extends State<ProjectTabs> {
                   ),
                 ),
                 Spacer(),
-                widget.entityType=="QUOTATION" ?GestureDetector(
+                (widget.entityType=="QUOTATION" && _entity["APPROVED_ON"]!=null)?GestureDetector(
                   onTap: () async {
                     print("yes tab");
                     String area="Quotation";

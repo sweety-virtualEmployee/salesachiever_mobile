@@ -1,7 +1,12 @@
+import 'dart:io';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_pdfview/flutter_pdfview.dart';
 import 'package:salesachiever_mobile/shared/widgets/layout/psa_scaffold.dart';
+import 'package:path/path.dart' as path;
+
 
 class ActionPhotoPreviewScreen extends StatefulWidget {
   const ActionPhotoPreviewScreen({
@@ -92,41 +97,45 @@ class _PhotoPreviewState extends State<PhotoPreview> {
   @override
   void initState() {
     super.initState();
+    print(widget.photo["FILE"]);
+    print(widget.photo["FILENAME"]);
     textController.text = widget.photo['DESCRIPTION'];
   }
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      child: Container(
-        child: Column(
-          children: [
-            Expanded(
-              child: Container(
-                color: Colors.black,
-                child: Image.file(
-                  widget.photo['FILE'],
-                  fit: BoxFit.fitWidth,
-                ),
+      child: Column(
+        children: [
+          path.extension(widget.photo["FILENAME"].toString()).contains(".jpg'")?Expanded(
+            child: Container(
+              color: Colors.black,
+              child: Image.file(
+                widget.photo['FILE'],
+                fit: BoxFit.fitWidth,
               ),
             ),
-            Container(
-              child: Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 16, vertical: 32),
-                child: CupertinoTextField(
-                  controller: textController,
-                  placeholder: 'Description',
-                  onChanged: (text) {
-                    setState(() {
-                      this.widget.onDescriptionChanged(widget.index, text);
-                    });
-                  },
-                ),
+          ):Expanded(
+            child: PDFView(
+              filePath: "${widget.photo['FILE']}.pdf",
+            ),
+          ),
+          Container(
+            child: Padding(
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 16, vertical: 32),
+              child: CupertinoTextField(
+                controller: textController,
+                placeholder: 'Description',
+                onChanged: (text) {
+                  setState(() {
+                    this.widget.onDescriptionChanged(widget.index, text);
+                  });
+                },
               ),
-            )
-          ],
-        ),
+            ),
+          )
+        ],
       ),
     );
   }
