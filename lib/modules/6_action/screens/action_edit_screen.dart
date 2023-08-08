@@ -15,6 +15,7 @@ import 'package:salesachiever_mobile/shared/widgets/buttons/psa_edit_button.dart
 import 'package:salesachiever_mobile/shared/widgets/layout/psa_scaffold.dart';
 import 'package:salesachiever_mobile/shared/widgets/psa_header.dart';
 import 'package:salesachiever_mobile/utils/auth_util.dart';
+import 'package:salesachiever_mobile/utils/date_util.dart';
 import 'package:salesachiever_mobile/utils/error_util.dart';
 import 'package:salesachiever_mobile/utils/lang_util.dart';
 import 'package:salesachiever_mobile/utils/message_util.dart';
@@ -225,6 +226,7 @@ class _ActionEditScreenState extends State<ActionEditScreen> {
   }
 
   onSave() async {
+   print(_action);
     if (_readonly) {
       setState(() => _readonly = !_readonly);
       return;
@@ -233,30 +235,49 @@ class _ActionEditScreenState extends State<ActionEditScreen> {
     int count = 0;
     try {
       context.loaderOverlay.show();
+      print("her");
+      setState(() {
+        print(_action['ACTION_DATE']);
+        print(_action['ACTION_TIME']);
+        _action['ACTION_DATE'] = DateUtil.formatDate(_action['ACTION_DATE'],_action['ACTION_TIME']);
+        _action['ACTION_TIME'] = DateUtil.formatDate(_action['ACTION_DATE'],_action['ACTION_TIME']);
+        _action['ACTION_END_DATE'] = DateUtil.formatDate(_action['ACTION_END_DATE'],_action['ACTION_END_TIME']);
+        _action['ACTION_END_TIME'] = DateUtil.formatDate(_action['ACTION_END_DATE'],_action['ACTION_END_TIME']);
+       print("Set staete$_action");
+      });
+      if(DateTime.parse(_action['ACTION_DATE']).isBefore(DateTime.parse(_action['ACTION_END_DATE']))||
+          DateTime.parse(_action['ACTION_DATE']).isAtSameMomentAs(DateTime.parse(_action['ACTION_END_DATE']))){
+        print("action date is before");
+        if (_action['ACTION_ID'] != null) {
+          await ActionService().updateEntity(_action!['ACTION_ID'], _action);
+        } else {
+          var newEntity = await ActionService().addNewEntity(_action);
+          _action['ACTION_ID'] = newEntity['ACTION_ID'];
+          newAct = true;
+        }
 
-      if (_action['ACTION_ID'] != null) {
-        await ActionService().updateEntity(_action!['ACTION_ID'], _action);
-      } else {
-        var newEntity = await ActionService().addNewEntity(_action);
-        _action['ACTION_ID'] = newEntity['ACTION_ID'];
-        newAct = true;
+        if (_action['DEAL_ID'] != null && newAct) {
+          var deal = {};
+          deal['DEAL_ID'] = _action['DEAL_ID'];
+          deal['ACCT_ID'] = _action['ACCT_ID'];
+          deal['ACTION_ID'] = _action['ACTION_ID'];
+          await OpportunityService().addCompanyOppLink(deal);
+        }
+
+        setState(() => _readonly = !_readonly);
+
+        Navigator.of(context).popUntil((_) => count++ >= widget.popScreens);
+      }
+      else{
+        ErrorUtil.showErrorMessage(context, 'End Date must be after start date');
       }
 
-      if (_action['DEAL_ID'] != null && newAct) {
-        var deal = {};
-        deal['DEAL_ID'] = _action['DEAL_ID'];
-        deal['ACCT_ID'] = _action['ACCT_ID'];
-        deal['ACTION_ID'] = _action['ACTION_ID'];
-        await OpportunityService().addCompanyOppLink(deal);
-      }
-
-      setState(() => _readonly = !_readonly);
-
-      Navigator.of(context).popUntil((_) => count++ >= widget.popScreens);
     } on DioError catch (e) {
+      print(e.toString());
       ErrorUtil.showErrorMessage(context, e.message);
     } catch (e) {
       if (!newAct) {
+        print(e.toString());
         ErrorUtil.showErrorMessage(context, MessageUtil.getMessage('500'));
       } else {
         Navigator.of(context).popUntil((_) => count++ >= widget.popScreens);

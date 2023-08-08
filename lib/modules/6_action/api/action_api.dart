@@ -9,6 +9,7 @@ class ActionApi {
   ActionApi({this.listName}) : _api = Api();
 
   Future<dynamic> create(dynamic action) async {
+    print("Action creadte $action");
     Response response = await _api.post('/action/', action);
     return response.data;
   }

@@ -73,6 +73,7 @@ class _PsaTimeFieldRowState extends State<PsaTimeFieldRow> {
                     DatePicker.showTimePicker(
                       context,
                       showTitleActions: true,
+                      showSecondsColumn: false,
                       onChanged: (date) {
                         onDateSelect(date);
                       },
@@ -95,9 +96,11 @@ class _PsaTimeFieldRowState extends State<PsaTimeFieldRow> {
 
   void onDateSelect(DateTime date) {
     setState(() {
+      print("date chefbesdvjde");
+      print(date.toString());
       value = DateUtil.getFormattedTime(date.toString());
     });
 
-    if (widget.onChange != null) widget.onChange!(widget.fieldKey, value);
+    if (widget.onChange != null) widget.onChange!(widget.fieldKey, date.toString());
   }
 }

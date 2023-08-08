@@ -34,4 +34,28 @@ class DateUtil {
     String formatted = formatter.format(dt);
     return formatted;
   }
+
+  static String formatDate(String dateStr, String timeStr) {
+    if(dateStr.contains("T")){
+      List<String> arrActionDate = dateStr.split("T");
+      String strDate = arrActionDate[0];
+      List<String> arrActionTime = timeStr.split(" ");
+      String strTime = arrActionTime[1];
+      String formattedDate = "$strDate $strTime";
+      return formattedDate;
+
+    }
+    else{
+      List<String> arrActionDate = dateStr.split(" ");
+      String strDate = arrActionDate[0];
+      List<String> arrActionTime = timeStr.split(" ");
+      String strTime = arrActionTime[1];
+
+      String formattedDate = "$strDate $strTime";
+      return formattedDate;
+
+    }
+
+
+  }
 }
