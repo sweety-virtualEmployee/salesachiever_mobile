@@ -159,6 +159,7 @@ class _PsaEntityListViewState extends State<PsaEntityListView> {
                     controller: scrollController,
                     separatorBuilder: (context, index) => Divider(
                       color: Colors.black26,
+                      thickness: 1.9,
                     ),
                     itemCount: _snapshot.data.length + 1,
                     itemBuilder: (BuildContext _context, int index) {

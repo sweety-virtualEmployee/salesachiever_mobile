@@ -520,11 +520,10 @@ class _DynamicRelatedEntityScreenState
                                                                   TextOverflow
                                                                       .ellipsis,
                                                               softWrap: false,
+                                                              maxLines: 2,
                                                             )),
                                                       ),
-                                                      SizedBox(
-                                                        width: 50,
-                                                      ),
+
                                                       Expanded(
                                                         child: Padding(
                                                           padding:
@@ -555,6 +554,7 @@ class _DynamicRelatedEntityScreenState
                                                                 TextOverflow
                                                                     .ellipsis,
                                                             softWrap: false,
+                                                            maxLines: 2,
                                                           ),
                                                         ),
                                                       ),
@@ -604,10 +604,8 @@ class _DynamicRelatedEntityScreenState
                                                                   TextOverflow
                                                                       .ellipsis,
                                                               softWrap: false,
+                                                              maxLines: 2,
                                                             )),
-                                                      ),
-                                                      SizedBox(
-                                                        width: 50,
                                                       ),
                                                       Expanded(
                                                         child: Padding(
@@ -639,6 +637,7 @@ class _DynamicRelatedEntityScreenState
                                                                 TextOverflow
                                                                     .ellipsis,
                                                             softWrap: false,
+                                                            maxLines: 2,
                                                           ),
                                                         ),
                                                       ),

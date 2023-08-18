@@ -244,4 +244,20 @@ class DynamicProjectService extends EntityService {
     log("document section$response");
     return response;
   }
+
+  Future<dynamic> getUserBranch() async {
+    final dynamic response = await DynamicProjectApi().getUserBranch();
+    print("section$response");
+    return response;
+  }
+  Future<dynamic> getDefaultUserBranch() async {
+    final dynamic response = await DynamicProjectApi().getDefaultUserBranch();
+    print("section$response");
+    return response;
+  }
+
+  Future<dynamic> setDefaultLists(String s) async{
+     final dynamic response = await DynamicProjectApi().setDefaultUserBranch(s);
+     return response;
+  }
 }

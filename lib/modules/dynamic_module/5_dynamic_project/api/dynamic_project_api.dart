@@ -96,6 +96,7 @@ class DynamicProjectApi {
     return response.data;
   }
 
+
   Future<dynamic> getProject() async {
     final response = await Api().getResult('$api/System/System.CustomFunctionList?FunctionName=GetFieldsByForm&Param1=P001');
     return response.data;
@@ -161,7 +162,7 @@ class DynamicProjectApi {
 
     if (!classicSearch && searchText != '%25') {
       var filter = {
-        'TableName': 'PROJECT',
+         'TableName': 'PROJECT',
         'FieldName': 'PROJECT_TITLE',
         'Comparison': '2',
         'ItemValue': searchText,
@@ -264,4 +265,29 @@ class DynamicProjectApi {
     print(response);
     return response.data;
   }
-}
+
+  Future<dynamic> getUserBranch() async {
+    String user = StorageUtil.getString('loginName');
+    final response = await Api().getResult('$api/System/System.CustomFunctionList?FunctionName=GetUserBranches&Param1=$user');
+    print("getUserBranch${response.data}");
+    return response.data;
+  }
+
+  Future<dynamic> getDefaultUserBranch() async {
+    String user = StorageUtil.getString('loginName');
+    Response response = await Api().get('/user/user.config/?userid=$user&varname=DEFAULT_BRANCH&section=DEFAULTS');
+    print("default list${response.data}");
+    return response.data;
+  }
+
+  Future<dynamic> setDefaultUserBranch(String defaultID) async {
+    String user = StorageUtil.getString('loginName');
+    Response response = await Api().put('/user/user.config/',{
+      "SauserId": user,
+      "Section": "DEFAULTS",
+      "VarName": "DEFAULT_BRANCH",
+      "VarValue": defaultID,
+    });
+    print("default list${response.data}");
+    return response.data;
+  }}

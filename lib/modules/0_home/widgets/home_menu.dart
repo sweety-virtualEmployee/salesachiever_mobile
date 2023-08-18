@@ -18,8 +18,8 @@ class HomeMenu extends StatelessWidget {
   List<Widget> _generateMenu(Box<Locale> box) {
     List<Widget> list = [];
     final List menuItems = HomeService.getMenuItems(box);
-
     menuItems.forEach((menuItem) {
+      print("menu item${menuItem.title}");
       if (menuItem.accessCode == null || AuthUtil.hasAccess(int.parse(menuItem.accessCode.toString()))) {
         PsaMainMenuItem psaMenuItem = new PsaMainMenuItem(
           title: menuItem.title,

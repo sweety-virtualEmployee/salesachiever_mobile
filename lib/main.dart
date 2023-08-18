@@ -45,6 +45,7 @@ void main() async {
   await Hive.openBox<dynamic>('accessRights');
   await Hive.openBox<dynamic>('county');
   await Hive.openBox<dynamic>('userFieldVisibility');
+  await Hive.openBox<dynamic>('currencyValue');
 
   HttpOverrides.global = new MyHttpOverrides();
 

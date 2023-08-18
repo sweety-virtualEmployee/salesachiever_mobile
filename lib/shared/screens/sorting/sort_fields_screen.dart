@@ -22,9 +22,21 @@ class SortFieldsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    List<Locale> dataList = LangUtil.getLocaleList(type);
-    dataList.sort((a, b) => a.displayValue.compareTo(b.displayValue));
-
+    print("type value$type");
+    List<Locale> dataList;
+    if(type=="COMPANY"){
+      dataList = LangUtil.getLocaleList("ACCOUNT");
+      dataList.sort((a, b) => a.displayValue.compareTo(b.displayValue));
+      print("data list ${dataList.toString()}");
+    }else if(type=="OPPORTUNITY"){
+      dataList = LangUtil.getLocaleList("DEAL");
+      dataList.sort((a, b) => a.displayValue.compareTo(b.displayValue));
+      print("data list ${dataList.toString()}");
+    }else {
+      dataList = LangUtil.getLocaleList(type);
+      dataList.sort((a, b) => a.displayValue.compareTo(b.displayValue));
+      print("data list ${dataList.toString()}");
+    }
     return PsaScaffold(
       title: title,
       body: Padding(

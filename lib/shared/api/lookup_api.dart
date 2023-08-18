@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:salesachiever_mobile/api/api.dart';
 
 class LookupApi {
@@ -55,6 +57,14 @@ class LookupApi {
 
   Future<dynamic> getUserFieldVisibility() async {
     final response = await Api().get('/UserField/UserField.Visibility');
+    return response.data;
+  }
+  Future<dynamic> getCurrencyValue() async {
+    List<dynamic> headers = [];
+    var filter = [{"TableName":"DATA_DICT_FORMAT","FieldName":"TABLE_NAME","Comparison":"5","ItemValue":""}];
+
+    headers.add({'key': 'filterset', 'headers': jsonEncode(filter)});
+    final dynamic response  = await  Api().get('/list/CURFORMAT?pageSize=10&pageNumber=1',headers);
     return response.data;
   }
 }

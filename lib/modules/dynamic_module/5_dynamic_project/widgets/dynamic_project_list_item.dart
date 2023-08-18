@@ -1,14 +1,13 @@
-import 'dart:convert';
 import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:hive/hive.dart';
-import 'package:intl/intl.dart';
 import 'package:loader_overlay/loader_overlay.dart';
-import 'package:salesachiever_mobile/modules/5_project/screens/project_edit_screen.dart';
 import 'package:salesachiever_mobile/modules/5_project/services/project_service.dart';
 import 'package:salesachiever_mobile/modules/dynamic_module/5_dynamic_project/screens/dynamic_project_tabs.dart';
 import 'package:salesachiever_mobile/modules/dynamic_module/5_dynamic_project/services/dynamic_project_service.dart';
+import 'package:salesachiever_mobile/shared/api/lookup_api.dart';
+import 'package:salesachiever_mobile/shared/services/lookup_service.dart';
 import 'package:salesachiever_mobile/utils/date_util.dart';
 import 'package:salesachiever_mobile/modules/base/entity/widgets/entity_list_item.dart';
 import 'package:salesachiever_mobile/utils/lang_util.dart';
@@ -43,11 +42,20 @@ class DynamicProjectListItemWidget extends EntityListItemWidget {
 class _ProjectListItemWidgetState
     extends EntityListItemWidgetState<DynamicProjectListItemWidget> {
   Map<String, dynamic> map = Map<String, dynamic>();
-
+  List<dynamic> currencyDefaultValues=[];
   @override
   void initState() {
+    getCurrencyValue();
     map = widget.entity;
     super.initState();
+  }
+
+  getCurrencyValue() async {
+   final response =  await LookupApi().getCurrencyValue();
+   print("resposne from the api");
+   print(response);
+   currencyDefaultValues = response["Items"];
+   print("currency default values $currencyDefaultValues");
   }
 
   @override
@@ -70,6 +78,8 @@ class _ProjectListItemWidgetState
             print("parts$key${parts.length}");
             print("conetxtsdbid${contextId}");
             print("erfafxsgasjf${itemId}");
+            print("erfafxsgasjf${itemId}");
+            bool containsCurrencyValue = currencyDefaultValues.any((entry) => entry["FIELD_NAME"] == LangUtil.getString(contextId, itemId).toUpperCase());
             if (key.contains("_ID") && parts.length < 3) {
               return SizedBox();
             } else {
@@ -88,13 +98,11 @@ class _ProjectListItemWidgetState
                                 color: Color(0xff3cab4f)),
                             overflow: TextOverflow.ellipsis,
                             softWrap: false,
+                            maxLines: 2,
                           ),
                         ],
                       ),
                     ),
-                  ),
-                  SizedBox(
-                    width: 50,
                   ),
                   Expanded(
                     child: Padding(
@@ -103,9 +111,17 @@ class _ProjectListItemWidgetState
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            value != null ? value.toString() : "",
+                            value != null ? (key.contains(
+                                "DATE")|| key.contains("_ON")||key.contains("_TILL"))
+                                ? DateUtil
+                                .getFormattedDate(value)
+                                : key.contains(
+                                "TIME")
+                                ? DateUtil.getFormattedTime(
+                                value):containsCurrencyValue == true ?DateUtil.getCurrencyValue(value):value.toString():"",
                             overflow: TextOverflow.ellipsis,
                             softWrap: false,
+                            maxLines: 2,
                           ),
                         ],
                       ),
@@ -178,6 +194,8 @@ class _ProjectListItemWidgetState
               print("parts$key${parts.length}");
               print("conetxtsdbid${contextId}");
               print("erfafxsgasjf${itemId}");
+              bool containsCurrencyValue = currencyDefaultValues.any((entry) => entry["FIELD_NAME"] == LangUtil.getString(contextId, itemId).toUpperCase());
+              print("iscondition$containsCurrencyValue");
               if (key.contains("_ID") && parts.length < 4) {
                 return SizedBox();
               } else {
@@ -185,22 +203,23 @@ class _ProjectListItemWidgetState
                   children: [
                     Expanded(
                       child: Padding(
-                        padding: const EdgeInsets.fromLTRB(0, 4, 12, 4),
+                        padding: const EdgeInsets.fromLTRB(0, 4, 4, 4),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
                               '${LangUtil.getString(contextId, itemId)} :',
+                              overflow: TextOverflow.ellipsis,
+                              softWrap: false,
+                              maxLines: 2,
                               style: TextStyle(
                                   fontWeight: FontWeight.w700,
                                   color: Color(0xffA4C400)),
+
                             ),
                           ],
                         ),
                       ),
-                    ),
-                    SizedBox(
-                      width: 50,
                     ),
                     Expanded(
                       child: Padding(
@@ -209,9 +228,17 @@ class _ProjectListItemWidgetState
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              value != null ? value.toString() : "",
+                              value != null ? (key.contains(
+                                  "DATE")|| key.contains("_ON")||key.contains("_TILL"))
+                                  ? DateUtil
+                                  .getFormattedDate(value)
+                                  : key.contains(
+                                  "TIME")
+                                  ? DateUtil.getFormattedTime(
+                                  value):containsCurrencyValue == true ?DateUtil.getCurrencyValue(value):value.toString():"",
                               overflow: TextOverflow.ellipsis,
                               softWrap: false,
+                              maxLines: 2,
                             ),
                           ],
                         ),
@@ -284,6 +311,8 @@ class _ProjectListItemWidgetState
                     String itemId = key.contains("_")
                         ? key.substring(key.indexOf("_") + 1)
                         : key;
+                    print("erfafxsgasjf${itemId}");
+                    bool containsCurrencyValue = currencyDefaultValues.any((entry) => entry["FIELD_NAME"] == LangUtil.getString(contextId, itemId).toUpperCase());
                     if (key.contains("_ID") && parts.length < 3) {
                       return SizedBox();
                     } else {
@@ -291,7 +320,7 @@ class _ProjectListItemWidgetState
                         children: [
                           Expanded(
                             child: Padding(
-                              padding: const EdgeInsets.fromLTRB(0, 4, 12, 4),
+                              padding: const EdgeInsets.fromLTRB(0, 4, 4, 4),
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
@@ -302,13 +331,11 @@ class _ProjectListItemWidgetState
                                         color: Color(0xff4C99E0)),
                                     overflow: TextOverflow.ellipsis,
                                     softWrap: false,
+                                    maxLines: 2,
                                   ),
                                 ],
                               ),
                             ),
-                          ),
-                          SizedBox(
-                            width: 50,
                           ),
                           Expanded(
                             child: Padding(
@@ -317,9 +344,17 @@ class _ProjectListItemWidgetState
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                    value != null ? value.toString() : "",
+                                    value != null ? (key.contains(
+                                        "DATE")|| key.contains("_ON")||key.contains("_TILL"))
+                                        ? DateUtil
+                                        .getFormattedDate(value)
+                                        : key.contains(
+                                        "TIME")
+                                        ? DateUtil.getFormattedTime(
+                                        value):containsCurrencyValue == true ?DateUtil.getCurrencyValue(value):value.toString():"",
                                     overflow: TextOverflow.ellipsis,
                                     softWrap: false,
+                                    maxLines: 2,
                                   ),
                                 ],
                               ),
@@ -392,6 +427,8 @@ class _ProjectListItemWidgetState
                         print("parts$key${parts.length}");
                         print("conetxtsdbid${contextId}");
                         print("erfafxsgasjf${itemId}");
+                        print("erfafxsgasjf${itemId}");
+                        bool containsCurrencyValue = currencyDefaultValues.any((entry) => entry["FIELD_NAME"] == LangUtil.getString(contextId, itemId).toUpperCase());
                         if (key.contains("_ID") && parts.length < 3) {
                           return SizedBox();
                         } else {
@@ -400,7 +437,7 @@ class _ProjectListItemWidgetState
                               Expanded(
                                 child: Padding(
                                   padding:
-                                      const EdgeInsets.fromLTRB(0, 4, 12, 4),
+                                      const EdgeInsets.fromLTRB(0, 4, 4, 4),
                                   child: Column(
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,
@@ -412,13 +449,11 @@ class _ProjectListItemWidgetState
                                             color: Color(0xffE67E6B)),
                                         overflow: TextOverflow.ellipsis,
                                         softWrap: false,
+                                        maxLines: 2,
                                       ),
                                     ],
                                   ),
                                 ),
-                              ),
-                              SizedBox(
-                                width: 50,
                               ),
                               Expanded(
                                 child: Padding(
@@ -429,9 +464,17 @@ class _ProjectListItemWidgetState
                                         CrossAxisAlignment.start,
                                     children: [
                                       Text(
-                                        value != null ? value.toString() : "",
+                                        value != null ? (key.contains(
+                                            "DATE")|| key.contains("_ON")||key.contains("_TILL"))
+                                            ? DateUtil
+                                            .getFormattedDate(value)
+                                            : key.contains(
+                                            "TIME")
+                                            ? DateUtil.getFormattedTime(
+                                            value):containsCurrencyValue == true ?DateUtil.getCurrencyValue(value):value.toString():"",
                                         overflow: TextOverflow.ellipsis,
                                         softWrap: false,
+                                        maxLines: 2,
                                       ),
                                     ],
                                   ),
@@ -508,6 +551,8 @@ class _ProjectListItemWidgetState
                                 : key;
                             print("conetxtchvs$contextId");
                             print("itemID$itemId");
+                            print("erfafxsgasjf${itemId}");
+                            bool containsCurrencyValue = currencyDefaultValues.any((entry) => entry["FIELD_NAME"] == LangUtil.getString(contextId, itemId).toUpperCase());
                             if ((key.contains("_ID") && parts.length < 3) ||
                                 key.contains("__") ||
                                 key == "ACTION_SAUSER") {
@@ -518,7 +563,7 @@ class _ProjectListItemWidgetState
                                   Expanded(
                                     child: Padding(
                                       padding: const EdgeInsets.fromLTRB(
-                                          0, 4, 12, 4),
+                                          0, 4, 4, 4),
                                       child: Column(
                                         crossAxisAlignment:
                                             CrossAxisAlignment.start,
@@ -535,9 +580,6 @@ class _ProjectListItemWidgetState
                                       ),
                                     ),
                                   ),
-                                  SizedBox(
-                                    width: 50,
-                                  ),
                                   Expanded(
                                     child: Padding(
                                       padding:
@@ -547,11 +589,17 @@ class _ProjectListItemWidgetState
                                             CrossAxisAlignment.start,
                                         children: [
                                           Text(
-                                            value != null
-                                                ? value.toString()
-                                                : "",
+                                            value != null ? (key.contains(
+                                                "DATE")|| key.contains("_ON")||key.contains("_TILL"))
+                                                ? DateUtil
+                                                .getFormattedDate(value)
+                                                : key.contains(
+                                                "TIME")
+                                                ? DateUtil.getFormattedTime(
+                                                value):containsCurrencyValue == true ?DateUtil.getCurrencyValue(value):value.toString():"",
                                             overflow: TextOverflow.ellipsis,
                                             softWrap: false,
+                                            maxLines: 2,
                                           ),
                                         ],
                                       ),
@@ -626,6 +674,8 @@ class _ProjectListItemWidgetState
                                 print("parts$key${parts.length}");
                                 print("conetxtsdbid${contextId}");
                                 print("erfafxsgasjf${itemId}");
+                                print("erfafxsgasjf${itemId}");
+                                bool containsCurrencyValue = currencyDefaultValues.any((entry) => entry["FIELD_NAME"] == LangUtil.getString(contextId, itemId).toUpperCase());
                                 if (key.contains("_ID")) {
                                   return SizedBox();
                                 } else {
@@ -634,7 +684,7 @@ class _ProjectListItemWidgetState
                                       Expanded(
                                         child: Padding(
                                           padding: const EdgeInsets.fromLTRB(
-                                              0, 4, 12, 4),
+                                              0, 4, 4, 4),
                                           child: Column(
                                             crossAxisAlignment:
                                                 CrossAxisAlignment.start,
@@ -646,13 +696,11 @@ class _ProjectListItemWidgetState
                                                     color: Color(0xff00aba9)),
                                                 overflow: TextOverflow.ellipsis,
                                                 softWrap: false,
+                                                maxLines: 2,
                                               ),
                                             ],
                                           ),
                                         ),
-                                      ),
-                                      SizedBox(
-                                        width: 50,
                                       ),
                                       Expanded(
                                         child: Padding(
@@ -663,11 +711,17 @@ class _ProjectListItemWidgetState
                                                 CrossAxisAlignment.start,
                                             children: [
                                               Text(
-                                                value != null
-                                                    ? value.toString()
-                                                    : "",
+                                                value != null ? (key.contains(
+                                                    "DATE")|| key.contains("_ON")||key.contains("_TILL"))
+                                                    ? DateUtil
+                                                    .getFormattedDate(value)
+                                                    : key.contains(
+                                                    "TIME")
+                                                    ? DateUtil.getFormattedTime(
+                                                    value):containsCurrencyValue == true ?DateUtil.getCurrencyValue(value):value.toString():"",
                                                 overflow: TextOverflow.ellipsis,
                                                 softWrap: false,
+                                                maxLines: 2,
                                               ),
                                             ],
                                           ),

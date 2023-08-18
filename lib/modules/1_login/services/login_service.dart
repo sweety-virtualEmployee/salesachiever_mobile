@@ -36,6 +36,8 @@ class LoginService {
     _fetchUserFieldVisibility();
     _fetchUserFields();
     _fetchSystemCounty();
+    _fetchCurrencyValue();
+
   }
 
   Future<void> _saveLoginDetails(
@@ -138,4 +140,10 @@ class LoginService {
     LookupService lookupService = LookupService();
     await lookupService.getSystemCounty();
   }
+
+  Future<void> _fetchCurrencyValue() async {
+    LookupService lookupService = LookupService();
+    await lookupService.getCurrencyValue();
+  }
+
 }

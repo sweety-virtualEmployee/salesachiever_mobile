@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:developer';
 
 import 'package:hive/hive.dart';
@@ -175,4 +176,31 @@ class LookupService {
 
     return defaultValues;
   }
+
+  Future<dynamic> getCurrencyValue() async {
+    final dynamic response = await LookupApi().getCurrencyValue();
+
+    if (response != null) {
+      final List<dynamic> currencyValue = response['Items'];
+
+      await Hive.box<dynamic>('currencyValue').clear();
+      await Hive.box<dynamic>('currencyValue')
+          .addAll(currencyValue);
+    }
+  }
+
+  List<dynamic> getDefaultCurrencyValues(String entityType) {
+    print("cherkcnskjabhjskhbjak");
+    print(Hive.box<dynamic>('currencyValue')
+        .values.toList());
+    print("entity of currency${entityType}");
+    var defaultValues = Hive.box<dynamic>('currencyValue')
+        .values
+        .where((e) =>
+    e['FIELD_NAME'] == entityType.toUpperCase())
+        .toList();
+    print(defaultValues);
+    return defaultValues;
+  }
+
 }

@@ -37,7 +37,8 @@ class _PsaDateFieldRowState extends State<PsaDateFieldRow> {
   void initState() {
     textController.text = widget.value?.toString() ?? '';
     value = DateUtil.getFormattedDate(widget.value);
-   // value = widget.value;
+    print("title${widget.title}");
+    print("value check $value");
     super.initState();
   }
 

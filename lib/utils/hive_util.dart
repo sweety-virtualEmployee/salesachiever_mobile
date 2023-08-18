@@ -15,8 +15,6 @@ class HiveUtil {
 
   static String getContextId(
       String entityType, String tableName, String fieldName) {
-    print("tablename$tableName");
-    print("fieldname$fieldName");
     var result = Hive.box<dynamic>('dataDictionaryLookups').values.firstWhere(
         (e) => e['TABLE_NAME'] == tableName && e['FIELD_NAME'] == fieldName,
         orElse: () => null);

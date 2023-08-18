@@ -247,7 +247,6 @@ class _ActionEditScreenState extends State<ActionEditScreen> {
       });
       if(DateTime.parse(_action['ACTION_DATE']).isBefore(DateTime.parse(_action['ACTION_END_DATE']))||
           DateTime.parse(_action['ACTION_DATE']).isAtSameMomentAs(DateTime.parse(_action['ACTION_END_DATE']))){
-        print("action date is before");
         if (_action['ACTION_ID'] != null) {
           await ActionService().updateEntity(_action!['ACTION_ID'], _action);
         } else {
@@ -269,7 +268,7 @@ class _ActionEditScreenState extends State<ActionEditScreen> {
         Navigator.of(context).popUntil((_) => count++ >= widget.popScreens);
       }
       else{
-        ErrorUtil.showErrorMessage(context, 'End Date must be after start date');
+        ErrorUtil.showErrorMessage(context, 'Start Date cannot be later than End Date');
       }
 
     } on DioError catch (e) {

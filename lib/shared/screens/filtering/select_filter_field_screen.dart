@@ -24,20 +24,55 @@ class SelectFilterFieldScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    List<dynamic> lookupFields = Hive.box<dynamic>('dataDictionary')
-        .values
-        .where((e) =>
-            e['TABLE_NAME'].toString().toLowerCase() == type.toLowerCase() &&
-            e['FIELD_TYPE'] == 'L')
-        .map((e) => {
-              'TEXT': LangUtil.getListValue(type, e['FIELD_NAME']),
-              'FIELD_NAME': e['FIELD_NAME'],
-              'TABLE_NAME': e['TABLE_NAME'].toString().toUpperCase()
-            })
-        .toList();
+    List<dynamic> lookupFields;
+    if(type=="COMPANY"){
+      lookupFields = Hive.box<dynamic>('dataDictionary')
+          .values
+          .where((e) =>
+      e['TABLE_NAME'].toString().toLowerCase() == "ACCOUNT".toLowerCase() &&
+          e['FIELD_TYPE'] == 'L')
+          .map((e) => {
+        'TEXT': LangUtil.getListValue("ACCOUNT", e['FIELD_NAME']),
+        'FIELD_NAME': e['FIELD_NAME'],
+        'TABLE_NAME': e['TABLE_NAME'].toString().toUpperCase()
+      })
+          .toList();
 
-    lookupFields.sort((a, b) => a['TEXT'].compareTo(b['TEXT']));
+      lookupFields.sort((a, b) => a['TEXT'].compareTo(b['TEXT']));
+    }
+    else if(type=="OPPORTUNITY"){
+      lookupFields = Hive
+          .box<dynamic>('dataDictionary')
+          .values
+          .where((e) =>
+      e['TABLE_NAME'].toString().toLowerCase() == "DEAL".toLowerCase() &&
+          e['FIELD_TYPE'] == 'L')
+          .map((e) =>
+      {
+        'TEXT': LangUtil.getListValue("DEAL", e['FIELD_NAME']),
+        'FIELD_NAME': e['FIELD_NAME'],
+        'TABLE_NAME': e['TABLE_NAME'].toString().toUpperCase()
+      })
+          .toList();
 
+      lookupFields.sort((a, b) => a['TEXT'].compareTo(b['TEXT']));
+    }else {
+      lookupFields = Hive
+          .box<dynamic>('dataDictionary')
+          .values
+          .where((e) =>
+      e['TABLE_NAME'].toString().toLowerCase() == type.toLowerCase() &&
+          e['FIELD_TYPE'] == 'L')
+          .map((e) =>
+      {
+        'TEXT': LangUtil.getListValue(type, e['FIELD_NAME']),
+        'FIELD_NAME': e['FIELD_NAME'],
+        'TABLE_NAME': e['TABLE_NAME'].toString().toUpperCase()
+      })
+          .toList();
+
+      lookupFields.sort((a, b) => a['TEXT'].compareTo(b['TEXT']));
+    }
     return PsaScaffold(
       title: title,
       body: Padding(

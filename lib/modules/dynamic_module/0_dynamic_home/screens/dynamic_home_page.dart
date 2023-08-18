@@ -14,6 +14,7 @@ import 'package:salesachiever_mobile/modules/7_calendar/screens/calendar_screen.
 import 'package:salesachiever_mobile/modules/8_create_record/screens/create_record_screen.dart';
 import 'package:salesachiever_mobile/modules/9_settings/screens/settings_screen.dart';
 import 'package:salesachiever_mobile/modules/dynamic_module/0_dynamic_home/widgets/home_menu.dart';
+import 'package:salesachiever_mobile/modules/dynamic_module/5_dynamic_project/screens/dynamic_branch_list_Section.dart';
 import 'package:salesachiever_mobile/modules/dynamic_module/5_dynamic_project/screens/dynamic_project_list_screen.dart';
 import 'package:salesachiever_mobile/shared/services/lookup_service.dart';
 import 'package:salesachiever_mobile/shared/widgets/layout/psa_scaffold.dart';
@@ -38,7 +39,6 @@ class _HomeScreenState extends State<DyanmicHomeScreen> {
   void initState() {
     callApi();
     print("Check role");
-
     super.initState();
   }
 
@@ -118,6 +118,7 @@ class _HomeScreenState extends State<DyanmicHomeScreen> {
             if (item == 'CALENDAR') return CalendarScreen();
             if (item == 'CREATERECORD') return CreateRecordScreen();
             if (item == 'SETTINGS') return SettingsScreen();
+            if(item =='API')  return DynamicBranchListSection();
 
             return DyanmicHomeScreen();
           },
@@ -139,14 +140,14 @@ class _HomeScreenState extends State<DyanmicHomeScreen> {
       title: LangUtil.getString('Application', 'Application.Title'),
       showHome: false,
       body: DynamicHomeMenu(
-        itemSelectedCallback: (item) {
+        itemSelectedCallback: (item) async {
           setState(() {
             _selectedItem = item;
           });
           print("item shfv$item");
 
           if (item == 'HOME') {
-            // _resetScreen();
+            print("api is called");
           } else if (item == 'EMAILUS') {
             // _launchURL();
           } else {
