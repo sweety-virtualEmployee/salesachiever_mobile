@@ -2,12 +2,12 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:hive/hive.dart';
+import 'package:intl/intl.dart';
 import 'package:loader_overlay/loader_overlay.dart';
 import 'package:salesachiever_mobile/modules/5_project/services/project_service.dart';
 import 'package:salesachiever_mobile/modules/dynamic_module/5_dynamic_project/screens/dynamic_project_tabs.dart';
 import 'package:salesachiever_mobile/modules/dynamic_module/5_dynamic_project/services/dynamic_project_service.dart';
 import 'package:salesachiever_mobile/shared/api/lookup_api.dart';
-import 'package:salesachiever_mobile/shared/services/lookup_service.dart';
 import 'package:salesachiever_mobile/utils/date_util.dart';
 import 'package:salesachiever_mobile/modules/base/entity/widgets/entity_list_item.dart';
 import 'package:salesachiever_mobile/utils/lang_util.dart';
@@ -42,7 +42,9 @@ class DynamicProjectListItemWidget extends EntityListItemWidget {
 class _ProjectListItemWidgetState
     extends EntityListItemWidgetState<DynamicProjectListItemWidget> {
   Map<String, dynamic> map = Map<String, dynamic>();
-  List<dynamic> currencyDefaultValues=[];
+  List<dynamic> currencyDefaultValues = [];
+  bool isLoading = false;
+
   @override
   void initState() {
     getCurrencyValue();
@@ -51,11 +53,38 @@ class _ProjectListItemWidgetState
   }
 
   getCurrencyValue() async {
-   final response =  await LookupApi().getCurrencyValue();
-   print("resposne from the api");
-   print(response);
-   currencyDefaultValues = response["Items"];
-   print("currency default values $currencyDefaultValues");
+    final response = await LookupApi().getCurrencyValue();
+    print("resposne from the api");
+    print(response);
+    setState(() {
+      currencyDefaultValues = response["Items"];
+    });
+
+    print("currency default values $currencyDefaultValues");
+  }
+
+  bool isStringDate(String input) {
+    print("let see the date $input");
+    try {
+      List<String> formats = [
+        "yyyy-MM-dd'T'HH:mm:ss", // ISO 8601 format
+        // Add more formats as needed
+      ];
+      for (var format in formats) {
+        print("for lopp");
+        var dateFormat = DateFormat(format);
+        print(dateFormat);
+        DateTime dateTime = dateFormat.parseStrict(input);
+        print("Date time $dateTime");
+        if (dateTime != null) {
+          return true;
+        }
+      }
+
+      return false; // None of the formats matched
+    } catch (e) {
+      return false; // Parsing error means it's not a date
+    }
   }
 
   @override
@@ -71,7 +100,8 @@ class _ProjectListItemWidgetState
           itemBuilder: (BuildContext context, int index) {
             final key = map.keys.elementAt(index);
             final value = map[key];
-            String contextId = key.contains("_") ?key.substring(0, key.indexOf('_')):key;
+            String contextId =
+                key.contains("_") ? key.substring(0, key.indexOf('_')) : key;
             String itemId =
                 key.contains("_") ? key.substring(key.indexOf("_") + 1) : key;
             List<String> parts = key.split('_');
@@ -79,7 +109,9 @@ class _ProjectListItemWidgetState
             print("conetxtsdbid${contextId}");
             print("erfafxsgasjf${itemId}");
             print("erfafxsgasjf${itemId}");
-            bool containsCurrencyValue = currencyDefaultValues.any((entry) => entry["FIELD_NAME"] == LangUtil.getString(contextId, itemId).toUpperCase());
+            bool containsCurrencyValue = currencyDefaultValues.any((entry) =>
+                entry["FIELD_NAME"] ==
+                LangUtil.getString(contextId, itemId).toUpperCase());
             if (key.contains("_ID") && parts.length < 3) {
               return SizedBox();
             } else {
@@ -111,14 +143,15 @@ class _ProjectListItemWidgetState
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            value != null ? (key.contains(
-                                "DATE")|| key.contains("_ON")||key.contains("_TILL"))
-                                ? DateUtil
-                                .getFormattedDate(value)
-                                : key.contains(
-                                "TIME")
-                                ? DateUtil.getFormattedTime(
-                                value):containsCurrencyValue == true ?DateUtil.getCurrencyValue(value):value.toString():"",
+                            value != null
+                                ? (value is String && isStringDate(value))
+                                    ? DateUtil.getFormattedDate(value)
+                                    : key.contains("TIME")
+                                        ? DateUtil.getFormattedTime(value)
+                                        : containsCurrencyValue == true
+                                            ? DateUtil.getCurrencyValue(value)
+                                            : value.toString()
+                                : "",
                             overflow: TextOverflow.ellipsis,
                             softWrap: false,
                             maxLines: 2,
@@ -193,9 +226,16 @@ class _ProjectListItemWidgetState
               List<String> parts = key.split('_');
               print("parts$key${parts.length}");
               print("conetxtsdbid${contextId}");
-              print("erfafxsgasjf${itemId}");
-              bool containsCurrencyValue = currencyDefaultValues.any((entry) => entry["FIELD_NAME"] == LangUtil.getString(contextId, itemId).toUpperCase());
+              print(
+                  "erfafxsgasjf${LangUtil.getString(contextId, itemId).toUpperCase()}");
+              bool containsCurrencyValue = currencyDefaultValues.any((entry) =>
+                  entry["FIELD_NAME"] ==
+                  LangUtil.getString(contextId, itemId).toUpperCase());
               print("iscondition$containsCurrencyValue");
+              if (value is String) {
+                isStringDate(value);
+                print("keyvalue pair$key$value");
+              }
               if (key.contains("_ID") && parts.length < 4) {
                 return SizedBox();
               } else {
@@ -215,7 +255,6 @@ class _ProjectListItemWidgetState
                               style: TextStyle(
                                   fontWeight: FontWeight.w700,
                                   color: Color(0xffA4C400)),
-
                             ),
                           ],
                         ),
@@ -228,14 +267,15 @@ class _ProjectListItemWidgetState
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              value != null ? (key.contains(
-                                  "DATE")|| key.contains("_ON")||key.contains("_TILL"))
-                                  ? DateUtil
-                                  .getFormattedDate(value)
-                                  : key.contains(
-                                  "TIME")
-                                  ? DateUtil.getFormattedTime(
-                                  value):containsCurrencyValue == true ?DateUtil.getCurrencyValue(value):value.toString():"",
+                              value != null
+                                  ? (value is String && isStringDate(value))
+                                      ? DateUtil.getFormattedDate(value)
+                                      : key.contains("TIME")
+                                          ? DateUtil.getFormattedTime(value)
+                                          : containsCurrencyValue == true
+                                              ? DateUtil.getCurrencyValue(value)
+                                              : value.toString()
+                                  : "",
                               overflow: TextOverflow.ellipsis,
                               softWrap: false,
                               maxLines: 2,
@@ -295,8 +335,251 @@ class _ProjectListItemWidgetState
           },
         );
       } else {
-        return widget.type == 'CONTACT'
-            ? ListTile(
+        if (widget.type == 'CONTACT') {
+          return ListTile(
+            subtitle: ListView.builder(
+              itemCount: map.length,
+              physics: NeverScrollableScrollPhysics(),
+              shrinkWrap: true,
+              itemBuilder: (BuildContext context, int index) {
+                final key = map.keys.elementAt(index);
+                final value = map[key];
+                List<String> parts = key.split('_');
+                String contextId = key.contains("_")
+                    ? key.substring(0, key.indexOf('_'))
+                    : "CONTACT";
+                String itemId = key.contains("_")
+                    ? key.substring(key.indexOf("_") + 1)
+                    : key;
+                print("erfafxsgasjf${itemId}");
+                bool containsCurrencyValue = currencyDefaultValues.any(
+                    (entry) =>
+                        entry["FIELD_NAME"] ==
+                        LangUtil.getString(contextId, itemId).toUpperCase());
+                if (key.contains("_ID") && parts.length < 3) {
+                  return SizedBox();
+                } else {
+                  return Row(
+                    children: [
+                      Expanded(
+                        child: Padding(
+                          padding: const EdgeInsets.fromLTRB(0, 4, 4, 4),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                '${LangUtil.getString(contextId, itemId)} :',
+                                style: TextStyle(
+                                    fontWeight: FontWeight.w700,
+                                    color: Color(0xff4C99E0)),
+                                overflow: TextOverflow.ellipsis,
+                                softWrap: false,
+                                maxLines: 2,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      Expanded(
+                        child: Padding(
+                          padding: const EdgeInsets.fromLTRB(0, 4, 0, 4),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                value != null
+                                    ? (value is String && isStringDate(value))
+                                        ? DateUtil.getFormattedDate(value)
+                                        : key.contains("TIME")
+                                            ? DateUtil.getFormattedTime(value)
+                                            : containsCurrencyValue == true
+                                                ? DateUtil.getCurrencyValue(
+                                                    value)
+                                                : value.toString()
+                                    : "",
+                                overflow: TextOverflow.ellipsis,
+                                softWrap: false,
+                                maxLines: 2,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  );
+                }
+              },
+            ),
+            trailing: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(context.platformIcons.rightChevron),
+              ],
+            ),
+            onTap: () async {
+              if (widget.isSelectable) {
+                Navigator.pop(context, {
+                  'ID': widget.entity['ACCT_ID'],
+                  'TEXT': widget.entity['FIRSTNAME'],
+                  'ACCT_ID': widget.entity['ACCT_ID'],
+                  'ACCTNAME': widget.entity['SURNAME'],
+                });
+                return;
+              }
+
+              context.loaderOverlay.show();
+              dynamic project = await DynamicProjectService()
+                  .getEntityById(widget.type, widget.entity['CONT_ID']);
+
+              print("project list");
+              log("${project.data.toString()}");
+
+              context.loaderOverlay.hide();
+
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) {
+                    return ProjectTabs(
+                      project: project.data,
+                      title: widget.entity['PROJECT_TITLE'] != null
+                          ? widget.entity['PROJECT_TITLE']
+                          : "",
+                      readonly: true,
+                      refresh: widget.refresh,
+                      moduleId: "004",
+                      entityType: widget.type,
+                    );
+                  },
+                ),
+              ).then((value) => widget.refresh());
+            },
+          );
+        } else {
+          if (widget.type == 'PROJECT') {
+            return ListTile(
+              subtitle: ListView.builder(
+                itemCount: map.length,
+                physics: NeverScrollableScrollPhysics(),
+                shrinkWrap: true,
+                itemBuilder: (BuildContext context, int index) {
+                  final key = map.keys.elementAt(index);
+                  final value = map[key];
+                  String contextId = key.substring(0, key.indexOf('_'));
+                  String itemId = key.contains("_")
+                      ? key.substring(key.indexOf("_") + 1)
+                      : key;
+                  List<String> parts = key.split('_');
+                  print("parts$key${parts.length}");
+                  print("conetxtsdbid${contextId}");
+                  print("erfafxsgasjf${itemId}");
+                  print("erfafxsgasjf${itemId}");
+                  bool containsCurrencyValue = currencyDefaultValues.any(
+                      (entry) =>
+                          entry["FIELD_NAME"] ==
+                          LangUtil.getString(contextId, itemId).toUpperCase());
+                  if (key.contains("_ID") && parts.length < 3) {
+                    return SizedBox();
+                  } else {
+                    return Row(
+                      children: [
+                        Expanded(
+                          child: Padding(
+                            padding: const EdgeInsets.fromLTRB(0, 4, 4, 4),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  '${LangUtil.getString(contextId, itemId)} :',
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.w700,
+                                      color: Color(0xffE67E6B)),
+                                  overflow: TextOverflow.ellipsis,
+                                  softWrap: false,
+                                  maxLines: 2,
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                        Expanded(
+                          child: Padding(
+                            padding: const EdgeInsets.fromLTRB(0, 4, 0, 4),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  value != null
+                                      ? (value is String && isStringDate(value))
+                                          ? DateUtil.getFormattedDate(value)
+                                          : key.contains("TIME")
+                                              ? DateUtil.getFormattedTime(value)
+                                              : containsCurrencyValue == true
+                                                  ? DateUtil.getCurrencyValue(
+                                                      value)
+                                                  : value.toString()
+                                      : "",
+                                  overflow: TextOverflow.ellipsis,
+                                  softWrap: false,
+                                  maxLines: 2,
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
+                    );
+                  }
+                },
+              ),
+              trailing: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(context.platformIcons.rightChevron),
+                ],
+              ),
+              onTap: () async {
+                if (widget.isSelectable) {
+                  Navigator.pop(context, {
+                    'ID': widget.entity['PROJECT_ID'],
+                    'TEXT': widget.entity['PROJECT_TITLE'],
+                    'ACCT_ID': widget.entity['PROJECT_ID'],
+                    'ACCTNAME': widget.entity['PROJECT_TITLE'],
+                  });
+                  return;
+                }
+
+                context.loaderOverlay.show();
+
+                dynamic project = await ProjectService()
+                    .getEntity(widget.entity['PROJECT_ID']);
+                print("project list");
+                log("${project.data.toString()}");
+
+                context.loaderOverlay.hide();
+
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) {
+                      return ProjectTabs(
+                        project: project.data,
+                        title: widget.entity['PROJECT_TITLE'] != null
+                            ? widget.entity['PROJECT_TITLE']
+                            : "",
+                        readonly: true,
+                        refresh: widget.refresh,
+                        moduleId: "005",
+                        entityType: widget.type,
+                      );
+                    },
+                  ),
+                ).then((value) => widget.refresh());
+              },
+            );
+          } else {
+            if (widget.type == 'ACTION') {
+              return ListTile(
                 subtitle: ListView.builder(
                   itemCount: map.length,
                   physics: NeverScrollableScrollPhysics(),
@@ -305,15 +588,26 @@ class _ProjectListItemWidgetState
                     final key = map.keys.elementAt(index);
                     final value = map[key];
                     List<String> parts = key.split('_');
-                    String contextId = key.contains("_")
-                        ? key.substring(0, key.indexOf('_'))
-                        : "CONTACT";
+                    print("sadrtfYDJHSCF${key}${parts.length - 1}");
+                    String contextId = key.contains("__")
+                        ? "ACTION"
+                        : key.contains("_")
+                            ? key.substring(0, key.indexOf('_'))
+                            : "ACTION";
                     String itemId = key.contains("_")
                         ? key.substring(key.indexOf("_") + 1)
                         : key;
+                    print("conetxtchvs$contextId");
+                    print("itemID$itemId");
                     print("erfafxsgasjf${itemId}");
-                    bool containsCurrencyValue = currencyDefaultValues.any((entry) => entry["FIELD_NAME"] == LangUtil.getString(contextId, itemId).toUpperCase());
-                    if (key.contains("_ID") && parts.length < 3) {
+                    bool containsCurrencyValue = currencyDefaultValues.any(
+                        (entry) =>
+                            entry["FIELD_NAME"] ==
+                            LangUtil.getString(contextId, itemId)
+                                .toUpperCase());
+                    if ((key.contains("_ID") && parts.length < 3) ||
+                        key.contains("__") ||
+                        key == "ACTION_SAUSER") {
                       return SizedBox();
                     } else {
                       return Row(
@@ -328,10 +622,9 @@ class _ProjectListItemWidgetState
                                     '${LangUtil.getString(contextId, itemId)} :',
                                     style: TextStyle(
                                         fontWeight: FontWeight.w700,
-                                        color: Color(0xff4C99E0)),
+                                        color: Color(0xffae1a3e)),
                                     overflow: TextOverflow.ellipsis,
                                     softWrap: false,
-                                    maxLines: 2,
                                   ),
                                 ],
                               ),
@@ -344,14 +637,17 @@ class _ProjectListItemWidgetState
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                    value != null ? (key.contains(
-                                        "DATE")|| key.contains("_ON")||key.contains("_TILL"))
-                                        ? DateUtil
-                                        .getFormattedDate(value)
-                                        : key.contains(
-                                        "TIME")
-                                        ? DateUtil.getFormattedTime(
-                                        value):containsCurrencyValue == true ?DateUtil.getCurrencyValue(value):value.toString():"",
+                                    value != null
+                                        ? (value is String && isStringDate(value))
+                                            ? DateUtil.getFormattedDate(value)
+                                            : key.contains("TIME")
+                                                ? DateUtil.getFormattedTime(
+                                                    value)
+                                                : containsCurrencyValue == true
+                                                    ? DateUtil.getCurrencyValue(
+                                                        value)
+                                                    : value.toString()
+                                        : "",
                                     overflow: TextOverflow.ellipsis,
                                     softWrap: false,
                                     maxLines: 2,
@@ -375,16 +671,16 @@ class _ProjectListItemWidgetState
                   if (widget.isSelectable) {
                     Navigator.pop(context, {
                       'ID': widget.entity['ACCT_ID'],
-                      'TEXT': widget.entity['FIRSTNAME'],
-                      'ACCT_ID': widget.entity['ACCT_ID'],
-                      'ACCTNAME': widget.entity['SURNAME'],
+                      'TEXT': widget.entity['ACCOUNT_ACCTNAME'],
+                      'ACCT_ID': widget.entity['PROJECT_ID'],
+                      'ACCTNAME': widget.entity['PROJECT_TITLE'],
                     });
                     return;
                   }
 
                   context.loaderOverlay.show();
                   dynamic project = await DynamicProjectService()
-                      .getEntityById(widget.type, widget.entity['CONT_ID']);
+                      .getEntityById(widget.type, widget.entity['ACTION_ID']);
 
                   print("project list");
                   log("${project.data.toString()}");
@@ -402,384 +698,147 @@ class _ProjectListItemWidgetState
                               : "",
                           readonly: true,
                           refresh: widget.refresh,
-                          moduleId: "004",
+                          moduleId: "009",
                           entityType: widget.type,
                         );
                       },
                     ),
                   ).then((value) => widget.refresh());
                 },
-              )
-            : widget.type == 'PROJECT'
-                ? ListTile(
-                    subtitle: ListView.builder(
-                      itemCount: map.length,
-                      physics: NeverScrollableScrollPhysics(),
-                      shrinkWrap: true,
-                      itemBuilder: (BuildContext context, int index) {
-                        final key = map.keys.elementAt(index);
-                        final value = map[key];
-                        String contextId = key.substring(0, key.indexOf('_'));
-                        String itemId = key.contains("_")
-                            ? key.substring(key.indexOf("_") + 1)
-                            : key;
-                        List<String> parts = key.split('_');
-                        print("parts$key${parts.length}");
-                        print("conetxtsdbid${contextId}");
-                        print("erfafxsgasjf${itemId}");
-                        print("erfafxsgasjf${itemId}");
-                        bool containsCurrencyValue = currencyDefaultValues.any((entry) => entry["FIELD_NAME"] == LangUtil.getString(contextId, itemId).toUpperCase());
-                        if (key.contains("_ID") && parts.length < 3) {
-                          return SizedBox();
-                        } else {
-                          return Row(
-                            children: [
-                              Expanded(
-                                child: Padding(
-                                  padding:
-                                      const EdgeInsets.fromLTRB(0, 4, 4, 4),
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        '${LangUtil.getString(contextId, itemId)} :',
-                                        style: TextStyle(
-                                            fontWeight: FontWeight.w700,
-                                            color: Color(0xffE67E6B)),
-                                        overflow: TextOverflow.ellipsis,
-                                        softWrap: false,
-                                        maxLines: 2,
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                              Expanded(
-                                child: Padding(
-                                  padding:
-                                      const EdgeInsets.fromLTRB(0, 4, 0, 4),
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        value != null ? (key.contains(
-                                            "DATE")|| key.contains("_ON")||key.contains("_TILL"))
-                                            ? DateUtil
-                                            .getFormattedDate(value)
-                                            : key.contains(
-                                            "TIME")
-                                            ? DateUtil.getFormattedTime(
-                                            value):containsCurrencyValue == true ?DateUtil.getCurrencyValue(value):value.toString():"",
-                                        overflow: TextOverflow.ellipsis,
-                                        softWrap: false,
-                                        maxLines: 2,
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ],
-                          );
-                        }
-                      },
-                    ),
-                    trailing: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(context.platformIcons.rightChevron),
-                      ],
-                    ),
-                    onTap: () async {
-                      if (widget.isSelectable) {
-                        Navigator.pop(context, {
-                          'ID': widget.entity['PROJECT_ID'],
-                          'TEXT': widget.entity['PROJECT_TITLE'],
-                          'ACCT_ID': widget.entity['PROJECT_ID'],
-                          'ACCTNAME': widget.entity['PROJECT_TITLE'],
-                        });
-                        return;
-                      }
-
-                      context.loaderOverlay.show();
-
-                      dynamic project = await ProjectService()
-                          .getEntity(widget.entity['PROJECT_ID']);
-                      print("project list");
-                      log("${project.data.toString()}");
-
-                      context.loaderOverlay.hide();
-
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) {
-                            return ProjectTabs(
-                              project: project.data,
-                              title: widget.entity['PROJECT_TITLE'] != null
-                                  ? widget.entity['PROJECT_TITLE']
-                                  : "",
-                              readonly: true,
-                              refresh: widget.refresh,
-                              moduleId: "005",
-                              entityType: widget.type,
-                            );
-                          },
-                        ),
-                      ).then((value) => widget.refresh());
-                    },
-                  )
-                : widget.type == 'ACTION'
-                    ? ListTile(
-                        subtitle: ListView.builder(
-                          itemCount: map.length,
-                          physics: NeverScrollableScrollPhysics(),
-                          shrinkWrap: true,
-                          itemBuilder: (BuildContext context, int index) {
-                            final key = map.keys.elementAt(index);
-                            final value = map[key];
-                            List<String> parts = key.split('_');
-                            print("sadrtfYDJHSCF${key}${parts.length - 1}");
-                            String contextId = key.contains("__")
-                                ? "ACTION"
-                                : key.contains("_")
-                                    ? key.substring(0, key.indexOf('_'))
-                                    : "ACTION";
-                            String itemId = key.contains("_")
-                                ? key.substring(key.indexOf("_") + 1)
-                                : key;
-                            print("conetxtchvs$contextId");
-                            print("itemID$itemId");
-                            print("erfafxsgasjf${itemId}");
-                            bool containsCurrencyValue = currencyDefaultValues.any((entry) => entry["FIELD_NAME"] == LangUtil.getString(contextId, itemId).toUpperCase());
-                            if ((key.contains("_ID") && parts.length < 3) ||
-                                key.contains("__") ||
-                                key == "ACTION_SAUSER") {
-                              return SizedBox();
-                            } else {
-                              return Row(
-                                children: [
-                                  Expanded(
-                                    child: Padding(
-                                      padding: const EdgeInsets.fromLTRB(
-                                          0, 4, 4, 4),
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Text(
-                                            '${LangUtil.getString(contextId, itemId)} :',
-                                            style: TextStyle(
-                                                fontWeight: FontWeight.w700,
-                                                color: Color(0xffae1a3e)),
-                                            overflow: TextOverflow.ellipsis,
-                                            softWrap: false,
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                  Expanded(
-                                    child: Padding(
-                                      padding:
-                                          const EdgeInsets.fromLTRB(0, 4, 0, 4),
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Text(
-                                            value != null ? (key.contains(
-                                                "DATE")|| key.contains("_ON")||key.contains("_TILL"))
-                                                ? DateUtil
-                                                .getFormattedDate(value)
-                                                : key.contains(
-                                                "TIME")
-                                                ? DateUtil.getFormattedTime(
-                                                value):containsCurrencyValue == true ?DateUtil.getCurrencyValue(value):value.toString():"",
-                                            overflow: TextOverflow.ellipsis,
-                                            softWrap: false,
-                                            maxLines: 2,
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              );
-                            }
-                          },
-                        ),
-                        trailing: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
+              );
+            } else {
+              if (widget.type == 'QUOTATION') {
+                return ListTile(
+                  subtitle: ListView.builder(
+                    itemCount: map.length,
+                    physics: NeverScrollableScrollPhysics(),
+                    shrinkWrap: true,
+                    itemBuilder: (BuildContext context, int index) {
+                      final key = map.keys.elementAt(index);
+                      final value = map[key];
+                      String contextId = key.substring(0, key.indexOf('_'));
+                      String itemId = key.contains("_")
+                          ? key.substring(key.indexOf("_") + 1)
+                          : key;
+                      List<String> parts = key.split('_');
+                      print("parts$key${parts.length}");
+                      print("conetxtsdbid${contextId}");
+                      print("erfafxsgasjf${itemId}");
+                      print("erfafxsgasjf${itemId}");
+                      bool containsCurrencyValue = currencyDefaultValues.any(
+                          (entry) =>
+                              entry["FIELD_NAME"] ==
+                              LangUtil.getString(contextId, itemId)
+                                  .toUpperCase());
+                      if (key.contains("_ID")) {
+                        return SizedBox();
+                      } else {
+                        return Row(
                           children: [
-                            Icon(context.platformIcons.rightChevron),
-                          ],
-                        ),
-                        onTap: () async {
-                          if (widget.isSelectable) {
-                            Navigator.pop(context, {
-                              'ID': widget.entity['ACCT_ID'],
-                              'TEXT': widget.entity['ACCOUNT_ACCTNAME'],
-                              'ACCT_ID': widget.entity['PROJECT_ID'],
-                              'ACCTNAME': widget.entity['PROJECT_TITLE'],
-                            });
-                            return;
-                          }
-
-                          context.loaderOverlay.show();
-                          dynamic project = await DynamicProjectService()
-                              .getEntityById(
-                                  widget.type, widget.entity['ACTION_ID']);
-
-                          print("project list");
-                          log("${project.data.toString()}");
-
-                          context.loaderOverlay.hide();
-
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) {
-                                return ProjectTabs(
-                                  project: project.data,
-                                  title: widget.entity['PROJECT_TITLE'] != null
-                                      ? widget.entity['PROJECT_TITLE']
-                                      : "",
-                                  readonly: true,
-                                  refresh: widget.refresh,
-                                  moduleId: "009",
-                                  entityType: widget.type,
-                                );
-                              },
-                            ),
-                          ).then((value) => widget.refresh());
-                        },
-                      )
-                    : widget.type == 'QUOTATION'
-                        ? ListTile(
-                            subtitle: ListView.builder(
-                              itemCount: map.length,
-                              physics: NeverScrollableScrollPhysics(),
-                              shrinkWrap: true,
-                              itemBuilder: (BuildContext context, int index) {
-                                final key = map.keys.elementAt(index);
-                                final value = map[key];
-                                String contextId =
-                                    key.substring(0, key.indexOf('_'));
-                                String itemId = key.contains("_")
-                                    ? key.substring(key.indexOf("_") + 1)
-                                    : key;
-                                List<String> parts = key.split('_');
-                                print("parts$key${parts.length}");
-                                print("conetxtsdbid${contextId}");
-                                print("erfafxsgasjf${itemId}");
-                                print("erfafxsgasjf${itemId}");
-                                bool containsCurrencyValue = currencyDefaultValues.any((entry) => entry["FIELD_NAME"] == LangUtil.getString(contextId, itemId).toUpperCase());
-                                if (key.contains("_ID")) {
-                                  return SizedBox();
-                                } else {
-                                  return Row(
-                                    children: [
-                                      Expanded(
-                                        child: Padding(
-                                          padding: const EdgeInsets.fromLTRB(
-                                              0, 4, 4, 4),
-                                          child: Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              Text(
-                                                '${LangUtil.getString(contextId, itemId)} :',
-                                                style: TextStyle(
-                                                    fontWeight: FontWeight.w700,
-                                                    color: Color(0xff00aba9)),
-                                                overflow: TextOverflow.ellipsis,
-                                                softWrap: false,
-                                                maxLines: 2,
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                      ),
-                                      Expanded(
-                                        child: Padding(
-                                          padding: const EdgeInsets.fromLTRB(
-                                              0, 4, 0, 4),
-                                          child: Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              Text(
-                                                value != null ? (key.contains(
-                                                    "DATE")|| key.contains("_ON")||key.contains("_TILL"))
-                                                    ? DateUtil
-                                                    .getFormattedDate(value)
-                                                    : key.contains(
-                                                    "TIME")
-                                                    ? DateUtil.getFormattedTime(
-                                                    value):containsCurrencyValue == true ?DateUtil.getCurrencyValue(value):value.toString():"",
-                                                overflow: TextOverflow.ellipsis,
-                                                softWrap: false,
-                                                maxLines: 2,
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  );
-                                }
-                              },
-                            ),
-                            trailing: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Icon(context.platformIcons.rightChevron),
-                              ],
-                            ),
-                            onTap: () async {
-                              if (widget.isSelectable) {
-                                Navigator.pop(context, {
-                                  'ID': widget.entity['QUOTATION_QUOTE_ID'],
-                                  'TEXT': widget.entity['QUOTATION_DESCRIPTION'],
-                                  'ACCT_ID': widget.entity['QUOTATION_QUOTE_ID'],
-                                  'ACCTNAME': widget.entity['QUOTATION_REPRESENTATIVE'],
-                                });
-                                return;
-                              }
-
-                              context.loaderOverlay.show();
-
-                              dynamic project  = await DynamicProjectService()
-                                  .getEntityById(
-                                  widget.type, widget.entity['QUOTATION_QUOTE_ID']);
-                              print("project list value");
-                              log("${project.data.toString()}");
-
-                              context.loaderOverlay.hide();
-
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) {
-                                    return ProjectTabs(
-                                      project: project.data,
-                                      title:
-                                          widget.entity['DESCRIPTION'] != null
-                                              ? widget.entity['DESCRIPTION']
-                                              : "",
-                                      readonly: true,
-                                      refresh: widget.refresh,
-                                      moduleId: "007",
-                                      entityType: widget.type,
-                                    );
-                                  },
+                            Expanded(
+                              child: Padding(
+                                padding: const EdgeInsets.fromLTRB(0, 4, 4, 4),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      '${LangUtil.getString(contextId, itemId)} :',
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.w700,
+                                          color: Color(0xff00aba9)),
+                                      overflow: TextOverflow.ellipsis,
+                                      softWrap: false,
+                                      maxLines: 2,
+                                    ),
+                                  ],
                                 ),
-                              ).then((value) => widget.refresh());
-                            },
-                          )
-                        : SizedBox();
+                              ),
+                            ),
+                            Expanded(
+                              child: Padding(
+                                padding: const EdgeInsets.fromLTRB(0, 4, 0, 4),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      value != null
+                                          ? (value is String && isStringDate(value))
+                                              ? DateUtil.getFormattedDate(value)
+                                              : key.contains("TIME")
+                                                  ? DateUtil.getFormattedTime(
+                                                      value)
+                                                  : containsCurrencyValue ==
+                                                          true
+                                                      ? DateUtil
+                                                          .getCurrencyValue(
+                                                              value)
+                                                      : value.toString()
+                                          : "",
+                                      overflow: TextOverflow.ellipsis,
+                                      softWrap: false,
+                                      maxLines: 2,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
+                        );
+                      }
+                    },
+                  ),
+                  trailing: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(context.platformIcons.rightChevron),
+                    ],
+                  ),
+                  onTap: () async {
+                    if (widget.isSelectable) {
+                      Navigator.pop(context, {
+                        'ID': widget.entity['QUOTATION_QUOTE_ID'],
+                        'TEXT': widget.entity['QUOTATION_DESCRIPTION'],
+                        'ACCT_ID': widget.entity['QUOTATION_QUOTE_ID'],
+                        'ACCTNAME': widget.entity['QUOTATION_REPRESENTATIVE'],
+                      });
+                      return;
+                    }
+
+                    context.loaderOverlay.show();
+
+                    dynamic project = await DynamicProjectService()
+                        .getEntityById(
+                            widget.type, widget.entity['QUOTATION_QUOTE_ID']);
+                    print("project list value");
+                    log("${project.data.toString()}");
+
+                    context.loaderOverlay.hide();
+
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) {
+                          return ProjectTabs(
+                            project: project.data,
+                            title: widget.entity['DESCRIPTION'] != null
+                                ? widget.entity['DESCRIPTION']
+                                : "",
+                            readonly: true,
+                            refresh: widget.refresh,
+                            moduleId: "007",
+                            entityType: widget.type,
+                          );
+                        },
+                      ),
+                    ).then((value) => widget.refresh());
+                  },
+                );
+              } else {
+                return SizedBox();
+              }
+            }
+          }
+        }
       }
     }
   }

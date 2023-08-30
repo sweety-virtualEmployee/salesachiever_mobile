@@ -17,7 +17,6 @@ class _DynamicBranchListSectionState extends State<DynamicBranchListSection> {
   String? defaultListId;
   List<dynamic>? lists;
 
-
   @override
   void initState() {
     getBranchLists();
@@ -52,22 +51,23 @@ class _DynamicBranchListSectionState extends State<DynamicBranchListSection> {
 
     var userBranchList = await service.getUserBranch();
     var defaultBranchLists = await service.getDefaultUserBranch();
-
-
+    print("default list array ${defaultBranchLists['Items'][0]['VAR_VALUE']}");
     setState(() {
-      defaultListId = defaultBranchLists['VAR_VALUE'];
+      defaultListId = defaultBranchLists['Items'][0]['VAR_VALUE'];
       lists = userBranchList;
-
       isLoading = false;
     });
+
   }
 
   _generateListItems(BuildContext context) {
     var filteredList = lists?.map(
-          (e) => Center(
+      (e) => Center(
         child: PsaMenuItem(
           title: e['BRANCH_NAME'],
           onTap: () {
+            print("on tap default id$defaultListId");
+            print("on tap default id${e['BRANCH_ID']}");
           },
           hasChild: true,
           showFavoriteIcon: true,
@@ -83,7 +83,6 @@ class _DynamicBranchListSectionState extends State<DynamicBranchListSection> {
         ? filteredList
         : [Text('')];
   }
-
 
   void _onTapFavourite(e) async {
     context.loaderOverlay.show();

@@ -290,4 +290,25 @@ class DynamicProjectApi {
     });
     print("default list${response.data}");
     return response.data;
-  }}
+  }
+
+  Future<dynamic> getSortValueApi(String listName) async {
+    String user = StorageUtil.getString('loginName');
+    final response = await Api().getResult('$api/user/user.configListFilterSort?userid=$user&Section=M_LIST_SORT_$listName');
+    return response.data;
+  }
+
+  Future<dynamic> setSortValue(String listName,String fieldName, String sortValue) async {
+    String user = StorageUtil.getString('loginName');
+    Response response = await Api().put('/user/user.config/',{
+    "SauserId":user,
+    "Section":"M_LIST_SORT_$listName",
+    "VarName":fieldName,
+    "VarValue":sortValue
+    }
+    );
+    print("sort value list${response.data}");
+    return response.data;
+  }
+
+}

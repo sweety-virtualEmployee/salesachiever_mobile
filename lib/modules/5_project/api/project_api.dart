@@ -23,6 +23,7 @@ class ProjectApi {
 
   Future<dynamic> search(String searchText, int pageNumber, int pageSize,
       List<dynamic>? sortBy, List<dynamic>? filterBy) async {
+    print("let see if this api getting called$sortBy");
     List<dynamic> headers = [];
 
     bool classicSearch = StorageUtil.getBool('classicSearch', defValue: true);

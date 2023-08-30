@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:hive/hive.dart';
@@ -10,10 +11,11 @@ import 'package:salesachiever_mobile/modules/dynamic_module/5_dynamic_project/se
 import 'package:salesachiever_mobile/modules/dynamic_module/5_dynamic_project/widgets/dynamic_project_list_item.dart';
 import 'package:salesachiever_mobile/shared/widgets/buttons/psa_add_button.dart';
 import 'package:salesachiever_mobile/modules/base/entity/widgets/psa_entity_list_view.dart';
+import 'package:salesachiever_mobile/shared/widgets/elements/psa_progress_indicator.dart';
 import 'package:salesachiever_mobile/shared/widgets/layout/psa_scaffold.dart';
 import 'package:salesachiever_mobile/utils/text_formatting_util.dart';
 
-class DynamicProjectListScreen extends StatelessWidget {
+class DynamicProjectListScreen extends StatefulWidget {
   final List<dynamic>? sortBy;
   final List<dynamic>? filterBy;
   final String listName;
@@ -30,98 +32,146 @@ class DynamicProjectListScreen extends StatelessWidget {
   }) : super(key: key);
 
   @override
+  State<DynamicProjectListScreen> createState() => _DynamicProjectListScreenState();
+}
+
+class _DynamicProjectListScreenState extends State<DynamicProjectListScreen> {
+  DynamicProjectService service = DynamicProjectService();
+  List<dynamic> sortBy=[];
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  Future<List<dynamic>> fetchData() async {
+    List<dynamic> sortValue = await service.getSortValues(widget.listName);
+    int sortOrder;
+
+    for (int i = 0; i < sortValue.length; i++) {
+      if (sortValue[i]["VAR_VALUE"] == "ASC") {
+        sortOrder = 1;
+      } else {
+        sortOrder = 2;
+      }
+      sortBy.add({
+        'TableName': widget.listType,
+        'FieldName': sortValue[i]["VAR_NAME"],
+        'SortOrder': sortOrder,
+        'SortIndex': 0
+      });
+    }
+
+    return sortBy;
+  }
+
+  @override
   Widget build(BuildContext context) {
-    print("listName${listName}");
-    return PsaScaffold(
-      title: "${capitalizeFirstLetter(listType)} - List",
-      body: PsaEntityListView(
-        service: DynamicProjectService(listName: listName),
-        display: (
-            {required final dynamic entity, required final Function refresh}) {
-          return DynamicProjectListItemWidget(
-            entity: entity,
-            refresh: refresh,
-            isSelectable: isSelectable,
-            isEditable: false,
-            type:listType
-          );
-        },
-        type: listType,
-        list: listName,
-        sortBy: sortBy,
-        filterBy: filterBy,
-      ),
-      action: PsaAddButton(
-        onTap: ()
-        {
-          print("checking list type");
-          print(listType);
-          if(listType=="COMPANY"){
-            Navigator.push(
-              context,
-              platformPageRoute(
-                context: context,
-                builder: (BuildContext context) => CompanyEditScreen(
-                  company: {},
-                  readonly: false,
-                ),
+    print("sortby data check$sortBy");
+    return FutureBuilder<List<dynamic>>(
+        future: fetchData(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return PsaScaffold(title: "${capitalizeFirstLetter(widget.listType)} - List",body: SizedBox()); // You can show a loading indicator while fetching data.
+          } else if (snapshot.hasError) {
+            return Text('Error: ${snapshot.error}');
+          } else {
+            return PsaScaffold(
+              title: "${capitalizeFirstLetter(widget.listType)} - List",
+              body: PsaEntityListView(
+                service: DynamicProjectService(listName: widget.listName),
+                display: (
+                    {required final dynamic entity, required final Function refresh}) {
+                  return DynamicProjectListItemWidget(
+                      entity: entity,
+                      refresh: refresh,
+                      isSelectable: widget.isSelectable,
+                      isEditable: false,
+                      type: widget.listType
+                  );
+                },
+                type: widget.listType,
+                list: widget.listName,
+                sortBy: sortBy,
+                filterBy: widget.filterBy,
+              ),
+              action: PsaAddButton(
+                onTap: () {
+                  print("checking list type");
+                  print(widget.listType);
+                  if (widget.listType == "COMPANY") {
+                    Navigator.push(
+                      context,
+                      platformPageRoute(
+                        context: context,
+                        builder: (BuildContext context) =>
+                            CompanyEditScreen(
+                              company: {},
+                              readonly: false,
+                            ),
+                      ),
+                    );
+                  }
+                  else if (widget.listType == "CONTACT") {
+                    Navigator.push(
+                      context,
+                      platformPageRoute(
+                        context: context,
+                        builder: (BuildContext context) =>
+                            ContactEditScreen(
+                              contact: {},
+                              readonly: false,
+                            ),
+                      ),
+                    );
+                  }
+                  else if (widget.listType == "ACTION") {
+                    Navigator.pushNamed(context, '/action/type');
+                  }
+                  else if (widget.listType == "OPPORTUNITY") {
+                    Navigator.push(
+                      context,
+                      platformPageRoute(
+                        context: context,
+                        builder: (BuildContext context) =>
+                            OpportunityEditScreen(
+                              deal: {},
+                              readonly: false,
+                            ),
+                      ),
+                    );
+                  }
+                  else if (widget.listType == "QUOTATION") {
+                    Navigator.push(
+                      context,
+                      platformPageRoute(
+                        context: context,
+                        builder: (BuildContext context) =>
+                            DynamicQuotationAddScreen(
+                              quotation: {},
+                              readonly: false,
+                            ),
+                      ),
+                    );
+                  }
+                  else if (widget.listType == "PROJECT") {
+                    Navigator.push(
+                      context,
+                      platformPageRoute(
+                        context: context,
+                        builder: (BuildContext context) =>
+                            ProjectEditScreen(
+                              project: {},
+                              readonly: false,
+                            ),
+                      ),
+                    );
+                  }
+                },
               ),
             );
           }
-          else if(listType=="CONTACT"){
-            Navigator.push(
-              context,
-              platformPageRoute(
-                context: context,
-                builder: (BuildContext context) => ContactEditScreen(
-                  contact: {},
-                  readonly: false,
-                ),
-              ),
-            );
-          }
-          else if(listType=="ACTION"){
-            Navigator.pushNamed(context, '/action/type');
-          }
-          else if(listType=="OPPORTUNITY"){
-            Navigator.push(
-              context,
-              platformPageRoute(
-                context: context,
-                builder: (BuildContext context) => OpportunityEditScreen(
-                  deal: {},
-                  readonly: false,
-                ),
-              ),
-            );
-          }
-          else if(listType=="QUOTATION"){
-            Navigator.push(
-              context,
-              platformPageRoute(
-                context: context,
-                builder: (BuildContext context) => DynamicQuotationAddScreen(
-                  quotation: {},
-                  readonly: false,
-                ),
-              ),
-            );
-          }
-          else if(listType == "PROJECT"){
-            Navigator.push(
-              context,
-              platformPageRoute(
-                context: context,
-                builder: (BuildContext context) =>
-                    ProjectEditScreen(
-                      project: {},
-                      readonly: false,
-                    ),
-              ),
-            );
-          }
-        },
-      ),
+        }
     );
   }
 }
