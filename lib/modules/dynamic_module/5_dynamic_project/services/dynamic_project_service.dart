@@ -263,20 +263,29 @@ class DynamicProjectService extends EntityService {
 
   Future<List<dynamic>> getSortValues(
       String listName) async {
-    print("entity${listName}");
     var data = await DynamicProjectApi().getSortValueApi(listName);
     print(data);
     List<dynamic> items = data['Items'];
+    return items;
+  }
 
+  Future<List<dynamic>> getFilterValues(
+      String listName) async {
+    var data = await DynamicProjectApi().getFilterValueApi(listName);
+    print(data);
+    List<dynamic> items = data['Items'];
     return items;
   }
 
   Future<List<dynamic>> setSortValue(String listName,String fieldName,String sortOrder) async{
     var data = await DynamicProjectApi().setSortValue(listName,fieldName,sortOrder);
-    print("data is prinyed");
-    print(data);
     List<dynamic> items = data['Items'];
+    return items;
+  }
 
+  Future<List<dynamic>> setFilterValue(String listName,String fieldName,String sortOrder) async{
+    var data = await DynamicProjectApi().setSortValue(listName,fieldName,sortOrder);
+    List<dynamic> items = data['Items'];
     return items;
   }
 }

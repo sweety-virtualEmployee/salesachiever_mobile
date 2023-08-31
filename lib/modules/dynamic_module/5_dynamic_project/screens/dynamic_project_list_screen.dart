@@ -38,16 +38,18 @@ class DynamicProjectListScreen extends StatefulWidget {
 class _DynamicProjectListScreenState extends State<DynamicProjectListScreen> {
   DynamicProjectService service = DynamicProjectService();
   List<dynamic> sortBy=[];
+  List<dynamic> filterBy=[];
 
   @override
   void initState() {
     super.initState();
   }
 
-  Future<List<dynamic>> fetchData() async {
+  Future<List<List<dynamic>>> fetchData() async {
     List<dynamic> sortValue = await service.getSortValues(widget.listName);
+    List<dynamic> filterValue = await service.getFilterValues(widget.listName);
+    print("filter value$filterValue");
     int sortOrder;
-
     for (int i = 0; i < sortValue.length; i++) {
       if (sortValue[i]["VAR_VALUE"] == "ASC") {
         sortOrder = 1;
@@ -61,13 +63,20 @@ class _DynamicProjectListScreenState extends State<DynamicProjectListScreen> {
         'SortIndex': 0
       });
     }
-
-    return sortBy;
+    for (int i = 0; i < filterValue.length; i++) {
+      filterBy.add({
+        'TableName': widget.listType,
+        'FieldName': filterValue[i]["VAR_NAME"],
+        'Comparison': '5',
+        'ItemValue': filterValue[i]["VAR_VALUE"],
+      });
+    }
+    return [sortBy,filterBy];
   }
 
   @override
   Widget build(BuildContext context) {
-    print("sortby data check$sortBy");
+    print("sortby data check$filterBy");
     return FutureBuilder<List<dynamic>>(
         future: fetchData(),
         builder: (context, snapshot) {
@@ -93,7 +102,7 @@ class _DynamicProjectListScreenState extends State<DynamicProjectListScreen> {
                 type: widget.listType,
                 list: widget.listName,
                 sortBy: sortBy,
-                filterBy: widget.filterBy,
+                filterBy:filterBy,
               ),
               action: PsaAddButton(
                 onTap: () {

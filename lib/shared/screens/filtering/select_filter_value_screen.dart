@@ -8,6 +8,7 @@ import 'package:salesachiever_mobile/modules/4_contact/screens/contact_list_scre
 import 'package:salesachiever_mobile/modules/0_home/screens/home_screen.dart';
 import 'package:salesachiever_mobile/modules/5_project/screens/project_list_screen.dart';
 import 'package:salesachiever_mobile/modules/dynamic_module/5_dynamic_project/screens/dynamic_project_list_screen.dart';
+import 'package:salesachiever_mobile/modules/dynamic_module/5_dynamic_project/services/dynamic_project_service.dart';
 import 'package:salesachiever_mobile/shared/models/locale.dart';
 import 'package:salesachiever_mobile/shared/widgets/layout/psa_scaffold.dart';
 import 'package:salesachiever_mobile/utils/lang_util.dart';
@@ -48,71 +49,45 @@ class SelectFilterValueScreen extends StatelessWidget {
             int index,
           ) {
             return InkWell(
-              child: Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 8.0, vertical: 2.0),
-                child: Text(
-                  items[index].displayValue,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 8.0, vertical: 2.0),
+                  child: Text(
+                    items[index].displayValue,
+                  ),
                 ),
-              ),
-              onTap: () => Navigator.push(
-                context,
-                platformPageRoute(
-                  context: context,
-                  builder: (BuildContext context) {
-                    List<dynamic> filter =
-                        new List<dynamic>.empty(growable: true);
+                onTap: () async {
+                  List<dynamic> response = await DynamicProjectService()
+                      .setFilterValue(list, field, items[index].displayValue);
+                  print("response check");
+                  print(response[0]);
+                  Navigator.push(
+                    context,
+                    platformPageRoute(
+                      context: context,
+                      builder: (BuildContext context) {
+                        List<dynamic> filter =
+                            new List<dynamic>.empty(growable: true);
 
-                    if (filterBy != null) filter.addAll(filterBy!);
-
-                    filter.add({
-                      'TableName': entity,
-                      'FieldName': field,
-                      'Comparison': condition,
-                      'ItemValue': items[index].itemId,
-                    });
-
-                    if (entity == 'ACCOUNT')
-                      return DynamicProjectListScreen(
-                        listType: entity,
-                        sortBy: sortBy,
-                        filterBy: filter,
-                        listName: list,
-                      );
-                    if (entity == 'CONTACT')
-                      return DynamicProjectListScreen(
-                        sortBy: sortBy,
-                        filterBy: filter,
-                        listName: list,
-                        listType: entity,
-                      );
-                    if (entity == 'PROJECT')
-                      return DynamicProjectListScreen(
-                        listType: entity,
-                        sortBy: sortBy,
-                        filterBy: filter,
-                        listName: list,
-                      );
-                    if (entity == 'ACTION')
-                      return DynamicProjectListScreen(
-                        sortBy: sortBy,
-                        filterBy: filter,
-                        listName: list,
-                        listType: entity,
-                      );
-                    if (entity == 'DEAL')
-                      return DynamicProjectListScreen(
-                        listType: entity,
-                        sortBy: sortBy,
-                        filterBy: filter,
-                        listName: list,
-                      );
-
-                    return HomeScreen();
-                  },
-                ),
-              ),
-            );
+                        if (filterBy != null) filter.addAll(filterBy!);
+                        for (int i = 0; i < response.length; i++) {
+                          filter.add({
+                            'TableName': entity,
+                            'FieldName': response[i]["VAR_NAME"],
+                            'Comparison': condition,
+                            'ItemValue': response[i]["VAR_VALUE"],
+                          });
+                        }
+                        return DynamicProjectListScreen(
+                          listType: entity,
+                          sortBy: sortBy,
+                          filterBy: filter,
+                          listName: list,
+                        );
+                      },
+                    ),
+                  );
+                });
           },
           itemCount: items.length,
           separatorBuilder: (context, index) => Divider(
