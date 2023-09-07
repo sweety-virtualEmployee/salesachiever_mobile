@@ -69,7 +69,7 @@ class _DynamicProjectEditScreenState extends State<DynamicProjectEditScreen> {
   void initState() {
     _readonly = this.widget.readonly;
     _entity = this.widget.project;
-    print("sweety***----${_entity['QUOTE_ID']}");
+    print("sweety***----${_entity}");
     callApi();
     validate();
 
@@ -246,6 +246,10 @@ class _DynamicProjectEditScreenState extends State<DynamicProjectEditScreen> {
             }
             break;
           case 'I':
+            if(field['FIELD_TYPE']=="I"){
+              print("field name checking ${entity?[field['FIELD_NAME']]}");
+              print("field name checking ${[field['FIELD_NAME']]}");
+            }
             widgets.add(
               PsaNumberFieldRow(
                 isRequired: isRequired,

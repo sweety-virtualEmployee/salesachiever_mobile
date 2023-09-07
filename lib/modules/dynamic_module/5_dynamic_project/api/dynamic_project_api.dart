@@ -320,7 +320,7 @@ class DynamicProjectApi {
     String user = StorageUtil.getString('loginName');
     Response response = await Api().put('/user/user.config/',{
       "SauserId":user,
-      "Section":"M_LIST_FILTER_$listName",
+      "Section":"M_LIST_FILTER _$listName",
       "VarName":fieldName,
       "VarValue":sortValue
     }

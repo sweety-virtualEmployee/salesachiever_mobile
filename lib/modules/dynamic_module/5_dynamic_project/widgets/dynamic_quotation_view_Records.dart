@@ -40,6 +40,7 @@ class DynamicQuotationViewRelatedRecords extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    print("quotation check ${_quotation['ACCT_ID']}");
     return CupertinoFormSection(
       backgroundColor: const Color(0xFFFAFAFA),
       header: Text(''),

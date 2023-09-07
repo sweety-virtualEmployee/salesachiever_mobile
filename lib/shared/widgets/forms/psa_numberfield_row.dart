@@ -7,7 +7,7 @@ import 'package:intl/intl.dart';
 class PsaNumberFieldRow extends StatefulWidget {
   final String fieldKey;
   final String? title;
-  final int? value;
+  final dynamic value;
   final bool readOnly;
   final TextInputType? keyboardType;
   final Function? onChange;
@@ -34,8 +34,7 @@ class _PsaNumberFieldRowState extends State<PsaNumberFieldRow> {
   @override
   void initState() {
     var value = '';
-
-    if (widget.value != null) {
+    if (widget.value != null && widget.value is int) {
       var formatter = NumberFormat('#,###');
       value = formatter.format(widget.value);
     }

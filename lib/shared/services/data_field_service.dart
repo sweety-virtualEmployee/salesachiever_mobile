@@ -29,9 +29,10 @@ class DataFieldService {
           e['TABLE_NAME'] == field['TABLE_NAME'] &&
           e['FIELD_NAME'] == field['FIELD_NAME']);
       print("isRqurierdds${isRequired} field name${field['FIELD_NAME']}${field["TABLE_NAME"]}");
-      if(field['FIELD_TYPE']=="B"){
+      if(field['FIELD_TYPE']=="I"){
         print("check the condition");
         print(field["FIELD_NAME"]);
+        print(entity?[field['FIELD_NAME']]);
       }
       switch (field['FIELD_TYPE']) {
         case 'L':
@@ -103,7 +104,7 @@ class DataFieldService {
               fieldKey: field['FIELD_NAME'],
               title:
                   LangUtil.getString(field['TABLE_NAME'], field['FIELD_NAME']),
-              value: 0,
+              value: entity?[field['FIELD_NAME']] ?? 0,
               keyboardType: TextInputType.number,
               readOnly: readonly || (field['DISABLED'] != null && field['DISABLED']),
               onChange: (_, __) => onChange(_, __, isRequired),
@@ -117,7 +118,7 @@ class DataFieldService {
               fieldKey: field['FIELD_NAME'],
               title:
                   LangUtil.getString(field['TABLE_NAME'], field['FIELD_NAME']),
-              value: 0.0,
+              value: entity?[field['FIELD_NAME']] ?? 0.0,
               keyboardType: TextInputType.numberWithOptions(decimal: true),
               readOnly: readonly || (field['DISABLED'] != null && field['DISABLED']),
               onChange: (_, __) => onChange(_, __, isRequired),
@@ -144,7 +145,7 @@ class DataFieldService {
               fieldKey: field['FIELD_NAME'],
               title:
                   LangUtil.getString(field['TABLE_NAME'], field['FIELD_NAME']),
-              value: false,
+              value: entity?[field['FIELD_NAME']] ?? false,
               readOnly: readonly || (field['DISABLED'] != null && field['DISABLED']),
               onChange: (_, __) => onChange(_, __, isRequired),
             ),

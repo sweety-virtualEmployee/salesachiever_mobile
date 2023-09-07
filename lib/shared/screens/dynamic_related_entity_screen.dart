@@ -6,6 +6,7 @@ import 'package:salesachiever_mobile/modules/10_opportunities/screens/opportunit
 import 'package:salesachiever_mobile/modules/5_project/services/project_service.dart';
 import 'package:salesachiever_mobile/modules/dynamic_module/5_dynamic_project/screens/dynamic_project_notes.dart';
 import 'package:salesachiever_mobile/modules/dynamic_module/5_dynamic_project/screens/dynamic_psa_header.dart';
+import 'package:salesachiever_mobile/modules/dynamic_module/5_dynamic_project/screens/dynamic_quotation_add.dart';
 import 'package:salesachiever_mobile/modules/dynamic_module/5_dynamic_project/services/dynamic_project_service.dart';
 import 'package:salesachiever_mobile/shared/widgets/layout/psa_scaffold.dart';
 import 'package:salesachiever_mobile/utils/date_util.dart';
@@ -61,7 +62,7 @@ class _DynamicRelatedEntityScreenState
   void initState() {
     _project = this.widget.project;
     list = widget.list;
-    print("dynamic type${widget.type}");
+    print("dynamic type${widget.entity}");
     super.initState();
   }
 
@@ -375,7 +376,7 @@ class _DynamicRelatedEntityScreenState
                     print(item);
                     return InkWell(
                       onTap: () async {
-                        context.loaderOverlay.show();
+                      //  context.loaderOverlay.show();
                         if (widget.type == "companies") {
                           dynamic company =
                               await CompanyService().getEntity(item["ACCT_ID"]);
@@ -453,7 +454,28 @@ class _DynamicRelatedEntityScreenState
                             ),
                           );
                         } else if (widget.type == "opp history") {
-                        } else {
+                        } else if (widget.type == "quotes") {
+                          print("projectbalue${item}");
+                          dynamic quotation =
+                          await DynamicProjectService()
+                              .getEntityById("QUOTATION",
+                             item['QUOTE_ID']);
+                          print("projectbalue${item['ACCT_ID']}");
+                          print("projectbalue${item['ACCTNAME']}");
+                          quotation.data['ACCT_ID'] = item['ACCT_ID'];
+                          quotation.data['ACCTNAME'] = item['ACCTNAME'];
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) {
+                                return DynamicQuotationAddScreen(
+                                  quotation: quotation.data,
+                                  readonly: true,
+                                );
+                              },
+                            ),
+                          );
+                        }else {
                           dynamic project = await ProjectService()
                               .getEntity(item['PROJECT_ID']);
                           print("projectbalue$project");
@@ -747,7 +769,25 @@ class _DynamicRelatedEntityScreenState
                                               );
                                             } else if (widget.type ==
                                                 "opp history") {
-                                            } else {
+                                            } else if (widget.type == "quotes") {
+                                              print("projectbalue${item}");
+                                              dynamic quotation =
+                                              await DynamicProjectService()
+                                                  .getEntityById("QUOTATION",
+                                                  item['QUOTE_ID']);
+                                              print("projectbalue$quotation");
+                                              Navigator.push(
+                                                context,
+                                                MaterialPageRoute(
+                                                  builder: (context) {
+                                                    return DynamicQuotationAddScreen(
+                                                      quotation: quotation.data,
+                                                      readonly: true,
+                                                    );
+                                                  },
+                                                ),
+                                              );
+                                            }else {
                                               dynamic project =
                                                   await ProjectService()
                                                       .getEntity(

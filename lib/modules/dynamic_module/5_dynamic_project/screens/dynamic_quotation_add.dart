@@ -47,6 +47,7 @@ class _DynamicQuotationAddScreenState extends State<DynamicQuotationAddScreen> {
   void initState() {
     _readonly = this.widget.readonly;
     _quotation = this.widget.quotation;
+    log("_quotation$_quotation");
 
     if (_quotation['QUOTE_ID'] == null) {
       var defaultValues = LookupService().getDefaultValues('Quotation');
@@ -98,7 +99,7 @@ class _DynamicQuotationAddScreenState extends State<DynamicQuotationAddScreen> {
             PsaHeader(
                 isVisible: true,
                 icon: 'assets/images/Quote.png',
-                title: _quotation?['PROJECT_TITLE'] ??
+                title: _quotation?['DESCRIPTION'] ??
                     LangUtil.getString('Entities', 'NewQuotation.Title')),
             Expanded(
               child: SingleChildScrollView(
