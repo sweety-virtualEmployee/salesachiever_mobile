@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
+import 'package:salesachiever_mobile/data/access_codes.dart';
 import 'package:salesachiever_mobile/modules/10_opportunities/screens/opportunity_list_screen.dart';
 import 'package:salesachiever_mobile/modules/6_action/screens/action_list_screen.dart';
 import 'package:salesachiever_mobile/modules/3_company/screens/company_list_screen.dart';
@@ -11,6 +12,7 @@ import 'package:salesachiever_mobile/modules/dynamic_module/5_dynamic_project/sc
 import 'package:salesachiever_mobile/modules/dynamic_module/5_dynamic_project/services/dynamic_project_service.dart';
 import 'package:salesachiever_mobile/shared/models/locale.dart';
 import 'package:salesachiever_mobile/shared/widgets/layout/psa_scaffold.dart';
+import 'package:salesachiever_mobile/utils/auth_util.dart';
 import 'package:salesachiever_mobile/utils/lang_util.dart';
 
 class SelectFilterValueScreen extends StatelessWidget {
@@ -38,7 +40,6 @@ class SelectFilterValueScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     List<Locale> items = LangUtil.getLocaleList(contextId);
-
     return PsaScaffold(
       title: title,
       body: Padding(
@@ -58,7 +59,7 @@ class SelectFilterValueScreen extends StatelessWidget {
                 ),
                 onTap: () async {
                   List<dynamic> response = await DynamicProjectService()
-                      .setFilterValue(list, field, items[index].displayValue);
+                      .setFilterValue(list, field, items[index].itemId,condition);
                   print("response check");
                   print(response[0]);
                   Navigator.push(
@@ -66,25 +67,36 @@ class SelectFilterValueScreen extends StatelessWidget {
                     platformPageRoute(
                       context: context,
                       builder: (BuildContext context) {
-                        List<dynamic> filter =
-                            new List<dynamic>.empty(growable: true);
+                        List<dynamic> filter = new List<dynamic>.empty(growable: true);
+                        if (AuthUtil.hasAccess(int.parse(
+                            ACCESS_CODES['Saving sort and filters']
+                                .toString()))) {
+                          if (filterBy != null) filter.addAll(filterBy!);
+                          for (int i = 0; i < response.length; i++) {
+                            filter.add({
+                              'TableName': entity,
+                              'FieldName': response[i]["VAR_NAME"],
+                              'Comparison': condition,
+                              'ItemValue': "${response[i]["VAR_VALUE"]}",
+                            });
+                          }
+                        } else {
+                          if (filterBy != null) filter.addAll(filterBy!);
 
-                        if (filterBy != null) filter.addAll(filterBy!);
-                        for (int i = 0; i < response.length; i++) {
                           filter.add({
                             'TableName': entity,
-                            'FieldName': response[i]["VAR_NAME"],
+                            'FieldName': field,
                             'Comparison': condition,
-                            'ItemValue': response[i]["VAR_VALUE"],
-                          });
+                            'ItemValue': items[index].itemId,
+                          });}
+
+                          return DynamicProjectListScreen(
+                            listType: entity,
+                            sortBy: sortBy,
+                            filterBy: filter,
+                            listName: list,
+                          );
                         }
-                        return DynamicProjectListScreen(
-                          listType: entity,
-                          sortBy: sortBy,
-                          filterBy: filter,
-                          listName: list,
-                        );
-                      },
                     ),
                   );
                 });

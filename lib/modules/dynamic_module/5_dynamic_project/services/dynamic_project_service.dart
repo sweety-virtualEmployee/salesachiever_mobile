@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:developer';
 
+import 'package:get/get_connect/http/src/response/response.dart';
 import 'package:hive/hive.dart';
 import 'package:salesachiever_mobile/modules/5_project/api/project_api.dart';
 import 'package:salesachiever_mobile/modules/base/entity/services/entity_service.dart';
@@ -283,9 +284,16 @@ class DynamicProjectService extends EntityService {
     return items;
   }
 
-  Future<List<dynamic>> setFilterValue(String listName,String fieldName,String sortOrder) async{
-    var data = await DynamicProjectApi().setSortValue(listName,fieldName,sortOrder);
+  Future<List<dynamic>> setFilterValue(String listName,String fieldName,String sortOrder,String comparison) async{
+    var data = await DynamicProjectApi().setFilterValue(listName,fieldName,sortOrder,comparison);
     List<dynamic> items = data['Items'];
     return items;
   }
+
+  Future<dynamic> deleteSortFilter(String varname,String type, String listName) {
+     return DynamicProjectApi().deleteSortApi(varname,type, listName);
+
+  }
+
+
 }
