@@ -107,7 +107,7 @@ class _DynamicProjectListScreenState extends State<DynamicProjectListScreen> {
       }
       isDataLoaded = true;
     });
-    print("filter by array $filterBy");
+    print("filter by array $filterBy"); 
   }
 
   @override

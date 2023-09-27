@@ -8,8 +8,6 @@ import 'package:salesachiever_mobile/modules/base/entity/widgets/psa_entity_list
 import 'package:salesachiever_mobile/shared/widgets/layout/psa_scaffold.dart';
 import 'package:salesachiever_mobile/utils/lang_util.dart';
 
-import '../services/company_service.dart';
-import '../widgets/company_list_item.dart';
 
 class CompanyListScreen extends StatelessWidget {
   final List<dynamic>? sortBy;
