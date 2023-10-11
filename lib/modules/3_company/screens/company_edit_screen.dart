@@ -92,6 +92,7 @@ class _CompanyEditScreenState extends State<CompanyEditScreen> {
 
   @override
   Widget build(BuildContext context) {
+    print("_Comapny entity check${_company}");
     var visibleFields = activeFields.where((e) => e['COLVAL']).toList();
 
     return PsaScaffold(

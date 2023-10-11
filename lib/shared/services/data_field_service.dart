@@ -24,6 +24,7 @@ class DataFieldService {
       [String? updatedFieldKey]) {
     List<Widget> widgets = [];
     print("filedList of the projecy$filedList");
+    print("filedList of the projecy$entity");
     for (dynamic field in filedList) {
       var isRequired = mandatoryFields.any((e) =>
           e['TABLE_NAME'] == field['TABLE_NAME'] &&
@@ -112,17 +113,21 @@ class DataFieldService {
           );
           break;
         case 'F':
+          print("entity?[field['FIELD_NAME']]${entity?[field['FIELD_NAME']]}");
+          print("field['FIELD_NAME']${field['FIELD_NAME']}");
           widgets.add(
             PsaFloatFieldRow(
               isRequired: isRequired,
               fieldKey: field['FIELD_NAME'],
               title:
                   LangUtil.getString(field['TABLE_NAME'], field['FIELD_NAME']),
-              value: entity?[field['FIELD_NAME']] ?? 0.0,
+              value: entity?[field['FIELD_NAME']] != null
+                  ? double.tryParse(entity[field['FIELD_NAME']]) ?? 0.0
+                  : 0.0,
               keyboardType: TextInputType.numberWithOptions(decimal: true),
               readOnly: readonly || (field['DISABLED'] != null && field['DISABLED']),
               onChange: (_, __) => onChange(_, __, isRequired),
-            ),
+            ), 
           );
           break;
         case 'D':
@@ -139,13 +144,14 @@ class DataFieldService {
           );
           break;
         case 'B':
+          bool isChecked = entity?[field['FIELD_NAME']] == 'Y'; // Adjust 'Y' as needed
           widgets.add(
             PsaCheckBoxRow(
               isRequired: isRequired,
               fieldKey: field['FIELD_NAME'],
               title:
                   LangUtil.getString(field['TABLE_NAME'], field['FIELD_NAME']),
-              value: entity?[field['FIELD_NAME']] ?? false,
+              value: isChecked,
               readOnly: readonly || (field['DISABLED'] != null && field['DISABLED']),
               onChange: (_, __) => onChange(_, __, isRequired),
             ),

@@ -294,6 +294,8 @@ class _DynamicProjectEditScreenState extends State<DynamicProjectEditScreen> {
             );
             break;
           case 'B':
+            print("LangUtil.getString(field['TABLE_NAME'], field['FIELD_NAME'])${LangUtil.getString(
+                field['TABLE_NAME'], field['FIELD_NAME'])}");
             widgets.add(
               PsaCheckBoxRow(
                 isRequired: isRequired,

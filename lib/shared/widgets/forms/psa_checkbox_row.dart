@@ -73,7 +73,7 @@ class _PsaCheckBoxRowState extends State<PsaCheckBoxRow> {
                         });
 
                         if (widget.onChange != null)
-                          widget.onChange!(widget.fieldKey, value);
+                          widget.onChange!(widget.fieldKey, value.toString());
                       },
                       value: value,
                     ),

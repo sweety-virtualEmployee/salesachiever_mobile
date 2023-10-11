@@ -80,7 +80,7 @@ class _HomeScreenState extends State<DyanmicHomeScreen> {
                         orElse: () => null)?['VAR_VALUE'] ??
                     'cont_api',
               );
-            if (isContainActiveFeature && item == 'PROJECT') {
+             if (isContainActiveFeature && item == 'PROJECT') {
               return DynamicProjectListScreen(
                 listType:item,
                 listName: defaultLists.firstWhere(
