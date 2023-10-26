@@ -36,6 +36,7 @@ class _RelatedEntityWidgetState extends State<RelatedEntityWidget> {
       isVisible: true,
       title: widget.title,
       onTap: () async {
+        print("yes");
         if (widget.id == '' || isLoading) return;
 
         setState(() {

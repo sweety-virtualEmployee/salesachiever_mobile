@@ -115,6 +115,9 @@ class DataFieldService {
         case 'F':
           print("entity?[field['FIELD_NAME']]${entity?[field['FIELD_NAME']]}");
           print("field['FIELD_NAME']${field['FIELD_NAME']}");
+          if(entity?[field['FIELD_NAME']]==null){
+            print("yes it is null for ${entity?[field['FIELD_NAME']]}");
+          }
           widgets.add(
             PsaFloatFieldRow(
               isRequired: isRequired,
@@ -122,7 +125,7 @@ class DataFieldService {
               title:
                   LangUtil.getString(field['TABLE_NAME'], field['FIELD_NAME']),
               value: entity?[field['FIELD_NAME']] != null
-                  ? double.tryParse(entity[field['FIELD_NAME']]) ?? 0.0
+                  ? double.tryParse((entity?[field['FIELD_NAME']]).toString()) ?? 0.0
                   : 0.0,
               keyboardType: TextInputType.numberWithOptions(decimal: true),
               readOnly: readonly || (field['DISABLED'] != null && field['DISABLED']),

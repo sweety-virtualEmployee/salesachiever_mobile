@@ -257,7 +257,7 @@ class _ProjectTabsState extends State<ProjectTabs> {
                                           id=   _entity?['CONT_ID'];
                                           tableName = "CONTACT";
                                         }
-                                        var result = await service.getTabListEntityApi(path.replaceAll("&amp;", "&"),tableName,id);
+                                        var result = await service.getTabListEntityApi(path.replaceAll("&amp;", "&"),tableName,id,1);
                                         Navigator.push(
                                           context,
                                           platformPageRoute(
@@ -266,6 +266,9 @@ class _ProjectTabsState extends State<ProjectTabs> {
                                               entity: _entity,
                                               project: _entity,
                                               entityType: widget.entityType,
+                                              path:path,
+                                              tableName:tableName,
+                                              id:id,
                                               type:jsonDecode(
                                                   jsonEncode(snapshot
                                                       .data))[index]

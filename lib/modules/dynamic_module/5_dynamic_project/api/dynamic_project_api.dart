@@ -72,10 +72,10 @@ class DynamicProjectApi {
   }
 
   Future<dynamic> getTabListEntityApi(
-      String path, String tableName, String id) async {
-    print("path$path");
-    print("tableName${tableName}");
-    print("tableName${id}");
+      String path, String tableName, String id, int pageNumber) async {
+    print("path: $path");
+    print("tableName: $tableName");
+    print("id: $id");
     List<dynamic> headers = [];
     var filter;
     if (tableName == "DEAL") {
@@ -98,11 +98,18 @@ class DynamicProjectApi {
       ];
     }
     headers.add({'key': 'filterset', 'headers': jsonEncode(filter)});
-    Response response =
-        await Api().get('/${path}?pageSize=10&pageNumber=1', headers);
+
+    final hasQueryParameters = path.contains('?');
+
+    final url = hasQueryParameters
+        ? '/$path'
+        : '/$path?pageSize=10&pageNumber=$pageNumber';
+
+    Response response = await Api().get(url, headers);
     print(response.data);
     return response.data;
   }
+
 
   Future<dynamic> getProject() async {
     final response = await Api().getResult(
@@ -348,6 +355,17 @@ class DynamicProjectApi {
     String user = StorageUtil.getString('loginName');
     final response = await Api().delete(
         '$api/user/user.configListFilterSort?VarName=$varname&userid=$user&Section=M_LIST_${type}_${listName}');
+    return response.data;
+  }
+
+
+  Future<dynamic> getStaffZoneEntityApi(String entityType,String staffZoneType,String id,List<dynamic>? sortBy,) async {
+    List<dynamic> headers = [];
+    if (sortBy != null) {
+      headers.add({'key': 'SortSet', 'headers': jsonEncode(sortBy)});
+    }
+    final response = await Api().get(
+        '$api/$entityType/$entityType.RateAgreements?id=000003861080&pagesize=10&pagenumber=1',headers);
     return response.data;
   }
 }

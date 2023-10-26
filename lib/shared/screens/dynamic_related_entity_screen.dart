@@ -34,6 +34,9 @@ class DynamicRelatedEntityScreen extends StatefulWidget {
     required this.title,
     required this.entityType,
     required this.list,
+    required this.tableName,
+    required this.id,
+    required this.path,
     required this.isSelectable,
     required this.isEditable,
     required this.project,
@@ -43,7 +46,10 @@ class DynamicRelatedEntityScreen extends StatefulWidget {
   final String type;
   final String title;
   final String entityType;
-  final List<dynamic> list;
+  final String path;
+  final String tableName;
+  final String id;
+  final dynamic list;
   final bool isSelectable;
   final bool isEditable;
   final Map<String, dynamic> project;
@@ -57,13 +63,37 @@ class _DynamicRelatedEntityScreenState
     extends State<DynamicRelatedEntityScreen> {
   List<dynamic> list = [];
   dynamic _project;
+  final ScrollController _scrollController = ScrollController();
+  bool isLastPage=false;
+  int pageNumber=1;
+  DynamicProjectService service = DynamicProjectService();
 
   @override
   void initState() {
     _project = this.widget.project;
-    list = widget.list;
-    print("dynamic type${widget.entity}");
+    list = widget.list["Items"];
+    isLastPage = widget.list["IsLastPage"];
+    pageNumber = widget.list["PageNumber"];
+    _scrollController.addListener(() {
+      if (_scrollController.position.pixels ==
+          _scrollController.position.maxScrollExtent) {
+        _loadNextPage();
+      }
+    });
     super.initState();
+  }
+
+  void _loadNextPage() async {
+    print("isLastPage$isLastPage");
+    if(isLastPage==false){
+      pageNumber = pageNumber+1;
+      var listData = await service.getTabListEntityApi(widget.path.replaceAll("&amp;", "&"),widget.tableName,widget.id,pageNumber);
+      setState(() {
+        isLastPage =listData["IsLastPage"];
+        pageNumber = listData["PageNumber"];
+        list.addAll(listData["Items"]);
+      });
+    }
   }
 
   @override
@@ -357,7 +387,7 @@ class _DynamicRelatedEntityScreenState
                 child: CommonHeader(
                     entityType: widget.entityType, entity: _project)),
             Container(
-              color: Colors.black,
+              color: Colors.white,
               height: 20,
             ),
             if (list.isEmpty)
@@ -370,6 +400,7 @@ class _DynamicRelatedEntityScreenState
               Expanded(
                 child: ListView.builder(
                   itemCount: list.length,
+                  controller: _scrollController,
                   itemBuilder: (BuildContext context, int index) {
                     final item = list[index];
                     print("itewbdfaskmgnvkdbh");
@@ -475,7 +506,8 @@ class _DynamicRelatedEntityScreenState
                               },
                             ),
                           );
-                        }else {
+                        }else if (widget.type == "projects") {
+                          print("widget.type${widget.type}");
                           dynamic project = await ProjectService()
                               .getEntity(item['PROJECT_ID']);
                           print("projectbalue$project");
@@ -490,6 +522,9 @@ class _DynamicRelatedEntityScreenState
                               },
                             ),
                           );
+                        }
+                        else{
+                          print("do nothing");
                         }
                         context.loaderOverlay.hide();
                       },
@@ -787,7 +822,8 @@ class _DynamicRelatedEntityScreenState
                                                   },
                                                 ),
                                               );
-                                            }else {
+                                            }else if (widget.type == "projects") {
+                                              print("widget.type${widget.type}");
                                               dynamic project =
                                                   await ProjectService()
                                                       .getEntity(
@@ -804,6 +840,9 @@ class _DynamicRelatedEntityScreenState
                                                   },
                                                 ),
                                               );
+                                            }
+                                            else{
+                                              print("do nothing");
                                             }
                                           },
                                           icon: Icon(context

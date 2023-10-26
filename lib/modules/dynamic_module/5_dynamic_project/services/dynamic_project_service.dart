@@ -36,14 +36,13 @@ class DynamicProjectService extends EntityService {
     return dataResult;
   }
 
-  Future<List<dynamic>> getTabListEntityApi(
-      String path,String tableName,String id) async {
+  Future<dynamic> getTabListEntityApi(
+      String path,String tableName,String id, int pageNumber) async {
     print("entity${path}");
-    var data = await DynamicProjectApi().getTabListEntityApi(path,tableName, id);
+    var data = await DynamicProjectApi().getTabListEntityApi(path,tableName, id,  pageNumber);
     print(data);
-    List<dynamic> items = data['Items'];
 
-    return items;
+    return data;
   }
 
   Future<dynamic> getLookByDDL(
@@ -294,6 +293,13 @@ class DynamicProjectService extends EntityService {
      return DynamicProjectApi().deleteSortApi(varname,type, listName);
 
   }
+  Future<List<dynamic>> getStaffZoneEntity(String entityType,String staffZoneType,String id,List<dynamic>? sortBy,) async{
+    var data = await DynamicProjectApi().getStaffZoneEntityApi(entityType,staffZoneType,id,sortBy);
+    List<dynamic> items = data['Items'];
+    return items;
+  }
+
+
 
 
 }

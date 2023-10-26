@@ -46,7 +46,7 @@ class ProjectViewRelatedRecords extends StatelessWidget {
           relatedEntityType: 'actions',
           isEditable: false,
         ),
-        /*if (AuthUtil.hasAccess(
+        if (AuthUtil.hasAccess(
             int.parse(ACCESS_CODES['OPPORTUNTIY'].toString())))
           RelatedEntityWidget(
             entity: _entity,
@@ -58,7 +58,7 @@ class ProjectViewRelatedRecords extends StatelessWidget {
             id: _projectId,
             relatedEntityType: 'OpportunityLinks?pageSize=1000&pageNumber=1',
             isEditable: false,
-          )*/
+          )
       ],
     );
   }

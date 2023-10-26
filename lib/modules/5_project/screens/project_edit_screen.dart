@@ -4,15 +4,18 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:loader_overlay/loader_overlay.dart';
+import 'package:salesachiever_mobile/data/access_codes.dart';
 import 'package:salesachiever_mobile/modules/5_project/services/project_service.dart';
 import 'package:salesachiever_mobile/modules/5_project/widgets/project_create_related_records.dart';
 import 'package:salesachiever_mobile/modules/5_project/widgets/project_info_section.dart';
 import 'package:salesachiever_mobile/modules/5_project/widgets/project_view_related_records.dart';
+import 'package:salesachiever_mobile/modules/dynamic_module/5_dynamic_project/widgets/dynamic_staffzone_related_records.dart';
 import 'package:salesachiever_mobile/shared/services/data_field_service.dart';
 import 'package:salesachiever_mobile/shared/services/lookup_service.dart';
 import 'package:salesachiever_mobile/shared/widgets/buttons/psa_edit_button.dart';
 import 'package:salesachiever_mobile/shared/widgets/layout/psa_scaffold.dart';
 import 'package:salesachiever_mobile/shared/widgets/psa_header.dart';
+import 'package:salesachiever_mobile/utils/auth_util.dart';
 import 'package:salesachiever_mobile/utils/error_util.dart';
 import 'package:salesachiever_mobile/utils/lang_util.dart';
 import 'package:salesachiever_mobile/utils/message_util.dart';
@@ -135,6 +138,13 @@ class _ProjectEditScreenState extends State<ProjectEditScreen> {
                       entity: _project,
                       projectId: _project['PROJECT_ID'] ?? '',
                     ),
+                   /* AuthUtil.hasAccess(int.parse(
+                        ACCESS_CODES['StaffZone'].toString()))?
+                    DynamicStaffZoneViewRelatedRecords(
+                        relatedEntityType: "project", isEditable: false,
+                        entity: _project,
+                        id: _project['PROJECT_ID'] ?? '',
+                      ):SizedBox(),*/
                     ProjectCreateRelatedRecords(project: _project),
                   ],
                 ),
