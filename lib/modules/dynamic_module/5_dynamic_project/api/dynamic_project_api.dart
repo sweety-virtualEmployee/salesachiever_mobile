@@ -368,4 +368,13 @@ class DynamicProjectApi {
         '$api/$entityType/$entityType.RateAgreements?id=000003861080&pagesize=10&pagenumber=1',headers);
     return response.data;
   }
+
+
+  Future<dynamic> getSubTabsValue(String listName,String fieldName,String fieldValue) async {
+    final response = await Api().getResult(
+        '$api/List/$listName?Fieldname=$fieldName&FieldValue=$fieldValue');
+    print("get respose tab${response.data}");
+    return response.data;
+  }
+
 }

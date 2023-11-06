@@ -187,6 +187,7 @@ class _ProjectTabsState extends State<ProjectTabs> {
                                         String id="";
                                         print("tab type is L ${snapshot
                                             .data}");
+                                        print("tab type is L ${_entity.toString()}");
                                         if(widget.entityType=="COMPANY"){
                                           path = jsonDecode(
                                               jsonEncode(snapshot
@@ -244,6 +245,7 @@ class _ProjectTabsState extends State<ProjectTabs> {
                                         }
                                         }else if(widget.entityType=="PROJECT"){
                                           print("check if it project type");
+                                          print("check if it project type$id");
                                             path = jsonDecode(
                                                 jsonEncode(snapshot
                                                     .data))[index]

@@ -300,6 +300,15 @@ class DynamicProjectService extends EntityService {
   }
 
 
+  Future<List<dynamic>> getSubTabListEntityValues(
+      String listName,String fieldName,String fieldValue) async {
+    var data = await DynamicProjectApi().getSubTabsValue(listName,fieldName,fieldValue);
+    List<dynamic> items = data['Items'];
+    print(data);
+
+    return items;
+  }
+
 
 
 }
