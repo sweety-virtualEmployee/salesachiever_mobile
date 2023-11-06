@@ -394,7 +394,7 @@ class _DynamicRelatedEntityScreenState
               Padding(
                 padding: const EdgeInsets.only(top: 200.0),
                 child: Text(
-                    "No ${widget.type} is linked to ${capitalizeFirstLetter(widget.entityType)}"),
+                    "No Data found"),
               )
             else
               Expanded(
@@ -407,7 +407,7 @@ class _DynamicRelatedEntityScreenState
                     print(item);
                     return InkWell(
                       onTap: () async {
-                      //  context.loaderOverlay.show();
+                             print("widget.type check${widget.type}");
                         if (widget.type == "companies") {
                           dynamic company =
                               await CompanyService().getEntity(item["ACCT_ID"]);
