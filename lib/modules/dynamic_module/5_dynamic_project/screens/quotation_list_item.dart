@@ -1,14 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:loader_overlay/loader_overlay.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
-import 'package:salesachiever_mobile/modules/10_opportunities/screens/opportunity_edit_screen.dart';
-import 'package:salesachiever_mobile/modules/10_opportunities/services/opportunity_service.dart';
-import 'package:salesachiever_mobile/modules/5_project/services/project_service.dart';
 import 'package:salesachiever_mobile/modules/base/entity/widgets/entity_list_item.dart';
 import 'package:salesachiever_mobile/modules/dynamic_module/5_dynamic_project/screens/dynamic_quotation_add.dart';
 import 'package:salesachiever_mobile/modules/dynamic_module/5_dynamic_project/services/dynamic_project_service.dart';
-import 'package:salesachiever_mobile/utils/date_util.dart';
-import 'package:salesachiever_mobile/utils/lang_util.dart';
+
 
 class QuotationListItemWidget extends EntityListItemWidget {
   const QuotationListItemWidget({

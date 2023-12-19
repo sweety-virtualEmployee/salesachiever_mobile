@@ -1,13 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
-import 'package:salesachiever_mobile/modules/10_opportunities/screens/opportunity_list_screen.dart';
-import 'package:salesachiever_mobile/modules/6_action/screens/action_list_screen.dart';
-import 'package:salesachiever_mobile/modules/3_company/screens/company_list_screen.dart';
-import 'package:salesachiever_mobile/modules/4_contact/screens/contact_list_screen.dart';
-import 'package:salesachiever_mobile/modules/0_home/screens/home_screen.dart';
-import 'package:salesachiever_mobile/modules/dynamic_module/5_dynamic_project/screens/dynamic_project_list_screen.dart';
-import 'package:salesachiever_mobile/modules/dynamic_module/5_dynamic_project/screens/dynamic_staffzone_list_screen.dart';
+import 'package:salesachiever_mobile/modules/dynamic_module/dynamic_staffzone/dynamic_Staffzone_list_Screen.dart';
 import 'package:salesachiever_mobile/shared/widgets/layout/psa_scaffold.dart';
 
 class SelectStaffZoneSortOrderScreen extends StatelessWidget {
@@ -73,11 +67,12 @@ class SelectStaffZoneSortOrderScreen extends StatelessWidget {
                     print("sortby$id");
                     print("sortby$entity");
 
-                      return DynamicStaffZoneListScreen(
+                      return DynamicStaffZoneListScreen(tableName: "",
                         sortBy: sort,
                         staffZoneType:entity,
                         id: id,
                         relatedEntityType: list,
+                        title:"",
                       );
                       },
                 ),

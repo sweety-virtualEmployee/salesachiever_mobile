@@ -101,7 +101,6 @@ class PotentialService extends EntityService {
             userField['UDF_ID'] == visibleUserFields['UDF_ID'] &&
             visibleUserFields['TYPE_ID'] == dealId))
         .where((activeField) =>
-            dealId[activeField['FIELD_NAME']] == null ||
             dealId[activeField['FIELD_NAME']] == '')
         .toList();
 

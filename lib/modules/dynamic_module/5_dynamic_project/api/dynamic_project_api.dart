@@ -166,6 +166,7 @@ class DynamicProjectApi {
     return response.data;
   }
 
+
   Future<dynamic> update(String projectId, dynamic project) async {
     Response response = await _api.put('/quotation/$projectId', project);
     return response.data;
@@ -359,16 +360,27 @@ class DynamicProjectApi {
   }
 
 
-  Future<dynamic> getStaffZoneEntityApi(String entityType,String staffZoneType,String id,List<dynamic>? sortBy,) async {
+  Future<dynamic> getStaffZoneEntityApi(String tableName,String fieldName,String staffZoneType,String id,List<dynamic>? sortBy,) async {
     List<dynamic> headers = [];
+    var filter = [{"TableName": tableName,"FieldName":fieldName,"Comparison":5,"ItemValue":id}];
     if (sortBy != null) {
       headers.add({'key': 'SortSet', 'headers': jsonEncode(sortBy)});
     }
+    headers.add({'key': 'FilterSet', 'headers': jsonEncode(filter)});
     final response = await Api().get(
-        '$api/$entityType/$entityType.RateAgreements?id=000003861080&pagesize=10&pagenumber=1',headers);
+        '$api$staffZoneType?PageSize=10&PageNumber=1',headers);
     return response.data;
   }
 
+  Future<dynamic> createStaffZoneEntity(dynamic entity,String staffZoneType) async {
+    Response response = await _api.post('/Entity/Entity.$staffZoneType', entity);
+    return response.data;
+  }
+
+  Future<dynamic> updateStaffZoneEntity(String id, dynamic entity,String staffZoneType) async {
+    Response response = await _api.put('/Entity/Entity.$staffZoneType', entity);
+    return response.data;
+  }
 
   Future<dynamic> getSubTabsValue(String listName,String fieldName,String fieldValue) async {
     final response = await Api().getResult(

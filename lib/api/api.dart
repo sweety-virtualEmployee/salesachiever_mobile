@@ -109,7 +109,6 @@ class Api {
     final prefs = await SharedPreferences.getInstance();
     prefs.setInt('myTimestampKey', timestamp);
 
-    DateTime dateTime = DateTime.fromMillisecondsSinceEpoch(timestamp);
       return companyModule;
     } catch (e) {
       print(e);

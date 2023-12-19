@@ -1,15 +1,12 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:loader_overlay/loader_overlay.dart';
-import 'package:salesachiever_mobile/modules/dynamic_module/5_dynamic_project/screens/dynamic_psa_header.dart';
 import 'package:salesachiever_mobile/modules/dynamic_module/5_dynamic_project/widgets/common_header.dart';
 import 'package:salesachiever_mobile/shared/widgets/layout/psa_scaffold.dart';
 import '../../../../shared/widgets/buttons/psa_edit_button.dart';
 import '../../../../shared/widgets/forms/psa_textfield_row.dart';
 import '../../../../utils/error_util.dart';
-import '../../../../utils/lang_util.dart';
 import '../../../../utils/message_util.dart';
 import '../services/dynamic_project_service.dart';
 

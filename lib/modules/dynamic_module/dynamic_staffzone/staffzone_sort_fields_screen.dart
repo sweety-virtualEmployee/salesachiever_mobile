@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
-import 'package:salesachiever_mobile/modules/dynamic_module/5_dynamic_project/widgets/selected_staffzone_sort_order_Screen.dart';
+import 'package:salesachiever_mobile/modules/dynamic_module/dynamic_staffzone/selected_staffzone_sort_order_Screen.dart';
 import 'package:salesachiever_mobile/shared/screens/sorting/select_sort_order_screen.dart';
 import 'package:salesachiever_mobile/shared/widgets/layout/psa_scaffold.dart';
 import 'package:salesachiever_mobile/shared/models/locale.dart';

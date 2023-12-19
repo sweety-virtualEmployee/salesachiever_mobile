@@ -4,11 +4,6 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:loader_overlay/loader_overlay.dart';
 import 'package:salesachiever_mobile/modules/dynamic_module/5_dynamic_project/widgets/dynamic_List_picker.dart';
-import 'package:salesachiever_mobile/shared/widgets/forms/psa_list_picker.dart';
-import 'package:salesachiever_mobile/shared/widgets/layout/psa_scaffold.dart';
-import 'package:salesachiever_mobile/utils/hive_util.dart';
-import 'package:salesachiever_mobile/utils/lang_util.dart';
-
 import '../services/dynamic_project_service.dart';
 
 class DynamicPsaDropdownRow extends StatefulWidget {

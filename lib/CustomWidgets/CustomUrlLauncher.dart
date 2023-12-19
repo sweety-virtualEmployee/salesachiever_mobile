@@ -4,13 +4,12 @@ import 'package:url_launcher/url_launcher.dart';
 
 class CustomUrlLauncher{
   static callNumber(String numberOfUser,) async{
-    String number = numberOfUser ?? '';//set the number here
+    String number = numberOfUser;//set the number here
     bool? res = await FlutterPhoneDirectCaller.callNumber(number);
   }
 
   static launchPhoneURL(String phoneNumber) async {
     String url = 'tel://' + phoneNumber.replaceAll(" ","");
-    var data =  url.length;
     print("url ----"+url);
     if (await canLaunch(url)) {
       await launch(url);

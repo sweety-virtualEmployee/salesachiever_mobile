@@ -75,7 +75,7 @@ class _CompanyInfoSectionState extends State<CompanyInfoSection> {
               if (snapshot.connectionState == ConnectionState.waiting)
                 return PsaTextAreaFieldRow(
                   key: Key('placehoder'),
-                  fieldKey: 'NOTES',
+                    fieldKey: 'NOTES',
                   title: LangUtil.getString(
                       'AccountEditWindow', 'NotesTab.Header'),
                   value: '',

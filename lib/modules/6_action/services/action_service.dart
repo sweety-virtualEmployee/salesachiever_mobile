@@ -105,7 +105,13 @@ class ActionService extends EntityService {
     return invalidFields.length <= 0;
   }
 
-  bool validateCompnay(dynamic action) {
+  bool
+
+
+
+
+
+  validateCompnay(dynamic action) {
     return action != null &&
         (action['CLASS'] == 'G' || action['ACCT_ID'] != null);
   }

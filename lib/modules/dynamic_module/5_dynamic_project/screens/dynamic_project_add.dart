@@ -6,7 +6,6 @@ import 'package:flutter/widgets.dart';
 import 'package:loader_overlay/loader_overlay.dart';
 import 'package:salesachiever_mobile/modules/5_project/services/project_service.dart';
 import 'package:salesachiever_mobile/modules/5_project/widgets/project_create_related_records.dart';
-import 'package:salesachiever_mobile/modules/5_project/widgets/project_info_section.dart';
 import 'package:salesachiever_mobile/modules/5_project/widgets/project_view_related_records.dart';
 import 'package:salesachiever_mobile/shared/services/data_field_service.dart';
 import 'package:salesachiever_mobile/shared/services/lookup_service.dart';
@@ -75,12 +74,6 @@ class _DynamicProjectAddScreenState extends State<DynamicProjectAddScreen> {
     validate();
   }
 
-  void _onNoteChange(String key, String value, int? state) {
-    setState(() {
-      _notes = value;
-      _isNewNote = state == null || state == 0;
-    });
-  }
 
   void validate() {
     var isValid = ProjectService().validateEntity(_project);

@@ -73,6 +73,16 @@ class LookupService {
         iPadFields = opportunityFields;
       else if(entityType.toLowerCase() == 'deal_potential')
         iPadFields = potentialFields;
+      else if(entityType.toLowerCase() == 'rate_agreement')
+        iPadFields = potentialFields;
+      else if(entityType.toLowerCase() == 'job_order')
+        iPadFields = potentialFields;
+      else if(entityType.toLowerCase() == 'initial_site_visit')
+        iPadFields = potentialFields;
+      else if(entityType.toLowerCase() == 'accident_record')
+        iPadFields = potentialFields;
+      else if(entityType.toLowerCase() == 'initial_order')
+        iPadFields = potentialFields;
     }
 
     await Hive.box<dynamic>('activeFields_$entityType').clear();
@@ -133,11 +143,6 @@ class LookupService {
   List<dynamic> getMandatoryFields() {
     List<dynamic> items =
         Hive.box<dynamic>('userFieldProperties').values.toList();
-        log("mendataory fields of check ${items
-            .where((e) =>
-        e['PROPERTY_ID'].toString() == '2' &&
-            e['PROPERTY_VALUE'].toString() == 'Y'&&e['TABLE_NAME']=="ACCOUNT")
-            .toList()}");
     return items
         .where((e) =>
             e['PROPERTY_ID'].toString() == '2' &&

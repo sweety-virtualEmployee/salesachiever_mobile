@@ -99,6 +99,7 @@ class _PhotoPreviewState extends State<PhotoPreview> {
     super.initState();
     print(widget.photo["FILE"]);
     print(widget.photo["FILENAME"]);
+    print(widget.photo["FILEPATH"]);
     textController.text = widget.photo['DESCRIPTION'];
   }
 
@@ -117,8 +118,7 @@ class _PhotoPreviewState extends State<PhotoPreview> {
             ),
           ):Expanded(
             child: PDFView(
-              filePath: "${widget.photo['FILE']}.pdf",
-            ),
+              filePath: widget.photo['FILEPATH']),
           ),
           Container(
             child: Padding(

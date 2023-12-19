@@ -241,7 +241,11 @@ class _ActionAttachmentScreenState extends State<ActionAttachmentScreen> {
             await pdfFile.writeAsBytes(file.content);
 
             print("filepath$filePath");
-
+            setState(() {
+              _imageList[_imageList.indexOf(_imageList.firstWhere(
+                      (element) => element['BLOB_ID'] == files[i]['BLOB_ID']))]
+              ['FILEPATH'] = filePath;
+            });
             if (file.isFile) {
               outFile = File(fileName);
               outFile = await outFile.create(recursive: true);

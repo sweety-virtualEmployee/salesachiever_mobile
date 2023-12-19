@@ -53,6 +53,7 @@ class _ActionEditScreenState extends State<ActionEditScreen> {
     _readonly = this.widget.readonly;
     _action = this.widget.action;
 
+     print("_action12$_action");
     if (_action['ACTION_ID'] == null) {
       _action['ACTION_DATE'] = DateTime.now().toString();
       _action['ACTION_TIME'] = DateTime.now().toString();
@@ -172,7 +173,7 @@ class _ActionEditScreenState extends State<ActionEditScreen> {
                         onBack: onInfoBack,
                       ),
                       if ((_action['CLASS'] == 'L' ||
-                              _action['CLASS'] == 'A') &&
+                              _action['CLASS'] == 'A'||_action['CLASS'] == 'E') &&
                           _action['ACTION_ID'] != null )
                         ActionAttachmentManager(action: _action),
                       if (_action['CLASS'] != 'G')

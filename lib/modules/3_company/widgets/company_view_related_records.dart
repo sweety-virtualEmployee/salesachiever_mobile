@@ -16,7 +16,7 @@ class CompanyViewRelatedRecords extends StatelessWidget {
         super(key: key);
 
   final dynamic _entity;
-  final String _companyId;
+  final String _companyId;  
 
   @override
   Widget build(BuildContext context) {

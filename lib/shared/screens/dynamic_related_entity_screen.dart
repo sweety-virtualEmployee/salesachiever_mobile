@@ -5,15 +5,12 @@ import 'package:salesachiever_mobile/modules/10_opportunities/screens/opportunit
 import 'package:salesachiever_mobile/modules/10_opportunities/screens/opportunity_list_screen.dart';
 import 'package:salesachiever_mobile/modules/5_project/services/project_service.dart';
 import 'package:salesachiever_mobile/modules/dynamic_module/5_dynamic_project/screens/dynamic_project_notes.dart';
-import 'package:salesachiever_mobile/modules/dynamic_module/5_dynamic_project/screens/dynamic_psa_header.dart';
 import 'package:salesachiever_mobile/modules/dynamic_module/5_dynamic_project/screens/dynamic_quotation_add.dart';
 import 'package:salesachiever_mobile/modules/dynamic_module/5_dynamic_project/services/dynamic_project_service.dart';
 import 'package:salesachiever_mobile/shared/screens/dynamic_sub_tab_listing.dart';
 import 'package:salesachiever_mobile/shared/widgets/layout/psa_scaffold.dart';
 import 'package:salesachiever_mobile/utils/date_util.dart';
 import 'package:salesachiever_mobile/utils/lang_util.dart';
-import 'package:salesachiever_mobile/utils/text_formatting_util.dart';
-
 import '../../modules/10_opportunities/services/opportunity_service.dart';
 import '../../modules/3_company/screens/company_edit_screen.dart';
 import '../../modules/3_company/services/company_service.dart';
@@ -744,7 +741,7 @@ class _DynamicRelatedEntityScreenState
                                                         ? entry.key.substring(
                                                         entry.key.indexOf("_") +
                                                             1)
-                                                        : entry.key}')} :',
+                                                     : entry.key}')} :',
                                                     style: TextStyle(
                                                         fontWeight:
                                                         FontWeight

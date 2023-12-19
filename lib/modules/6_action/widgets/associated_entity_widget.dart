@@ -17,6 +17,7 @@ class AssociatedEntityWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    print("entity values$entity");
     return PsaRelatedEntityRow(
       isVisible: false,
       isRequired: (isRequired && entity?['ID'] == null),

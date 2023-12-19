@@ -114,6 +114,11 @@ class LoginService {
     await lookupService.getIpadFields('action', dynmaicUIEnabled);
     await lookupService.getIpadFields('deal', dynmaicUIEnabled);
     await lookupService.getIpadFields('quotation', dynmaicUIEnabled);
+    await lookupService.getIpadFields('rate_agreement', dynmaicUIEnabled);
+    await lookupService.getIpadFields('job_order', dynmaicUIEnabled);
+    await lookupService.getIpadFields('initial_site_visit', dynmaicUIEnabled);
+    await lookupService.getIpadFields('accident_record', dynmaicUIEnabled);
+    await lookupService.getIpadFields('initial_order', dynmaicUIEnabled);
   }
 
   Future<void> _fetchUserFields() async {
@@ -124,6 +129,11 @@ class LoginService {
     await lookupService.getUserFields('action');
     await lookupService.getUserFields('deal');
     await lookupService.getUserFields('quotation');
+    await lookupService.getUserFields('rate_agreement');
+    await lookupService.getUserFields('job_order');
+    await lookupService.getUserFields('initial_site_visit');
+    await lookupService.getUserFields('accident_record');
+    await lookupService.getUserFields('initial_order');
   }
 
   Future<void> _fetchUserFieldProperties() async {

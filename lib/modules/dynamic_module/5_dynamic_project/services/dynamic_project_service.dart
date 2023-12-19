@@ -90,9 +90,18 @@ class DynamicProjectService extends EntityService {
     return await DynamicProjectApi().create(entity);
   }
 
+  Future<dynamic> addNewStaffZoneEntity(dynamic entity,String staffZoneType) async {
+    return await DynamicProjectApi().createStaffZoneEntity(entity,staffZoneType);
+  }
+
   @override
   Future<dynamic> updateEntity(String id, dynamic entity) async {
     await DynamicProjectApi().update(id, entity);
+  }
+
+  @override
+  Future<dynamic> updateStaffZoneEntity(String id, dynamic entity,String staffZoneType) async {
+    await DynamicProjectApi().updateStaffZoneEntity(id, entity,staffZoneType);
   }
 
   @override
@@ -126,6 +135,19 @@ class DynamicProjectService extends EntityService {
     print("Data${data}");
     dynamic notes = data;
     return notes;
+  }
+
+  List<dynamic> getStaffZoneActiveFields(String staffZoneEntity) {
+     print("activefieldsstfzzoneEntity$staffZoneEntity");
+    List<dynamic> items =
+    Hive.box<dynamic>('activeFields_$staffZoneEntity').values.toList();
+    print("length of items");
+    print(items.length);
+
+    items.sort((a, b) => a['ORDER_NUM'].compareTo(b['ORDER_NUM']));
+
+    return items.where((e) => e['FIELD_NAME'] != 'PROJECT_TYPE_ID').toList();
+
   }
 
   List<dynamic> getActiveFields() {
@@ -293,8 +315,8 @@ class DynamicProjectService extends EntityService {
      return DynamicProjectApi().deleteSortApi(varname,type, listName);
 
   }
-  Future<List<dynamic>> getStaffZoneEntity(String entityType,String staffZoneType,String id,List<dynamic>? sortBy,) async{
-    var data = await DynamicProjectApi().getStaffZoneEntityApi(entityType,staffZoneType,id,sortBy);
+  Future<List<dynamic>> getStaffZoneEntity(String entityType,String fieldName,String staffZoneType,String id,List<dynamic>? sortBy,) async{
+    var data = await DynamicProjectApi().getStaffZoneEntityApi(entityType,fieldName,staffZoneType,id,sortBy);
     List<dynamic> items = data['Items'];
     return items;
   }
@@ -308,7 +330,9 @@ class DynamicProjectService extends EntityService {
 
     return items;
   }
-
+  bool validateStaffZoneEntity(dynamic entity) {
+    return validateActiveFields(entity) && validateUserFields(entity);
+  }
 
 
 }
