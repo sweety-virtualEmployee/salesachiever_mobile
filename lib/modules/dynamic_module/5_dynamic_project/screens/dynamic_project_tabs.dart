@@ -86,7 +86,7 @@ class _ProjectTabsState extends State<ProjectTabs> {
             if (snapshot.hasData) {
               return Column(children: [
                 Container(
-                    height: 61,
+                    height: 70,
                     child: CommonHeader(
                         entityType: widget.entityType, entity: _entity)),
                 Container(
@@ -107,7 +107,7 @@ class _ProjectTabsState extends State<ProjectTabs> {
                                     Divider(
                                       height: 0,
                                       endIndent: 1.0,
-                                      color: Colors.black,
+                                      color: Colors.black12,
                                     ),
                                 itemCount: jsonDecode(jsonEncode(snapshot.data))
                                     .length,

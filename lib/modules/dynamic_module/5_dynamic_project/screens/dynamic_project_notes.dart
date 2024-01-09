@@ -103,7 +103,7 @@ class _DynamicProjectNotesState extends State<DynamicProjectNotes> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Container(
-                height:61,
+                height:70,
                 child: CommonHeader(entityType: widget.entityType, entity: widget.project)),
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,

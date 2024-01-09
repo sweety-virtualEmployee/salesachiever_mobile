@@ -389,7 +389,7 @@ class _DynamicRelatedEntityScreenState
         body: Column(
           children: [
             Container(
-                height: 61,
+                height: 70,
                 child: CommonHeader(
                     entityType: widget.entityType, entity: _project)),
             Container(
