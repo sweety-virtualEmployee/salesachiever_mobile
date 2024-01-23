@@ -230,7 +230,7 @@ class _ActionAttachmentScreenState extends State<ActionAttachmentScreen> {
           print("decodeBytes$decodedBytes");
           final archive = ZipDecoder().decodeBytes(decodedBytes);
            print("archive$archive");
-          File? outFile;
+           File? outFile;
 
           for (var file in archive) {
             var fileName = '$_dir/${files[i]['BLOB_ID']}';

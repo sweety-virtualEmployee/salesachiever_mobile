@@ -1,5 +1,10 @@
+import 'dart:io';
+
 import 'package:dio/dio.dart';
+import 'package:file_picker/file_picker.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:loader_overlay/loader_overlay.dart';
 import 'package:salesachiever_mobile/modules/3_company/services/company_service.dart';
 import 'package:salesachiever_mobile/modules/4_contact/services/contact_service.dart';
@@ -44,8 +49,10 @@ class _DynamicStaffZoneEditScreenState
   late List<dynamic> activeFields;
   late List<dynamic> mandatoryFields;
   bool _isValid = false;
-
+  List<dynamic> _imageList = [];
+  bool isLoading = false;
   static final key = GlobalKey<FormState>();
+  final picker = ImagePicker();
 
   @override
   void initState() {
@@ -163,9 +170,19 @@ class _DynamicStaffZoneEditScreenState
     print("_readonly$_readonly");
     var visibleFields = activeFields.where((e) => e['COLVAL']).toList();
     return PsaScaffold(
-      action: PsaEditButton(
-        text: _readonly ? 'Edit' : 'Save',
-        onTap: onTap,
+      action: Row(
+        children: [
+          _readonly?GestureDetector(
+            child:  PsaEditButton(
+              text: 'Upload',
+              onTap: addImage,
+            ),)
+              :SizedBox(),
+          PsaEditButton(
+            text: _readonly ? 'Edit' : 'Save',
+            onTap: onTap,
+          ),
+        ],
       ),
       title: "Add new ${widget.title}",
       body: Container(
@@ -210,6 +227,89 @@ class _DynamicStaffZoneEditScreenState
       ],
     );
   }
+
+  Future addImage() async {
+    showCupertinoModalPopup<void>(
+      context: context,
+      builder: (BuildContext context) => CupertinoActionSheet(
+        title: const Text('Add Documents'),
+        actions: <CupertinoActionSheetAction>[
+          CupertinoActionSheetAction(
+            child: const Text('Choose from Document'),
+            onPressed: () async {
+              FilePickerResult? result = await FilePicker.platform.pickFiles(type: FileType.any);
+              setState(() {
+                if (result != null) {
+                  setState(() {
+                    isLoading = false;
+                    _imageList.insert(0, {
+                      'FILE': File(result.files.single.path!),
+                      'ISNEW': true,
+                      'ISUPDATED': false,
+                      'DESCRIPTION': 'new document'
+                    });
+                  });
+                } else {
+                  print('No document selected.');
+                }}
+              );
+            },
+          ),
+          CupertinoActionSheetAction(
+            child: const Text('Choose Image from Gallery'),
+            onPressed: () async {
+              Navigator.pop(context);
+
+              final pickedFile =
+              await picker.pickImage(source: ImageSource.gallery);
+
+              setState(() {
+                if (pickedFile != null) {
+                  setState(() {
+                    isLoading = false;
+                    _imageList.insert(0, {
+                      'FILE': File(pickedFile.path),
+                      'ISNEW': true,
+                      'ISUPDATED': false,
+                      'DESCRIPTION': 'new img'
+                    });
+                  });
+                } else {
+                  print('No image selected.');
+                }
+              });
+            },
+          ),
+          CupertinoActionSheetAction(
+            child: const Text('Take Photo'),
+            onPressed: () async {
+              Navigator.pop(context);
+
+              final pickedFile =
+              await picker.pickImage(source: ImageSource.camera);
+
+              setState(() {
+                if (pickedFile != null) {
+                  setState(() {
+                    isLoading = false;
+                    _imageList.insert(0, {
+                      'FILE': File(pickedFile.path),
+                      'ISNEW': true,
+                      'ISUPDATED': false,
+                      'DESCRIPTION': 'new img'
+                    });
+                  });
+                } else {
+                  print('No image selected.');
+                }
+              });
+            },
+          )
+        ],
+      ),
+    );
+  }
+
 
   void validate() {
     var isValid = DynamicProjectService().validateStaffZoneEntity(_entity);

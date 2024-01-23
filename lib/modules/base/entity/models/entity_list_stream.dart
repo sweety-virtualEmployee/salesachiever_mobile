@@ -91,12 +91,14 @@ class EntityListStream {
             filterBy: filterBy)
         . then(
       (response) {
+        print("response $response");
         EntityList entityList = EntityList.fromJson(response.data);
         isLoading = false;
         _data.addAll(entityList.data!);
         hasMore = !entityList.isLastPage;
         _pageNumber = entityList.pageNumber;
         _controller.add(_data);
+        print("dat check $_data");
       },
     ).catchError(
       (error) {

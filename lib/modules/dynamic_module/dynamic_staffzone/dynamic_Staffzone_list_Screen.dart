@@ -1,5 +1,12 @@
+import 'dart:convert';
+import 'dart:io';
+import 'package:archive/archive_io.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:salesachiever_mobile/modules/99_50021_site_photos/services/site_photo_service.dart';
+import 'package:salesachiever_mobile/modules/dynamic_module/dynamic_staffzone/dyanmic_Staffzone_document_view.dart';
 import 'package:salesachiever_mobile/modules/dynamic_module/dynamic_staffzone/dynamic_staffzone_edit_screen.dart';
 import 'package:salesachiever_mobile/modules/dynamic_module/5_dynamic_project/services/dynamic_project_service.dart';
 import 'package:salesachiever_mobile/shared/widgets/buttons/psa_add_button.dart';
@@ -35,6 +42,8 @@ class _DynamicStaffZoneListScreenState
     extends State<DynamicStaffZoneListScreen> {
   List<dynamic> staffZone = [];
   bool isLoading = false;
+  List<dynamic> _imageList = [];
+  String? _dir;
 
   @override
   void initState() {
@@ -112,33 +121,87 @@ class _DynamicStaffZoneListScreenState
                         );
                       },
                       child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          SizedBox(height: 10),
-                          PlatformText(
-                            '${item['DESCRIPTION'] ?? ''}',
-                            style: TextStyle(
-                                fontWeight: FontWeight.w500,
-                                color: Colors.black87),
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                          SizedBox(height: 5),
-                          PlatformText(
-                            "Submitted By: ${item['SUBMITTED_BY'] ?? ''}",
-                            style: TextStyle(
-                                fontWeight: FontWeight.w300,
-                                color: Colors.black87,
-                                fontSize: 14),
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                          SizedBox(height: 5),
-                          PlatformText(
-                            "Submitted On: ${item['SUBMITTED_ON'] ?? ''}",
-                            style: TextStyle(
-                                fontWeight: FontWeight.w300,
-                                color: Colors.black87,
-                                fontSize: 14),
-                            overflow: TextOverflow.ellipsis,
+                          Row(
+                            children: [
+                              Flexible(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    SizedBox(height: 10),
+                                    PlatformText(
+                                      '${item['DESCRIPTION'] ?? ''}',
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.w500,
+                                          color: Colors.black87),
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                    SizedBox(height: 5),
+                                    PlatformText(
+                                      "Submitted By: ${item['SUBMITTED_BY'] ?? ''}",
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.w300,
+                                          color: Colors.black87,
+                                          fontSize: 14),
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                    SizedBox(height: 5),
+                                    PlatformText(
+                                      "Submitted On: ${item['SUBMITTED_ON'] ?? ''}",
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.w300,
+                                          color: Colors.black87,
+                                          fontSize: 14),
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                    SizedBox(height: 5,),
+                                  ],
+                                ),
+                              ),
+                              SizedBox(width: 2,),
+                              if (item['HAS_LINK_DOCUMENT'] == "Y") InkWell(
+                                onTap: () async {
+                                  final String blob = await SitePhotoService().getBlobById(item['LINK_DOCUMENT_BLOB_ID']);
+                                  final fileBytes = base64.decode(blob.replaceAll('\r\n', ''));
+                                  final archive = ZipDecoder().decodeBytes(fileBytes);
+                                  File? outFile;
+                                  String pdfPath="";
+                                  for (var file in archive) {
+                                    var fileName = '$_dir/${item['LINK_DOCUMENT_BLOB_ID']}';
+                                    final directory = await getApplicationDocumentsDirectory();
+                                    final filePath = '${directory.path}/file.pdf';
+                                    final pdfFile = File(filePath);
+                                    await pdfFile.writeAsBytes(file.content);
+                                    print("filepath$filePath");
+                                    setState(() {
+                                      pdfPath = filePath;
+                                    });
+                                 /*   if (file.isFile) {
+                                      outFile = File(fileName);
+                                      outFile = await outFile.create(recursive: true);
+                                      await outFile.writeAsBytes(file.content);
+                                    }*/
+                                  }
+                                  print("check the output file");
+                                  print(outFile);
+                                  print(pdfPath);
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => DynamicStaffzoneDocumentView(filePath: pdfPath),
+                                    ),
+                                  );
+                                },
+                                child: SizedBox(
+                                  width: 40,
+                                  height: 40,
+                                  child: Image.asset(
+                                    "assets/images/pdf_icon.png",
+                                  ),
+                                ),
+                              ) else SizedBox(),
+                              SizedBox(width:5)
+                            ],
                           ),
                           SizedBox(height: 5,),
                           Divider(  color: Colors.black26,),
@@ -165,4 +228,6 @@ class _DynamicStaffZoneListScreenState
           );
         }));
   }
+
+
 }

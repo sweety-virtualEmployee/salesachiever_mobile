@@ -120,6 +120,7 @@ class _DynamicProjectListScreenState extends State<DynamicProjectListScreen> {
         service: DynamicProjectService(listName: widget.listName),
         display: (
             {required final dynamic entity, required final Function refresh}) {
+          print("entity passed$entity");
           return DynamicProjectListItemWidget(
               entity: entity,
               refresh: refresh,

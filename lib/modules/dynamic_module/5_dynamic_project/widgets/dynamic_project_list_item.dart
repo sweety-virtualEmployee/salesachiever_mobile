@@ -41,14 +41,13 @@ class DynamicProjectListItemWidget extends EntityListItemWidget {
 
 class _ProjectListItemWidgetState
     extends EntityListItemWidgetState<DynamicProjectListItemWidget> {
-  Map<String, dynamic> map = Map<String, dynamic>();
   List<dynamic> currencyDefaultValues = [];
   bool isLoading = false;
 
   @override
   void initState() {
-    getCurrencyValue();
-    map = widget.entity;
+    //getCurrencyValue();
+    print("widget entry${widget.entity}");
     super.initState();
   }
 
@@ -89,17 +88,15 @@ class _ProjectListItemWidgetState
 
   @override
   Widget build(BuildContext context) {
-    print("entity data${map}");
-    print("entity data${widget.type}");
     if (widget.type == 'COMPANY') {
       return ListTile(
         subtitle: ListView.builder(
-          itemCount: map.length,
+          itemCount:  widget.entity.length,
           physics: NeverScrollableScrollPhysics(),
           shrinkWrap: true,
           itemBuilder: (BuildContext context, int index) {
-            final key = map.keys.elementAt(index);
-            final value = map[key];
+            final key =  widget.entity.keys.elementAt(index);
+            final value =  widget.entity[key];
             String contextId =
                 key.contains("_") ? key.substring(0, key.indexOf('_')) : key;
             String itemId =
@@ -214,12 +211,12 @@ class _ProjectListItemWidgetState
       if (widget.type == 'OPPORTUNITY') {
         return ListTile(
           subtitle: ListView.builder(
-            itemCount: map.length,
+            itemCount:  widget.entity.length,
             physics: NeverScrollableScrollPhysics(),
             shrinkWrap: true,
             itemBuilder: (BuildContext context, int index) {
-              final key = map.keys.elementAt(index);
-              final value = map[key];
+              final key =  widget.entity.keys.elementAt(index);
+              final value =  widget.entity[key];
               String contextId = key.substring(0, key.indexOf('_'));
               String itemId =
                   key.contains("_") ? key.substring(key.indexOf("_") + 1) : key;
@@ -338,12 +335,12 @@ class _ProjectListItemWidgetState
         if (widget.type == 'CONTACT') {
           return ListTile(
             subtitle: ListView.builder(
-              itemCount: map.length,
+              itemCount:  widget.entity.length,
               physics: NeverScrollableScrollPhysics(),
               shrinkWrap: true,
               itemBuilder: (BuildContext context, int index) {
-                final key = map.keys.elementAt(index);
-                final value = map[key];
+                final key =  widget.entity.keys.elementAt(index);
+                final value =  widget.entity[key];
                 List<String> parts = key.split('_');
                 String contextId = key.contains("_")
                     ? key.substring(0, key.indexOf('_'))
@@ -459,12 +456,12 @@ class _ProjectListItemWidgetState
           if (widget.type == 'PROJECT') {
             return ListTile(
               subtitle: ListView.builder(
-                itemCount: map.length,
+                itemCount:  widget.entity.length,
                 physics: NeverScrollableScrollPhysics(),
                 shrinkWrap: true,
                 itemBuilder: (BuildContext context, int index) {
-                  final key = map.keys.elementAt(index);
-                  final value = map[key];
+                  final key =  widget.entity.keys.elementAt(index);
+                  final value =  widget.entity[key];
                   String contextId = key.substring(0, key.indexOf('_'));
                   String itemId = key.contains("_")
                       ? key.substring(key.indexOf("_") + 1)
@@ -581,12 +578,12 @@ class _ProjectListItemWidgetState
             if (widget.type == 'ACTION') {
               return ListTile(
                 subtitle: ListView.builder(
-                  itemCount: map.length,
+                  itemCount:  widget.entity.length,
                   physics: NeverScrollableScrollPhysics(),
                   shrinkWrap: true,
                   itemBuilder: (BuildContext context, int index) {
-                    final key = map.keys.elementAt(index);
-                    final value = map[key];
+                    final key =  widget.entity.keys.elementAt(index);
+                    final value =  widget.entity[key];
                     List<String> parts = key.split('_');
                     print("sadrtfYDJHSCF${key}${parts.length - 1}");
                     String contextId = key.contains("__")
@@ -710,12 +707,12 @@ class _ProjectListItemWidgetState
               if (widget.type == 'QUOTATION') {
                 return ListTile(
                   subtitle: ListView.builder(
-                    itemCount: map.length,
+                    itemCount:  widget.entity.length,
                     physics: NeverScrollableScrollPhysics(),
                     shrinkWrap: true,
                     itemBuilder: (BuildContext context, int index) {
-                      final key = map.keys.elementAt(index);
-                      final value = map[key];
+                      final key =  widget.entity.keys.elementAt(index);
+                      final value =  widget.entity[key];
                       String contextId = key.substring(0, key.indexOf('_'));
                       String itemId = key.contains("_")
                           ? key.substring(key.indexOf("_") + 1)

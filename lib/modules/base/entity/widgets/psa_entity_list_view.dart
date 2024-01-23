@@ -74,6 +74,7 @@ class _PsaEntityListViewState extends State<PsaEntityListView> {
               autocorrect: false,
               placeholder: LangUtil.getString('Entities', 'List.Search'),
               onSubmitted: (value) {
+                print("submitted");
                 setState(() {
                   _searchText = value;
                 });
@@ -81,14 +82,15 @@ class _PsaEntityListViewState extends State<PsaEntityListView> {
               },
               prefix: Icon(context.platformIcons.search),
               onChanged: (value) {
+                print("yes");
                 if (value.isEmpty) {
                   setState(() {
                     _searchText = value;
                   });
                   entityList.search(_searchText);
                 }
-
-                entityList.filter(value);
+                //entityList.filter(value);
+                print("entityList$entityList");
               },
               textInputAction: TextInputAction.search,
               clearButtonMode: OverlayVisibilityMode.editing,
