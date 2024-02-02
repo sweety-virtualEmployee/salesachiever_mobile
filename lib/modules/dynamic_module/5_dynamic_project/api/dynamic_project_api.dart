@@ -28,8 +28,9 @@ class DynamicProjectApi {
   }
 
   Future<dynamic> getProjectForm(String p1, String p2) async {
+    print("p1$p1");
     final response = await Api().getResult(
-        '$api/System/System.CustomFunctionList?FunctionName=GetFieldsByForm&Param1=$p1 &Param2=$p2');
+        '$api/System/System.CustomFunctionList?FunctionName=GetFieldsByForm&Param1=$p1&Param2=$p2');
     print("getPRojectForm${response.data}");
     return response.data;
   }
@@ -250,6 +251,15 @@ class DynamicProjectApi {
     print("localedID$localeId");
     final response = await Api().getResult(
         '$api/Report/Report.GenerateReport?ReportId=$reportId&ReportTitle=$reportTitle&ACCT_ID=$id&PROJECT_ID=$id&CONTACT_ID=$id&DEAL_ID=$id&ACTION_ID$id&QUOTE_ID=$id&LOCALE_ID=$localeId');
+    print("generated reports");
+    print(response);
+    return response.data;
+  }
+
+  Future<dynamic> getStaffZoneGeneratedReports(
+      String reportId, String reportTitle, String id) async {
+    final response = await Api().getResult(
+        '$api/Report/Report.GenerateReport?ReportId=$reportId&ReportTitle=Test123&ENTITY_ID=$id');
     print("generated reports");
     print(response);
     return response.data;

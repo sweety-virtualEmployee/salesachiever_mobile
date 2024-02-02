@@ -147,7 +147,6 @@ class _DynamicProjectEditScreenState extends State<DynamicProjectEditScreen> {
 
     final dynamic response =
         await DynamicProjectApi().getProjectForm(widget.tabId.toString(), id);
-    print("response${response}");
     setState(() {
       fieldData = response;
     });

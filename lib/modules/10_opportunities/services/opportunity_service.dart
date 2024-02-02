@@ -86,6 +86,17 @@ class OpportunityService extends EntityService {
 
     return items.where((e) => e['FIELD_NAME'] != 'ACCT_TYPE_ID').toList();
   }
+  List<dynamic> getDynamicActiveFields() {
+    List<dynamic> items =
+    Hive.box<dynamic>('dynamicFormFields_O001').values.toList();
+    print("length of items");
+    print(items.length);
+
+    items.sort((a, b) => a['DISLAY_ORDER'].compareTo(b['DISLAY_ORDER']));
+
+    return items.where((e) => e['FIELD_NAME'] != 'ACCT_TYPE_ID').toList();
+
+  }
 
   List<dynamic> getuserFields() {
     List<dynamic> items = Hive.box<dynamic>('userFields_deal').values.toList();

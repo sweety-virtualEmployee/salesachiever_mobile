@@ -73,6 +73,19 @@ class ActionService extends EntityService {
         .where((e) => e['FIELD_NAME'] != 'NOTES')
         .toList();
   }
+  List<dynamic> getDynamicActiveFields() {
+    List<dynamic> items =
+    Hive.box<dynamic>('dynamicFormFields_A001').values.toList();
+    print("length of items");
+    print(items.length);
+
+    items.sort((a, b) => a['DISLAY_ORDER'].compareTo(b['DISLAY_ORDER']));
+
+    return items
+        .where((e) => e['FIELD_NAME'] != 'ACTION_TYPE_ID')
+        .where((e) => e['FIELD_NAME'] != 'NOTES')
+        .toList();
+  }
 
   List<dynamic> getuserFields() {
     List<dynamic> items =

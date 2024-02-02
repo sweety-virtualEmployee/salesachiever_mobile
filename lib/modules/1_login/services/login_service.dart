@@ -37,7 +37,7 @@ class LoginService {
     _fetchUserFields();
     _fetchSystemCounty();
     _fetchCurrencyValue();
-
+    _dynamicFormData();
   }
 
   Future<void> _saveLoginDetails(
@@ -99,6 +99,16 @@ class LoginService {
   Future<void> _fetchDefaultLists() async {
     ListManagerService listManagerService = ListManagerService();
     await listManagerService.getDefaultLists();
+  }
+
+  Future<void> _dynamicFormData()async {
+    LookupService lookupService = LookupService();
+    await lookupService.getDynamicFormData('P001');
+    await lookupService.getDynamicFormData('C001');
+    await lookupService.getDynamicFormData('Q001');
+    await lookupService.getDynamicFormData('A001');
+    await lookupService.getDynamicFormData('O001');
+    await lookupService.getDynamicFormData('D001');
   }
 
   Future<void> _fetchIpadFields() async {

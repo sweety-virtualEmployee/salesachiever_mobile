@@ -1,8 +1,6 @@
 import 'package:hive/hive.dart';
 import 'package:salesachiever_mobile/modules/3_company/api/company_api.dart';
 import 'package:salesachiever_mobile/modules/base/entity/services/entity_service.dart';
-
-
 import 'package:salesachiever_mobile/shared/services/lookup_service.dart';
 
 class CompanyService extends EntityService {
@@ -73,6 +71,16 @@ class CompanyService extends EntityService {
         Hive.box<dynamic>('activeFields_account').values.toList();
 
     items.sort((a, b) => a['ORDER_NUM'].compareTo(b['ORDER_NUM']));
+
+    return items.where((e) => e['FIELD_NAME'] != 'ACCT_TYPE_ID').toList();
+  }
+  List<dynamic> getDynamicActiveFields() {
+    List<dynamic> items =
+    Hive.box<dynamic>('dynamicFormFields_C001').values.toList();
+    print("length of items");
+    print(items.length);
+
+    items.sort((a, b) => a['DISLAY_ORDER'].compareTo(b['DISLAY_ORDER']));
 
     return items.where((e) => e['FIELD_NAME'] != 'ACCT_TYPE_ID').toList();
   }

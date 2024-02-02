@@ -243,6 +243,13 @@ class DynamicProjectService extends EntityService {
     return dataResult;
   }
 
+  Future<String> getStaffZoneGeneratedReports(String reportId,String reportTitle,String id) async {
+    final dynamic response = await DynamicProjectApi().getStaffZoneGeneratedReports(reportId,reportTitle,id);
+    final String dataResult = response;
+    log("subscripbed values ---$dataResult");
+    return dataResult;
+  }
+
   Future<dynamic> markQuoteAsIssued(String quoteId) async {
     final dynamic response = await DynamicProjectApi().markIssueAsApproved(quoteId);
     return response;
@@ -251,11 +258,11 @@ class DynamicProjectService extends EntityService {
 
   List<dynamic> getDynamicActiveFields() {
     List<dynamic> items =
-    Hive.box<dynamic>('activeFields_quotation').values.toList();
+    Hive.box<dynamic>('dynamicFormFields_Q001').values.toList();
     print("length of items");
     print(items.length);
 
-    items.sort((a, b) => a['ORDER_NUM'].compareTo(b['ORDER_NUM']));
+    items.sort((a, b) => a['DISLAY_ORDER'].compareTo(b['DISLAY_ORDER']));
 
     return items.where((e) => e['FIELD_NAME'] != 'QUOTE_TYPE_ID').toList();
 

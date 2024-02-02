@@ -8,6 +8,7 @@ import 'package:salesachiever_mobile/data/static_ui/contact_fields.dart';
 import 'package:salesachiever_mobile/data/static_ui/potentialFields.dart';
 import 'package:salesachiever_mobile/data/static_ui/project_fields.dart';
 import 'package:salesachiever_mobile/data/static_ui/opportunity_fields.dart';
+import 'package:salesachiever_mobile/modules/dynamic_module/5_dynamic_project/api/dynamic_project_api.dart';
 import 'package:salesachiever_mobile/shared/api/lookup_api.dart';
 import 'package:salesachiever_mobile/utils/auth_util.dart';
 
@@ -45,6 +46,14 @@ class LookupService {
       await Hive.box<dynamic>('dataDictionaryLookups')
           .addAll(dataDictionaryLookups);
     }
+  }
+
+  Future<void> getDynamicFormData(String entityId) async{
+    final dynamic response = await DynamicProjectApi().getProjectForm(entityId,"Init");
+    print("response of the value dynamic form");
+    print(response);
+    await Hive.box<dynamic>('dynamicFormFields_$entityId').clear();
+    await Hive.box<dynamic>('dynamicFormFields_$entityId').addAll(response);
   }
 
   Future<void> getIpadFields(String entityType, bool dynmaicUIEnabled) async {

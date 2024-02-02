@@ -43,7 +43,7 @@ class _ActionEditScreenState extends State<ActionEditScreen> {
   // bool? _isNewNote;
   bool _isValid = false;
 
-  var activeFields = ActionService().getActiveFields();
+  var activeFields = ActionService().getDynamicActiveFields();
   var mandatoryFields = LookupService().getMandatoryFields();
 
   var key = UniqueKey();
@@ -127,7 +127,7 @@ class _ActionEditScreenState extends State<ActionEditScreen> {
 
   @override
   Widget build(BuildContext context) {
-    var visibleFields = activeFields.where((e) => e['COLVAL'] == true).toList();
+    var visibleFields = activeFields.where((e) => e['COLVAL'] == "1").toList();
 
     return PsaScaffold(
       action: PsaEditButton(

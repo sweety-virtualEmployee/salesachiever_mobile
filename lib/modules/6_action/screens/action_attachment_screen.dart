@@ -148,16 +148,20 @@ class _ActionAttachmentScreenState extends State<ActionAttachmentScreen> {
     try {
       _imageList.forEach((image) async {
         print(path.extension(image["FILE"].toString()));
+        print(image["FILE"]);
         if (image['ISNEW'] == true) {
           var uuid = Uuid().v1().toUpperCase();
-
+          print("dir$_dir");
           var encoder = ZipFileEncoder();
           encoder.create('$_dir/$uuid.zip');
           encoder.addFile(image['FILE']);
           encoder.close();
+          print(encoder);
 
           var bytes = File('$_dir/$uuid.zip').readAsBytesSync();
+          print("bytes");
           String base64Image = base64Encode(bytes);
+          print("base64iamge$base64Image");
 
           var blob = {
             'DESCRIPTION': image['DESCRIPTION'],
@@ -167,7 +171,6 @@ class _ActionAttachmentScreenState extends State<ActionAttachmentScreen> {
             'FILENAME': '${widget.action['ACCTNAME']}' '$uuid' '${path.extension(image["FILE"].toString())}',
           };
 
-          await SitePhotoService().uploadBlob(blob);
 
           File('$_dir/$uuid.zip').deleteSync();
 

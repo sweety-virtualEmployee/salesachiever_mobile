@@ -83,7 +83,7 @@ class _DynamicQuotationAddScreenState extends State<DynamicQuotationAddScreen> {
 
   @override
   Widget build(BuildContext context) {
-    var visibleFileds = activeFields.where((e) => e['COLVAL']).toList();
+    var visibleFileds = activeFields.where((e) => e['COLVAL']=="1").toList();
     return PsaScaffold(
       action: PsaEditButton(
         text: _readonly ? 'Edit' : 'Save',

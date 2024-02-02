@@ -54,9 +54,11 @@ dependencies:
   archive: ^3.1.2
   path_provider: ^2.0.2
   uuid: ^3.0.4
+  signature: ^5.4.1
+
 
 dev_dependencies:
-  flutter_launcher_icons: ^0.10.0
+  flutter_launcher_icons: ^0.13.1
   hive_generator:
   build_runner:
   flutter_test:

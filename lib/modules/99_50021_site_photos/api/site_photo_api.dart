@@ -52,7 +52,7 @@ class SitePhotoApi {
 
   Future<dynamic> uploadBlob(dynamic blob) async {
     Response response = await _api.post('/BlobStore', blob);
-
+    print("response.date${response.data}");
     return response.data;
   }
 
