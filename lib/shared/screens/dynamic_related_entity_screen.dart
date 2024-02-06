@@ -421,7 +421,6 @@ class _DynamicRelatedEntityScreenState
                       controller: _scrollController,
                       itemBuilder: (BuildContext context, int index) {
                         final item = list[index];
-                        print("itewbdfaskmgnvkdbh");
                         print(item);
                         return InkWell(
                           onTap: () async {

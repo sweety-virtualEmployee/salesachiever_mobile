@@ -449,7 +449,7 @@ class _DynamicEditScreenState extends State<DynamicEditScreen> {
     try {
       context.loaderOverlay.show();
       print("saving the project");
-      print(_dynamicTabProvide.getEntity);
+      print(_dynamicTabProvide.getEntity["PROJECT_ID"]);
       print("widget.entityType == ${widget.entityType}");
       if (widget.entityType.toUpperCase() == "COMPANY") {
         if (_dynamicTabProvide.getEntity['ACCT_ID'] != null) {
@@ -467,10 +467,12 @@ class _DynamicEditScreenState extends State<DynamicEditScreen> {
                 .updateCompanyNote(_dynamicTabProvide.getEntity['ACCT_ID'], _notes);
           }
         }
-      } else if (widget.entityType.toUpperCase() == "CONTACT") {
+      } else if (widget.entityType.toUpperCase() == "CONTACT"||widget.entityType.toUpperCase() == "CONTACTS") {
         if (_dynamicTabProvide.getEntity['CONT_ID'] != null) {
           await ContactService().updateEntity(_dynamicTabProvide.getEntity['CONT_ID'], _dynamicTabProvide.getEntity);
         } else {
+          print("add contact");
+          print(_dynamicTabProvide.getEntity["PROJECT_ID"]);
           var newEntity = await ContactService().addNewEntity(_dynamicTabProvide.getEntity);
           _dynamicTabProvide.getEntity['CONT_ID'] = newEntity['CONT_ID'];
         }

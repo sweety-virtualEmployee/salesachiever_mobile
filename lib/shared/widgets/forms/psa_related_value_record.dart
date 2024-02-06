@@ -65,7 +65,7 @@ class _PsaRelatedValueRowState extends State<PsaRelatedValueRow> {
     print(widget.entity);
     context.loaderOverlay.show();
     if (type == "ACCT_ID") {
-      if (widget.entity.isNotEmpty) {
+      if (widget.entity?["ACCT_ID"]!=null) {
         var company = await CompanyService().getEntity(widget.entity?["ACCT_ID"]);
         setState(() {
           companyData = company.data;
@@ -75,7 +75,7 @@ class _PsaRelatedValueRowState extends State<PsaRelatedValueRow> {
       }
     }
     if (type == "CONT_ID") {
-      if (widget.entity.isNotEmpty) {
+      if (widget.entity?["CONT_ID"]!=null) {
         var contact = await ContactService().getEntity(widget.entity?["CONT_ID"]);
         print(contact);
         setState(() {
@@ -85,7 +85,7 @@ class _PsaRelatedValueRowState extends State<PsaRelatedValueRow> {
       }
     }
     if (type == "PROJECT_ID") {
-      if (widget.entity.isNotEmpty) {
+      if (widget.entity?["PROJECT_ID"]!=null) {
         var project = await ProjectService().getEntity(widget.entity?["PROJECT_ID"]);
         setState(() {
           projectData = project.data;
@@ -94,7 +94,7 @@ class _PsaRelatedValueRowState extends State<PsaRelatedValueRow> {
       }
     }
       if(type=="DEAL_ID"){
-        if (widget.entity.isNotEmpty) {
+        if (widget.entity?["DEAL_ID"]!=null) {
           var deal = await OpportunityService().getEntity(widget.entity?["DEAL_ID"]);
           print("deal data check$deal");
           print("deal description${deal.data["DESCRIPTION"]}");
