@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:loader_overlay/loader_overlay.dart';
+import 'package:provider/provider.dart';
 import 'package:salesachiever_mobile/modules/10_opportunities/screens/opportunity_edit_screen.dart';
 import 'package:salesachiever_mobile/modules/10_opportunities/screens/opportunity_list_screen.dart';
 import 'package:salesachiever_mobile/modules/5_project/services/project_service.dart';
+import 'package:salesachiever_mobile/modules/dynamic_module/5_dynamic_project/provider/dynamic_tab_provider.dart';
 import 'package:salesachiever_mobile/modules/dynamic_module/5_dynamic_project/screens/dynamic_project_notes.dart';
 import 'package:salesachiever_mobile/modules/dynamic_module/5_dynamic_project/screens/dynamic_quotation_add.dart';
+import 'package:salesachiever_mobile/modules/dynamic_module/5_dynamic_project/screens/dynamic_tab_screen.dart';
 import 'package:salesachiever_mobile/modules/dynamic_module/5_dynamic_project/services/dynamic_project_service.dart';
 import 'package:salesachiever_mobile/shared/screens/dynamic_sub_tab_listing.dart';
 import 'package:salesachiever_mobile/shared/widgets/layout/psa_scaffold.dart';
@@ -60,15 +63,19 @@ class DynamicRelatedEntityScreen extends StatefulWidget {
 class _DynamicRelatedEntityScreenState
     extends State<DynamicRelatedEntityScreen> {
   List<dynamic> list = [];
-  dynamic _project;
   final ScrollController _scrollController = ScrollController();
   bool isLastPage = false;
   int pageNumber = 1;
   DynamicProjectService service = DynamicProjectService();
 
+  late DynamicTabProvide _dynamicTabProvider;
+
   @override
   void initState() {
-    _project = this.widget.project;
+    super.initState();
+    _dynamicTabProvider = DynamicTabProvide();
+    _dynamicTabProvider.setEntity(widget.entity);
+    callApi();
     list = widget.list["Items"];
     isLastPage = widget.list["IsLastPage"];
     pageNumber = widget.list["PageNumber"];
@@ -81,12 +88,35 @@ class _DynamicRelatedEntityScreenState
     super.initState();
   }
 
+  callApi() async {
+    context.loaderOverlay.show();
+    if (widget.entity?["ACCT_ID"]!=null) {
+        var entity = await CompanyService().getEntity(widget.entity?["ACCT_ID"]);
+        _dynamicTabProvider.getEntity["ACCTNAME"] = entity.data["ACCTNAME"];
+    }
+    if (widget.entity?["PROJECT_ID"]!=null) {
+      var entity = await ProjectService().getEntity(widget.entity?["PROJECT_ID"]);
+      _dynamicTabProvider.getEntity["PROJECT_TITLE"] = entity.data["PROJECT_TITLE"];
+    }
+    if (widget.entity?["CONT_ID"]!=null) {
+      var entity = await ContactService().getEntity(widget.entity?["CONT_ID"]);
+      _dynamicTabProvider.getEntity["FIRSTNAME"] = entity.data["FIRSTNAME"];
+    }
+    if (widget.entity?["DEAL_ID"]!=null) {
+      var entity = await OpportunityService().getEntity(widget.entity?["DEAL_ID"]);
+      _dynamicTabProvider.getEntity["DESCRIPTION"] = entity.data["DESCRIPTION"];
+    }
+    _dynamicTabProvider.setEntity(_dynamicTabProvider.getEntity);
+    context.loaderOverlay.hide();
+  }
+
   void _loadNextPage() async {
-    print("isLastPage$isLastPage");
     if (isLastPage == false) {
       pageNumber = pageNumber + 1;
       var listData = await service.getTabListEntityApi(
-          widget.path.replaceAll("&amp;", "&"), widget.tableName, widget.id,
+          widget.path.replaceAll("&amp;", "&"),
+          widget.tableName,
+          widget.id,
           pageNumber);
       setState(() {
         isLastPage = listData["IsLastPage"];
@@ -98,917 +128,856 @@ class _DynamicRelatedEntityScreenState
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      child: PsaScaffold(
-        action: (widget.type == 'company' ||
-            widget.type == 'companies' ||
-            widget.type == 'companies?pageSize=1000&pageNumber=1')
-            ? PsaAddButton(
-          onTap: () async {
-            widget.entity['DEAL_ID'] != null
-                ? Navigator.push(
-              context,
-              platformPageRoute(
-                context: context,
-                builder: (BuildContext context) =>
-                    AddRelatedEntityScreen(
-                      multiId: widget.entity['MULTI_ID'],
-                      deal: {
-                        'ID': widget.entity['DEAL_ID'],
-                        'TEXT': widget.entity['DESCRIPTION'],
-                      },
-                      account: widget.entity['ACCT_ID'] != null
-                          ? {
-                        'ID': widget.entity['ACCT_ID'],
-                        'TEXT': widget.entity['ACCTNAME'],
-                      }
-                          : {},
-                      contact: widget.entity['CONT_ID'] != null
-                          ? {
-                        'ID': widget.entity['CONT_ID'],
-                        'TEXT':
-                        '${widget.entity['FIRSTNAME'] ?? ''} ${widget
-                            .entity['SURNAME'] ?? ''}',
-                      }
-                          : {},
-                      type: "",
-                    ),
-              ),
-            )
-                : Navigator.push(
-              context,
-              platformPageRoute(
-                context: context,
-                builder: (BuildContext context) =>
-                    AddRelatedEntityScreen(
-                      project: {
-                        'ID': widget.entity['PROJECT_ID'],
-                        'TEXT': widget.entity['PROJECT_TITLE'],
-                      },
-                    ),
-              ),
-            ).then((value) async {
-              context.loaderOverlay.show();
-
-              var result = await CompanyService().getRelatedEntity(
-                  'project',
-                  widget.entity['PROJECT_ID'],
-                  'companies');
-
-              setState(() {
-                list = result;
-              });
-
-              context.loaderOverlay.hide();
-            });
-          },
-        )
-            : (widget.type == 'projects' && widget.entity['CONT_ID'] == null)
-            ? PsaAddButton(
-          onTap: () async {
-            if (widget.entity['ACCT_ID'] != null) {
-              print("yes here");
-              Navigator.push(
-                context,
-                platformPageRoute(
-                  context: context,
-                  builder: (BuildContext context) =>
-                      AddRelatedEntityScreen(
-                        account: {
-                          'ID': widget.entity['ACCT_ID'],
-                          'TEXT': widget.entity['ACCTNAME'],
-                        },
-                      ),
-                ),
-              );
-            } else {
-              print("yes i am in this");
-              print("opportunit name${widget.entity['DEAL_NAME']}");
-              print("opportunit name${widget.entity['DEAL_ID']}");
-              if (widget.entity['DEAL_ID'] != null) {
-                var project = await DynamicProjectService()
-                    .getEntityById(
-                    "OPPORTUNITY", widget.entity['DEAL_ID']);
-                print(
-                    "project data value get${project.data.toString()}");
-                print(project.data["DEAL_NAME"]);
-                setState(() {
-                  widget.entity["DEAL_NAME"] =
-                  project.data["DEAL_NAME"];
-                });
-              }
-              Navigator.push(
-                context,
-                platformPageRoute(
-                  context: context,
-                  builder: (BuildContext context) =>
-                      AddRelatedEntityScreen(
-                        account: {
-                          'ID': widget.entity['ACCT_ID'],
-                          'TEXT': widget.entity['ACCTNAME'],
-                        },
-                        multiId: widget.entity['MULTI_ID'],
+    return  ChangeNotifierProvider<DynamicTabProvide>(
+      create: (context) => _dynamicTabProvider,
+      child: Consumer<DynamicTabProvide>(
+          builder: (context, provider, child) {
+          return PsaScaffold(
+            action: (widget.type == 'company' ||
+                    widget.type == 'companies' ||
+                    widget.type == 'companies?pageSize=1000&pageNumber=1')
+                ? PsaAddButton(
+              onTap: () async {
+                if (provider.getEntity['DEAL_ID'] != null) {
+                  await Navigator.push(
+                    context,
+                    platformPageRoute(
+                      context: context,
+                      builder: (BuildContext context) => AddRelatedEntityScreen(
+                        multiId: provider.getEntity['MULTI_ID'],
                         deal: {
-                          'ID': widget.entity['DEAL_ID'],
-                          'TEXT': widget.entity['DEAL_NAME'],
+                          'ID': provider.getEntity['DEAL_ID'],
+                          'TEXT': provider.getEntity['DESCRIPTION'],
                         },
-                        type: "opp",
+                        account: provider.getEntity['ACCT_ID'] != null
+                            ? {
+                          'ID': provider.getEntity['ACCT_ID'],
+                          'TEXT': provider.getEntity['ACCTNAME'],
+                        }
+                            : {},
+                        contact: provider.getEntity['CONT_ID'] != null
+                            ? {
+                          'ID': provider.getEntity['CONT_ID'],
+                          'TEXT': '${provider.getEntity['FIRSTNAME'] ?? ''} ${provider.getEntity['SURNAME'] ?? ''}',
+                        }
+                            : {},
+                        type: "",
                       ),
-                ),
-              );
-            }
-          },
-        )
-            : (widget.type == 'contacts')
-            ? PsaAddButton(
-          onTap: () async {
-            Navigator.push(
-              context,
-              platformPageRoute(
-                context: context,
-                builder: (BuildContext context) =>
-                    ContactEditScreen(
-                      contact: {
-                        'ACCT_ID': widget.entity['ACCT_ID'],
-                        'ACCTNAME': widget.entity['ACCTNAME'],
-                        'CONT_ID': widget.entity['CONT_ID'],
-                        'CONTACT_NAME': widget.entity['CONT_ID'] !=
-                            null
-                            ? '${widget.entity['FIRSTNAME'] ?? ''} ${widget
-                            .entity['SURNAME'] ?? ''}'
-                            : null,
-                        'PROJECT_ID': widget.entity['PROJECT_ID'],
-                        'PROJECT_TITLE':
-                        widget.entity['PROJECT_TITLE'],
-                        'DEAL_ID': widget.entity['DEAL_ID'],
-                        'DEAL_DESCRIPTION':
-                        widget.entity['DEAL_ID'] != null
-                            ? widget.entity['DESCRIPTION']
-                            : '',
-                      },
-                      readonly: false,
                     ),
-              ),
-            );
-          },
-        )
-            : (widget.type == 'actions' ||
-            widget.type == "actions?pageSize=1000&pageNumber=1")
-            ? PsaAddButton(
-          onTap: () =>
-              Navigator.push(
-                context,
-                platformPageRoute(
-                  context: context,
-                  builder: (BuildContext context) =>
-                      ActionTypeScreen(
-                        action: {
-                          'ACCT_ID': widget.entity['ACCT_ID'],
-                          'ACCTNAME': widget.entity['ACCTNAME'],
-                          'CONT_ID': widget.entity['CONT_ID'],
-                          'CONTACT_NAME': widget.entity['CONT_ID'] !=
-                              null
-                              ? '${widget.entity['FIRSTNAME'] ?? ''} ${widget
-                              .entity['SURNAME'] ?? ''}'
-                              : null,
-                          'PROJECT_ID': widget.entity['PROJECT_ID'],
-                          'PROJECT_TITLE':
-                          widget.entity['PROJECT_TITLE'],
-                          'DEAL_ID': widget.entity['DEAL_ID'],
-                          'DEAL_DESCRIPTION':
-                          widget.entity['DEAL_ID'] != null
-                              ? widget.entity['DESCRIPTION']
-                              : '',
-                        },
-                        popScreens: 3,
-                      ),
-                ),
-              ),
-        )
-            : (widget.type == 'opportunities' ||
-            widget.type ==
-                'OpportunityLinks?pageSize=1000&pageNumber=1')
-            ? PsaAddButton(
-          onTap: () async {
-            if (widget.entity['MULTI_ID'] == null &&
-                widget.entity['PROJECT_ID'] != null) {
-              var result = await Navigator.push(
-                context,
-                platformPageRoute(
-                  context: context,
-                  builder: (BuildContext context) =>
-                      OpportunityListScreen(
-                        listName: 'ALLDE',
-                        isSelectable: true,
-                      ),
-                ),
-              );
-              print("result${result}");
-              dynamic value = {
-                "PROJECT_ID": widget.entity['PROJECT_ID']
-              };
-              print(value);
-              await OpportunityService()
-                  .updateEntity(result!['ID'], value);
-            } else {
-              print("we are here");
-              if (widget.entity['ACCT_ID'] != null) {
-                var project =
-                await DynamicProjectService()
-                    .getEntityById("COMPANY",
-                    widget.entity['ACCT_ID']);
-                print(
-                    "project data value get${project.data}");
-                print(project.data["ACCTNAME"]);
-                setState(() {
-                  widget.entity["ACCTNAME"] =
-                  project.data["ACCTNAME"];
-                });
-              }
-              Navigator.push(
-                context,
-                platformPageRoute(
-                  context: context,
-                  builder: (BuildContext context) =>
-                      AddRelatedEntityScreen(
-                        multiId: widget.entity['MULTI_ID'],
-                        deal: {
-                          'ID': widget.entity['DEAL_ID'],
-                          'TEXT': widget.entity['DEAL_NAME'],
-                        },
+                  );
+                } else {
+                  print("we are in this value");
+                  await Navigator.push(
+                    context,
+                    platformPageRoute(
+                      context: context,
+                      builder: (BuildContext context) => AddRelatedEntityScreen(
                         project: {
-                          'ID': widget.entity['PROJECT_ID'],
-                          'TEXT':
-                          widget.entity['PROJECT_TITLE'],
+                          'ID': provider.getEntity['PROJECT_ID'],
+                          'TEXT': provider.getEntity['PROJECT_TITLE'],
                         },
-                        account: widget.entity['ACCT_ID'] !=
-                            null
-                            ? {
-                          'ID':
-                          widget.entity['ACCT_ID'],
-                          'TEXT':
-                          widget.entity['ACCTNAME'],
-                        }
-                            : {},
-                        contact: widget.entity['CONT_ID'] !=
-                            null
-                            ? {
-                          'ID':
-                          widget.entity['CONT_ID'],
-                          'TEXT':
-                          '${widget.entity['FIRSTNAME'] ?? ''} ${widget
-                              .entity['SURNAME'] ?? ''}',
-                        }
-                            : {},
-                        type: "opp",
+                        account: {
+                          'ID': provider.getEntity['ACCT_ID'],
+                          'TEXT': provider.getEntity['ACCTNAME'],
+                        },
+                        contact: {
+                          'ID': provider.getEntity['CONT_ID'],
+                          'TEXT': provider.getEntity['CONT_ID'] !=
+                              null
+                              ? '${provider.getEntity['FIRSTNAME'] ??
+                              ''} ${provider.getEntity['SURNAME'] ?? ''}'
+                              : null,
+                        },
                       ),
-                ),
-              );
-            }
-          },
-        )
-            : (widget.type.contains("notes"))
-            ? PsaAddButton(
-          onTap: () =>
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) {
-                    return DynamicProjectNotes(
-                      project: _project,
-                      notesData: {},
-                      typeNote: widget.type,
-                      isNewNote: true,
-                      entityType: widget.entityType,
+                    ),
+                  ).then((value) async {
+                    context.loaderOverlay.show();
+                    print("value check$value");
+
+                    var result = await CompanyService().getRelatedEntity(
+                      'project',
+                       provider.getEntity["PROJECT_ID"],
+                      'companies',
                     );
-                  },
-                ),
-              ),
-        )
-            : null,
-        body: Column(
-          children: [
-            Container(
-                height: 70,
-                child: CommonHeader(
-                    entityType: widget.entityType, entity: _project)),
-            Container(
-              color: Colors.white,
-              height: 20,
-            ),
-            if (list.isEmpty)
-              Padding(
-                padding: const EdgeInsets.only(top: 200.0),
-                child: Text(
-                    "No Data found"),
-              )
-            else
-              Expanded(
-                child: ListView.builder(
-                  itemCount: list.length,
-                  controller: _scrollController,
-                  itemBuilder: (BuildContext context, int index) {
-                    final item = list[index];
-                    print("itewbdfaskmgnvkdbh");
-                    print(item);
-                    return InkWell(
-                      onTap: () async {
-                        print("widget.type check${widget.type}");
-                        if (widget.type == "companies") {
-                          dynamic company =
-                          await CompanyService().getEntity(item["ACCT_ID"]);
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) {
-                                return CompanyEditScreen(
-                                  company: company.data,
-                                  readonly: true,
-                                );
-                              },
-                            ),
-                          );
-                        } else if (widget.type == "contacts") {
-                          dynamic contact =
-                          await ContactService().getEntity(item['CONT_ID']);
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) {
-                                return ContactEditScreen(
-                                  contact: contact.data,
-                                  readonly: true,
-                                );
-                              },
-                            ),
-                          );
-                        } else if (widget.type == "actions") {
-                          dynamic action = await ActionService()
-                              .getEntity(item['ACTION_ID']);
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) {
-                                return ActionEditScreen(
-                                  action: action.data,
-                                  readonly: true,
-                                  popScreens: 1,
-                                );
-                              },
-                            ),
-                          );
-                        } else if (widget.type == "opportunities") {
-                          print(
-                              "deal id valeudifgc${widget
-                                  .entity['DEAL_DEAL_ID']}");
-                          dynamic deal = await OpportunityService()
-                              .getEntity(item['DEAL_ID'].toString());
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) {
-                                return OpportunityEditScreen(
-                                  deal: deal.data,
-                                  readonly: true,
-                                );
-                              },
-                            ),
-                          );
-                        } else if (widget.type.contains("notes")) {
-                          dynamic response = await DynamicProjectService()
-                              .getProjectNote(widget.type, item['NOTE_ID']);
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) {
-                                return DynamicProjectNotes(
-                                  project: _project,
-                                  typeNote: widget.type,
-                                  notesData: response,
-                                  isNewNote: false,
-                                  entityType: widget.entityType,
-                                );
-                              },
-                            ),
-                          );
-                        } else if (widget.type == "opp history") {} else
-                        if (widget.type == "quotes") {
-                          print("projectbalue${item}");
-                          dynamic quotation =
-                          await DynamicProjectService()
-                              .getEntityById("QUOTATION",
-                              item['QUOTE_ID']);
-                          print("projectbalue${item['ACCT_ID']}");
-                          print("projectbalue${item['ACCTNAME']}");
-                          quotation.data['ACCT_ID'] = item['ACCT_ID'];
-                          quotation.data['ACCTNAME'] = item['ACCTNAME'];
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) {
-                                return DynamicQuotationAddScreen(
-                                  quotation: quotation.data,
-                                  readonly: true,
-                                );
-                              },
-                            ),
-                          );
-                        } else if (widget.type == "projects") {
-                          print("widget.type${widget.type}");
-                          dynamic project = await ProjectService()
-                              .getEntity(item['PROJECT_ID']);
-                          print("projectbalue$project");
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) {
-                                return DynamicProjectAddScreen(
-                                  project: project.data,
-                                  readonly: true,
-                                );
-                              },
-                            ),
-                          );
-                        }
-                        else {
-                          print("do nothing");
-                          print("item$item");
-                          if (widget.title == "P2P Quotes") {
-                            dynamic response = await service
-                                .getSubTabListEntityValues(
-                                "QTIT_API", "QUOTE_ID", item["QUOTE_ID"]);
-                            print(response);
+
+                    setState(() {
+                      list = result;
+                    });
+
+                    context.loaderOverlay.hide();
+                  });
+                }
+              },
+            )
+                : (widget.type == 'projects' && provider.getEntity['CONT_ID'] == null)
+                    ? PsaAddButton(
+                        onTap: () async {
+                          if (provider.getEntity['ACCT_ID'] != null) {
+                            print("yes here");
                             Navigator.push(
                               context,
-                              MaterialPageRoute(
-                                builder: (context) {
-                                  return DynamicSubTabListingScreen(
-                                    list: response,
-                                    title: widget.title,
-                                    entityType: widget.entityType,
-                                    project: _project,
-                                  );
-                                },
-                              ),
-                            );
-                          } else if (widget.title == "Invoice Information") {
-                            dynamic response = await service
-                                .getSubTabListEntityValues(
-                                "INITEM_API", "INVOICE_ID", item["INVOICE_ID"]);
-                            print(response);
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) {
-                                  return DynamicSubTabListingScreen(
-                                    list: response,
-                                    title: widget.title,
-                                    entityType: widget.entityType,
-                                    project: _project,
-
-                                  );
-                                },
-                              ),
-                            );
-                          }
-                          else if (widget.title == "Order Information") {
-                            dynamic response = await service
-                                .getSubTabListEntityValues(
-                                "ORITEM_API", "ORDERINFO_ID", item["ORDERINFO_ID"]);
-                            print(response);
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) {
-                                  return DynamicSubTabListingScreen(
-                                    list: response,
-                                    title: widget.title,
-                                    entityType: widget.entityType,
-                                    project: _project,
-
-                                  );
-                                },
-                              ),
-                            );
-                          }
-                        }
-
-                        context.loaderOverlay.hide();
-                      },
-                      child: Column(
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: [
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    for (final entry in item.entries)
-                                      entry.key == "SAUSER_ID"
-                                          ? Padding(
-                                        padding:
-                                        const EdgeInsets.only(
-                                            left: 20.0,
-                                            right: 20,
-                                            top: 10),
-                                        child: Row(
-                                          children: [
-                                            Expanded(
-                                              child: Padding(
-                                                  padding:
-                                                  const EdgeInsets
-                                                      .fromLTRB(
-                                                      0, 4, 0, 4),
-                                                  child: Text(
-                                                    '${LangUtil.getString(
-                                                        '${entry.key.contains(
-                                                            "_") ? entry.key
-                                                            .substring(0,
-                                                            entry.key.indexOf(
-                                                                '_')) : ""}',
-                                                        '${entry.key
-                                                            .split('_')
-                                                            .length < 3 ? entry
-                                                            .key : entry.key
-                                                            .contains("_")
-                                                            ? entry.key
-                                                            .substring(entry.key
-                                                            .indexOf("_") + 1)
-                                                            : entry.key}')} :',
-                                                    style: TextStyle(
-                                                        fontWeight:
-                                                        FontWeight
-                                                            .w700,
-                                                        color: widget
-                                                            .type ==
-                                                            "companies"
-                                                            ? Color(
-                                                            0xff3cab4f)
-                                                            : widget.type ==
-                                                            "contacts"
-                                                            ? Color(
-                                                            0xff4C99E0)
-                                                            : widget.type ==
-                                                            "opportunities" ||
-                                                            widget.type ==
-                                                                "opp history"
-                                                            ? Color(0xffA4C400)
-                                                            : widget.type ==
-                                                            "actions"
-                                                            ? Color(0xffae1a3e)
-                                                            : Color(
-                                                            0xffE67E6B)),
-                                                    overflow:
-                                                    TextOverflow
-                                                        .ellipsis,
-                                                    softWrap: false,
-                                                    maxLines: 2,
-                                                  )),
-                                            ),
-
-                                            Expanded(
-                                              child: Padding(
-                                                padding:
-                                                const EdgeInsets
-                                                    .fromLTRB(
-                                                    0, 4, 0, 4),
-                                                child: Text(
-                                                  entry.value != null
-                                                      ? entry.key.contains(
-                                                      "DATE")
-                                                      ? DateUtil
-                                                      .getFormattedDate(entry
-                                                      .value)
-                                                      : entry.key.contains(
-                                                      "TIME")
-                                                      ? DateUtil
-                                                      .getFormattedTime(
-                                                      entry.value)
-                                                      : '${entry.value
-                                                      .toString()}'
-                                                      : "",
-                                                  style: TextStyle(
-                                                      color: widget.type ==
-                                                          "opp history"
-                                                          ? Colors
-                                                          .grey
-                                                          : Colors
-                                                          .black),
-                                                  overflow:
-                                                  TextOverflow
-                                                      .ellipsis,
-                                                  softWrap: false,
-                                                  maxLines: 2,
-                                                ),
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      )
-                                          : entry.key.contains("_ID") ||
-                                          entry.key.contains("__") ||
-                                          entry.key.contains("_DORMANT") ||
-                                          entry.key.contains("DORMANT")
-                                          ? SizedBox()
-                                          : Padding(
-                                        padding:
-                                        const EdgeInsets.only(
-                                            left: 20.0,
-                                            right: 20,
-                                            top: 10),
-                                        child: Row(
-                                          children: [
-                                            Expanded(
-                                              child: Padding(
-                                                  padding:
-                                                  const EdgeInsets
-                                                      .fromLTRB(
-                                                      0, 4, 0, 4),
-                                                  child: Text(
-                                                    '${LangUtil.getString(
-                                                        '${entry.key.contains(
-                                                            "_")
-                                                            ? entry.key
-                                                            .substring(0, entry
-                                                            .key.indexOf('_'))
-                                                            : ""}', '${entry.key
-                                                        .split('_')
-                                                        .length < 3
-                                                        ? entry.key
-                                                        : entry.key.contains(
-                                                        "_")
-                                                        ? entry.key.substring(
-                                                        entry.key.indexOf("_") +
-                                                            1)
-                                                     : entry.key}')} :',
-                                                    style: TextStyle(
-                                                        fontWeight:
-                                                        FontWeight
-                                                            .w700,
-                                                        color: widget
-                                                            .type ==
-                                                            "companies"
-                                                            ? Color(
-                                                            0xff3cab4f)
-                                                            : widget.type ==
-                                                            "contacts"
-                                                            ? Color(
-                                                            0xff4C99E0)
-                                                            : widget.type ==
-                                                            "opportunities" ||
-                                                            widget.type ==
-                                                                "opp history"
-                                                            ? Color(0xffA4C400)
-                                                            : widget.type ==
-                                                            "actions"
-                                                            ? Color(0xffae1a3e)
-                                                            : Color(
-                                                            0xffE67E6B)),
-                                                    overflow:
-                                                    TextOverflow
-                                                        .ellipsis,
-                                                    softWrap: false,
-                                                    maxLines: 2,
-                                                  )),
-                                            ),
-                                            Expanded(
-                                              child: Padding(
-                                                padding:
-                                                const EdgeInsets
-                                                    .fromLTRB(
-                                                    0, 4, 0, 4),
-                                                child: Text(
-                                                  entry.value != null
-                                                      ? entry.key.contains(
-                                                      "DATE")
-                                                      ? DateUtil
-                                                      .getFormattedDate(entry
-                                                      .value)
-                                                      : entry.key.contains(
-                                                      "TIME")
-                                                      ? DateUtil
-                                                      .getFormattedTime(
-                                                      entry.value)
-                                                      : '${entry.value
-                                                      .toString()}'
-                                                      : "",
-                                                  style: TextStyle(
-                                                      color: widget.type ==
-                                                          "opp history"
-                                                          ? Colors
-                                                          .grey
-                                                          : Colors
-                                                          .black),
-                                                  overflow:
-                                                  TextOverflow
-                                                      .ellipsis,
-                                                  softWrap: false,
-                                                  maxLines: 2,
-                                                ),
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      )
-                                  ],
+                              platformPageRoute(
+                                context: context,
+                                builder: (BuildContext context) =>
+                                    AddRelatedEntityScreen(
+                                  account: {
+                                    'ID': provider.getEntity['ACCT_ID'],
+                                    'TEXT': provider.getEntity['ACCTNAME'],
+                                  },
                                 ),
                               ),
-                              Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  widget.type == "opp history"
-                                      ? SizedBox()
-                                      : IconButton(
-                                      onPressed: () async {
-                                        if (widget.type == "companies") {
-                                          dynamic company =
-                                          await CompanyService()
-                                              .getEntity(
-                                              item["ACCT_ID"]);
-                                          Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                              builder: (context) {
-                                                return CompanyEditScreen(
-                                                  company: company.data,
-                                                  readonly: true,
-                                                );
-                                              },
-                                            ),
-                                          );
-                                        } else if (widget.type ==
-                                            "contacts") {
-                                          dynamic contact =
-                                          await ContactService()
-                                              .getEntity(
-                                              item['CONT_ID']);
-                                          Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                              builder: (context) {
-                                                return ContactEditScreen(
-                                                  contact: contact.data,
-                                                  readonly: true,
-                                                );
-                                              },
-                                            ),
-                                          );
-                                        } else if (widget.type ==
-                                            "actions") {
-                                          dynamic action =
-                                          await ActionService()
-                                              .getEntity(
-                                              item['ACTION_ID']);
-                                          Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                              builder: (context) {
-                                                return ActionEditScreen(
-                                                  action: action.data,
-                                                  readonly: true,
-                                                  popScreens: 1,
-                                                );
-                                              },
-                                            ),
-                                          );
-                                        } else if (widget.type ==
-                                            "opportunities") {
-                                          print(
-                                              "deal id valeudifgc${widget
-                                                  .entity['DEAL_DEAL_ID']}");
-                                          dynamic deal =
-                                          await OpportunityService()
-                                              .getEntity(item['DEAL_ID']
-                                              .toString());
-                                          Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                              builder: (context) {
-                                                return OpportunityEditScreen(
-                                                  deal: deal.data,
-                                                  readonly: true,
-                                                );
-                                              },
-                                            ),
-                                          );
-                                        } else if (widget.type
-                                            .contains("notes")) {
-                                          dynamic response =
-                                          await DynamicProjectService()
-                                              .getProjectNote(
-                                              widget.type,
-                                              item['NOTE_ID']);
-                                          Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                              builder: (context) {
-                                                return DynamicProjectNotes(
-                                                    project: _project,
-                                                    notesData: response,
-                                                    entityType:
-                                                    widget.entityType,
-                                                    typeNote: widget.type,
-                                                    isNewNote: false);
-                                              },
-                                            ),
-                                          );
-                                        } else if (widget.type ==
-                                            "opp history") {} else
-                                        if (widget.type == "quotes") {
-                                          print("projectbalue${item}");
-                                          dynamic quotation =
-                                          await DynamicProjectService()
-                                              .getEntityById("QUOTATION",
-                                              item['QUOTE_ID']);
-                                          print("projectbalue$quotation");
-                                          Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                              builder: (context) {
-                                                return DynamicQuotationAddScreen(
-                                                  quotation: quotation.data,
-                                                  readonly: true,
-                                                );
-                                              },
-                                            ),
-                                          );
-                                        } else if (widget.type == "projects") {
-                                          print("widget.type${widget.type}");
-                                          dynamic project =
-                                          await ProjectService()
-                                              .getEntity(
-                                              item['PROJECT_ID']);
-                                          print("projectbalue$project");
-                                          Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                              builder: (context) {
-                                                return DynamicProjectAddScreen(
-                                                  project: project.data,
-                                                  readonly: true,
-                                                );
-                                              },
-                                            ),
-                                          );
-                                        }
-                                        else {
-                                          print("do nothing");
-                                        }
+                            );
+                          } else {
+                            if (provider.getEntity['DEAL_ID'] != null) {
+                              var project = await DynamicProjectService()
+                                  .getEntityById(
+                                      "OPPORTUNITY", provider.getEntity['DEAL_ID']);
+                              print(
+                                  "project data value get${project.data.toString()}");
+                              print(project.data["DEAL_NAME"]);
+                              setState(() {
+                                provider.getEntity["DEAL_NAME"] =
+                                    project.data["DEAL_NAME"];
+                              });
+                            }
+                            Navigator.push(
+                              context,
+                              platformPageRoute(
+                                context: context,
+                                builder: (BuildContext context) =>
+                                    AddRelatedEntityScreen(
+                                  account: {
+                                    'ID': provider.getEntity['ACCT_ID'],
+                                    'TEXT': provider.getEntity['ACCTNAME'],
+                                  },
+                                  multiId: provider.getEntity['MULTI_ID'],
+                                  deal: {
+                                    'ID': provider.getEntity['DEAL_ID'],
+                                    'TEXT': provider.getEntity['DEAL_NAME'],
+                                  },
+                                  type: "opp",
+                                ),
+                              ),
+                            );
+                          }
+                        },
+                      )
+                    : (widget.type == 'contacts')
+                        ? PsaAddButton(
+                            onTap: () async {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                  builder: (context) {
+                                return DynamicTabScreen(
+                                  entity:provider.getEntity,
+                                  title: "Add New Contact",
+                                  readonly: true,
+                                  moduleId: "004",
+                                  entityType: widget.type,
+                                );
+                              },
+                              ));
+                            },
+                          )
+                        : (widget.type == 'actions' ||
+                                widget.type == "actions?pageSize=1000&pageNumber=1")
+                            ? PsaAddButton(
+                                onTap: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) {
+                                        return DynamicTabScreen(
+                                          entity:provider.getEntity,
+                                          title: "Add New Action",
+                                          readonly: true,
+                                          moduleId: "009",
+                                          entityType: widget.type,
+                                        );
                                       },
-                                      icon: Icon(context
-                                          .platformIcons.rightChevron)),
+                                    ),
+                                  );
+                                }
+                              )
+                            : (widget.type == 'opportunities' ||
+                                    widget.type ==
+                                        'OpportunityLinks?pageSize=1000&pageNumber=1')
+                                ? PsaAddButton(
+                                    onTap: () async {
+                                      if (provider.getEntity['MULTI_ID'] == null &&
+                                          provider.getEntity['PROJECT_ID'] != null) {
+                                        var result = await Navigator.push(
+                                          context,
+                                          platformPageRoute(
+                                            context: context,
+                                            builder: (BuildContext context) =>
+                                                OpportunityListScreen(
+                                              listName: 'ALLDE',
+                                              isSelectable: true,
+                                            ),
+                                          ),
+                                        );
+                                        print("result${result}");
+                                        dynamic value = {
+                                          "PROJECT_ID": provider.getEntity['PROJECT_ID']
+                                        };
+                                        print(value);
+                                        await OpportunityService()
+                                            .updateEntity(result!['ID'], value);
+                                      } else {
+                                        print("we are here");
+                                        if (provider.getEntity['ACCT_ID'] != null) {
+                                          var project =
+                                              await DynamicProjectService()
+                                                  .getEntityById("COMPANY",
+                                                      provider.getEntity['ACCT_ID']);
+                                          print(
+                                              "project data value get${project.data}");
+                                          print(project.data["ACCTNAME"]);
+                                          setState(() {
+                                            provider.getEntity["ACCTNAME"] =
+                                                project.data["ACCTNAME"];
+                                          });
+                                        }
+                                        Navigator.push(
+                                          context,
+                                          platformPageRoute(
+                                            context: context,
+                                            builder: (BuildContext context) =>
+                                                AddRelatedEntityScreen(
+                                              multiId: provider.getEntity['MULTI_ID'],
+                                              deal: {
+                                                'ID': provider.getEntity['DEAL_ID'],
+                                                'TEXT': provider.getEntity['DEAL_NAME'],
+                                              },
+                                              project: {
+                                                'ID': provider.getEntity['PROJECT_ID'],
+                                                'TEXT':
+                                                    provider.getEntity['PROJECT_TITLE'],
+                                              },
+                                              account: provider.getEntity['ACCT_ID'] !=
+                                                      null
+                                                  ? {
+                                                      'ID':
+                                                          provider.getEntity['ACCT_ID'],
+                                                      'TEXT':
+                                                          provider.getEntity['ACCTNAME'],
+                                                    }
+                                                  : {},
+                                              contact: provider.getEntity['CONT_ID'] !=
+                                                      null
+                                                  ? {
+                                                      'ID':
+                                                          provider.getEntity['CONT_ID'],
+                                                      'TEXT':
+                                                          '${provider.getEntity['FIRSTNAME'] ?? ''} ${provider.getEntity['SURNAME'] ?? ''}',
+                                                    }
+                                                  : {},
+                                              type: "opp",
+                                            ),
+                                          ),
+                                        );
+                                      }
+                                    },
+                                  )
+                                : (widget.type.contains("notes"))
+                                    ? PsaAddButton(
+                                        onTap: () => Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) {
+                                              return DynamicProjectNotes(
+                                                project: provider.getEntity,
+                                                notesData: {},
+                                                typeNote: widget.type,
+                                                isNewNote: true,
+                                                entityType: widget.entityType,
+                                              );
+                                            },
+                                          ),
+                                        ),
+                                      )
+                                    : null,
+            body: Column(
+              children: [
+                Container(
+                    height: 70,
+                    child: CommonHeader(
+                        entityType: widget.entityType, entity: provider.getEntity)),
+                Container(
+                  color: Colors.white,
+                  height: 20,
+                ),
+                if (list.isEmpty)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 200.0),
+                    child: Text("No Data found"),
+                  )
+                else
+                  Expanded(
+                    child: ListView.builder(
+                      itemCount: list.length,
+                      controller: _scrollController,
+                      itemBuilder: (BuildContext context, int index) {
+                        final item = list[index];
+                        print("itewbdfaskmgnvkdbh");
+                        print(item);
+                        return InkWell(
+                          onTap: () async {
+                            print("widget.type check${widget.type}");
+                            if (widget.type == "companies") {
+                              dynamic company =
+                                  await CompanyService().getEntity(item["ACCT_ID"]);
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) {
+                                    return CompanyEditScreen(
+                                      company: company.data,
+                                      readonly: true,
+                                    );
+                                  },
+                                ),
+                              );
+                            } else if (widget.type == "contacts") {
+                              dynamic contact =
+                                  await ContactService().getEntity(item['CONT_ID']);
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) {
+                                    return ContactEditScreen(
+                                      contact: contact.data,
+                                      readonly: true,
+                                    );
+                                  },
+                                ),
+                              );
+                            } else if (widget.type == "actions") {
+                              dynamic action = await ActionService()
+                                  .getEntity(item['ACTION_ID']);
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) {
+                                    return ActionEditScreen(
+                                      action: action.data,
+                                      readonly: true,
+                                      popScreens: 1,
+                                    );
+                                  },
+                                ),
+                              );
+                            } else if (widget.type == "opportunities") {
+                              print(
+                                  "deal id valeudifgc${provider.getEntity['DEAL_DEAL_ID']}");
+                              dynamic deal = await OpportunityService()
+                                  .getEntity(item['DEAL_ID'].toString());
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) {
+                                    return OpportunityEditScreen(
+                                      deal: deal.data,
+                                      readonly: true,
+                                    );
+                                  },
+                                ),
+                              );
+                            } else if (widget.type.contains("notes")) {
+                              dynamic response = await DynamicProjectService()
+                                  .getProjectNote(widget.type, item['NOTE_ID']);
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) {
+                                    return DynamicProjectNotes(
+                                      project: provider.getEntity,
+                                      typeNote: widget.type,
+                                      notesData: response,
+                                      isNewNote: false,
+                                      entityType: widget.entityType,
+                                    );
+                                  },
+                                ),
+                              );
+                            } else if (widget.type == "opp history") {
+                            } else if (widget.type == "quotes") {
+                              print("projectbalue${item}");
+                              dynamic quotation = await DynamicProjectService()
+                                  .getEntityById("QUOTATION", item['QUOTE_ID']);
+                              print("projectbalue${item['ACCT_ID']}");
+                              print("projectbalue${item['ACCTNAME']}");
+                              quotation.data['ACCT_ID'] = item['ACCT_ID'];
+                              quotation.data['ACCTNAME'] = item['ACCTNAME'];
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) {
+                                    return DynamicQuotationAddScreen(
+                                      quotation: quotation.data,
+                                      readonly: true,
+                                    );
+                                  },
+                                ),
+                              );
+                            } else if (widget.type == "projects") {
+                              print("widget.type${widget.type}");
+                              dynamic project = await ProjectService()
+                                  .getEntity(item['PROJECT_ID']);
+                              print("projectbalue$project");
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) {
+                                    return DynamicProjectAddScreen(
+                                      project: project.data,
+                                      readonly: true,
+                                    );
+                                  },
+                                ),
+                              );
+                            } else {
+                              print("do nothing");
+                              print("item$item");
+                              if (widget.title == "P2P Quotes") {
+                                dynamic response =
+                                    await service.getSubTabListEntityValues(
+                                        "QTIT_API", "QUOTE_ID", item["QUOTE_ID"]);
+                                print(response);
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) {
+                                      return DynamicSubTabListingScreen(
+                                        list: response,
+                                        title: widget.title,
+                                        entityType: widget.entityType,
+                                        project: provider.getEntity,
+                                      );
+                                    },
+                                  ),
+                                );
+                              } else if (widget.title == "Invoice Information") {
+                                dynamic response =
+                                    await service.getSubTabListEntityValues(
+                                        "INITEM_API",
+                                        "INVOICE_ID",
+                                        item["INVOICE_ID"]);
+                                print(response);
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) {
+                                      return DynamicSubTabListingScreen(
+                                        list: response,
+                                        title: widget.title,
+                                        entityType: widget.entityType,
+                                        project: provider.getEntity,
+                                      );
+                                    },
+                                  ),
+                                );
+                              } else if (widget.title == "Order Information") {
+                                dynamic response =
+                                    await service.getSubTabListEntityValues(
+                                        "ORITEM_API",
+                                        "ORDERINFO_ID",
+                                        item["ORDERINFO_ID"]);
+                                print(response);
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) {
+                                      return DynamicSubTabListingScreen(
+                                        list: response,
+                                        title: widget.title,
+                                        entityType: widget.entityType,
+                                        project: provider.getEntity,
+                                      );
+                                    },
+                                  ),
+                                );
+                              }
+                            }
+
+                            context.loaderOverlay.hide();
+                          },
+                          child: Column(
+                            children: [
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: [
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        for (final entry in item.entries)
+                                          entry.key == "SAUSER_ID"
+                                              ? Padding(
+                                                  padding: const EdgeInsets.only(
+                                                      left: 20.0,
+                                                      right: 20,
+                                                      top: 10),
+                                                  child: Row(
+                                                    children: [
+                                                      Expanded(
+                                                        child: Padding(
+                                                            padding:
+                                                                const EdgeInsets
+                                                                    .fromLTRB(
+                                                                    0, 4, 0, 4),
+                                                            child: Text(
+                                                              '${LangUtil.getString('${entry.key.contains("_") ? entry.key.substring(0, entry.key.indexOf('_')) : ""}', '${entry.key.split('_').length < 3 ? entry.key : entry.key.contains("_") ? entry.key.substring(entry.key.indexOf("_") + 1) : entry.key}')} :',
+                                                              style: TextStyle(
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .w700,
+                                                                  color: widget
+                                                                              .type ==
+                                                                          "companies"
+                                                                      ? Color(
+                                                                          0xff3cab4f)
+                                                                      : widget.type ==
+                                                                              "contacts"
+                                                                          ? Color(
+                                                                              0xff4C99E0)
+                                                                          : widget.type == "opportunities" ||
+                                                                                  widget.type ==
+                                                                                      "opp history"
+                                                                              ? Color(
+                                                                                  0xffA4C400)
+                                                                              : widget.type == "actions"
+                                                                                  ? Color(0xffae1a3e)
+                                                                                  : Color(0xffE67E6B)),
+                                                              overflow: TextOverflow
+                                                                  .ellipsis,
+                                                              softWrap: false,
+                                                              maxLines: 2,
+                                                            )),
+                                                      ),
+                                                      Expanded(
+                                                        child: Padding(
+                                                          padding: const EdgeInsets
+                                                              .fromLTRB(0, 4, 0, 4),
+                                                          child: Text(
+                                                            entry.value != null
+                                                                ? entry.key
+                                                                        .contains(
+                                                                            "DATE")
+                                                                    ? DateUtil
+                                                                        .getFormattedDate(
+                                                                            entry
+                                                                                .value)
+                                                                    : entry.key.contains(
+                                                                            "TIME")
+                                                                        ? DateUtil
+                                                                            .getFormattedTime(
+                                                                                entry.value)
+                                                                        : '${entry.value.toString()}'
+                                                                : "",
+                                                            style: TextStyle(
+                                                                color: widget
+                                                                            .type ==
+                                                                        "opp history"
+                                                                    ? Colors.grey
+                                                                    : Colors.black),
+                                                            overflow: TextOverflow
+                                                                .ellipsis,
+                                                            softWrap: false,
+                                                            maxLines: 2,
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                )
+                                              : entry.key.contains("_ID") ||
+                                                      entry.key.contains("__") ||
+                                                      entry.key
+                                                          .contains("_DORMANT") ||
+                                                      entry.key.contains("DORMANT")
+                                                  ? SizedBox()
+                                                  : Padding(
+                                                      padding:
+                                                          const EdgeInsets.only(
+                                                              left: 20.0,
+                                                              right: 20,
+                                                              top: 10),
+                                                      child: Row(
+                                                        children: [
+                                                          Expanded(
+                                                            child: Padding(
+                                                                padding:
+                                                                    const EdgeInsets
+                                                                        .fromLTRB(
+                                                                        0, 4, 0, 4),
+                                                                child: Text(
+                                                                  '${LangUtil.getString('${entry.key.contains("_") ? entry.key.substring(0, entry.key.indexOf('_')) : ""}', '${entry.key.split('_').length < 3 ? entry.key : entry.key.contains("_") ? entry.key.substring(entry.key.indexOf("_") + 1) : entry.key}')} :',
+                                                                  style: TextStyle(
+                                                                      fontWeight:
+                                                                          FontWeight
+                                                                              .w700,
+                                                                      color: widget
+                                                                                  .type ==
+                                                                              "companies"
+                                                                          ? Color(
+                                                                              0xff3cab4f)
+                                                                          : widget.type ==
+                                                                                  "contacts"
+                                                                              ? Color(
+                                                                                  0xff4C99E0)
+                                                                              : widget.type == "opportunities" || widget.type == "opp history"
+                                                                                  ? Color(0xffA4C400)
+                                                                                  : widget.type == "actions"
+                                                                                      ? Color(0xffae1a3e)
+                                                                                      : Color(0xffE67E6B)),
+                                                                  overflow:
+                                                                      TextOverflow
+                                                                          .ellipsis,
+                                                                  softWrap: false,
+                                                                  maxLines: 2,
+                                                                )),
+                                                          ),
+                                                          Expanded(
+                                                            child: Padding(
+                                                              padding:
+                                                                  const EdgeInsets
+                                                                      .fromLTRB(
+                                                                      0, 4, 0, 4),
+                                                              child: Text(
+                                                                entry.value != null
+                                                                    ? entry.key.contains(
+                                                                            "DATE")
+                                                                        ? DateUtil
+                                                                            .getFormattedDate(entry
+                                                                                .value)
+                                                                        : entry.key.contains(
+                                                                                "TIME")
+                                                                            ? DateUtil.getFormattedTime(
+                                                                                entry.value)
+                                                                            : '${entry.value.toString()}'
+                                                                    : "",
+                                                                style: TextStyle(
+                                                                    color: widget.type ==
+                                                                            "opp history"
+                                                                        ? Colors
+                                                                            .grey
+                                                                        : Colors
+                                                                            .black),
+                                                                overflow:
+                                                                    TextOverflow
+                                                                        .ellipsis,
+                                                                softWrap: false,
+                                                                maxLines: 2,
+                                                              ),
+                                                            ),
+                                                          ),
+                                                        ],
+                                                      ),
+                                                    )
+                                      ],
+                                    ),
+                                  ),
+                                  Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      widget.type == "opp history"
+                                          ? SizedBox()
+                                          : IconButton(
+                                              onPressed: () async {
+                                                if (widget.type == "companies") {
+                                                  dynamic company =
+                                                      await CompanyService()
+                                                          .getEntity(
+                                                              item["ACCT_ID"]);
+                                                  Navigator.push(
+                                                    context,
+                                                    MaterialPageRoute(
+                                                      builder: (context) {
+                                                        return CompanyEditScreen(
+                                                          company: company.data,
+                                                          readonly: true,
+                                                        );
+                                                      },
+                                                    ),
+                                                  );
+                                                } else if (widget.type ==
+                                                    "contacts") {
+                                                  dynamic contact =
+                                                      await ContactService()
+                                                          .getEntity(
+                                                              item['CONT_ID']);
+                                                  Navigator.push(
+                                                    context,
+                                                    MaterialPageRoute(
+                                                      builder: (context) {
+                                                        return ContactEditScreen(
+                                                          contact: contact.data,
+                                                          readonly: true,
+                                                        );
+                                                      },
+                                                    ),
+                                                  );
+                                                } else if (widget.type ==
+                                                    "actions") {
+                                                  dynamic action =
+                                                      await ActionService()
+                                                          .getEntity(
+                                                              item['ACTION_ID']);
+                                                  Navigator.push(
+                                                    context,
+                                                    MaterialPageRoute(
+                                                      builder: (context) {
+                                                        return ActionEditScreen(
+                                                          action: action.data,
+                                                          readonly: true,
+                                                          popScreens: 1,
+                                                        );
+                                                      },
+                                                    ),
+                                                  );
+                                                } else if (widget.type ==
+                                                    "opportunities") {
+                                                  print(
+                                                      "deal id valeudifgc${provider.getEntity['DEAL_DEAL_ID']}");
+                                                  dynamic deal =
+                                                      await OpportunityService()
+                                                          .getEntity(item['DEAL_ID']
+                                                              .toString());
+                                                  Navigator.push(
+                                                    context,
+                                                    MaterialPageRoute(
+                                                      builder: (context) {
+                                                        return OpportunityEditScreen(
+                                                          deal: deal.data,
+                                                          readonly: true,
+                                                        );
+                                                      },
+                                                    ),
+                                                  );
+                                                } else if (widget.type
+                                                    .contains("notes")) {
+                                                  dynamic response =
+                                                      await DynamicProjectService()
+                                                          .getProjectNote(
+                                                              widget.type,
+                                                              item['NOTE_ID']);
+                                                  Navigator.push(
+                                                    context,
+                                                    MaterialPageRoute(
+                                                      builder: (context) {
+                                                        return DynamicProjectNotes(
+                                                            project: provider.getEntity,
+                                                            notesData: response,
+                                                            entityType:
+                                                            widget.entityType,
+                                                            typeNote: widget.type,
+                                                            isNewNote: false);
+                                                      },
+                                                    ),
+                                                  );
+                                                } else if (widget.type ==
+                                                    "opp history") {
+                                                } else if (widget.type ==
+                                                    "quotes") {
+                                                  print("projectbalue${item}");
+                                                  dynamic quotation =
+                                                      await DynamicProjectService()
+                                                          .getEntityById(
+                                                              "QUOTATION",
+                                                              item['QUOTE_ID']);
+                                                  print("projectbalue$quotation");
+                                                  Navigator.push(
+                                                    context,
+                                                    MaterialPageRoute(
+                                                      builder: (context) {
+                                                        return DynamicQuotationAddScreen(
+                                                          quotation: quotation.data,
+                                                          readonly: true,
+                                                        );
+                                                      },
+                                                    ),
+                                                  );
+                                                } else if (widget.type ==
+                                                    "projects") {
+                                                  print(
+                                                      "widget.type${widget.type}");
+                                                  dynamic project =
+                                                      await ProjectService()
+                                                          .getEntity(
+                                                              item['PROJECT_ID']);
+                                                  print("projectbalue$project");
+                                                  Navigator.push(
+                                                    context,
+                                                    MaterialPageRoute(
+                                                      builder: (context) {
+                                                        return DynamicProjectAddScreen(
+                                                          project: project.data,
+                                                          readonly: true,
+                                                        );
+                                                      },
+                                                    ),
+                                                  );
+                                                } else {
+                                                  print("do nothing");
+                                                }
+                                              },
+                                              icon: Icon(context
+                                                  .platformIcons.rightChevron)),
+                                    ],
+                                  ),
                                 ],
+                              ),
+                              if ((widget.type == 'company' ||
+                                      widget.type == 'companies' ||
+                                      widget.type ==
+                                          'companies?pageSize=1000&pageNumber=1') &&
+                                  (list[index]['LINK_ID'] != null ||
+                                      list[index]['MULTI_ID'] != null))
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.end,
+                                  children: [
+                                    TextButton(
+                                      onPressed: () {
+                                        onLinkEdit(index);
+                                      },
+                                      child: Text('Edit'),
+                                    ),
+                                    TextButton(
+                                      onPressed: () {
+                                        onLinkDelete(index);
+                                      },
+                                      child: Text('Delete'),
+                                    )
+                                  ],
+                                ),
+                              Divider(
+                                color: Colors.black26,
+                                thickness: 2,
                               ),
                             ],
                           ),
-                          if ((widget.type == 'company' ||
-                              widget.type == 'companies' ||
-                              widget.type ==
-                                  'companies?pageSize=1000&pageNumber=1') &&
-                              (list[index]['LINK_ID'] != null ||
-                                  list[index]['MULTI_ID'] != null))
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.end,
-                              children: [
-                                TextButton(
-                                  onPressed: () {
-                                    onLinkEdit(index);
-                                  },
-                                  child: Text('Edit'),
-                                ),
-                                TextButton(
-                                  onPressed: () {
-                                    onLinkDelete(index);
-                                  },
-                                  child: Text('Delete'),
-                                )
-                              ],
-                            ),
-                          Divider(
-                            color: Colors.black26,
-                            thickness: 2,
-                          ),
-                        ],
-                      ),
-                    );
-                  },
-                ),
-              ),
-          ],
-        ),
-        title: widget.title,
+                        );
+                      },
+                    ),
+                  ),
+              ],
+            ),
+            title: widget.title,
+          );
+        }
       ),
     );
   }
 
   onLinkEdit(int index) async {
-    print("check the multi id${list[index]['MULTI_ID']}");
     context.loaderOverlay.show();
     String type = widget.type;
     var linkedEntity = list[index]['LINK_ID'] != null
         ? await DynamicProjectService()
-        .getProjectAccountLink(list[index]['LINK_ID'])
+            .getProjectAccountLink(list[index]['LINK_ID'])
         : null;
 
     var linkedDeal = list[index]['MULTI_ID'] != null
@@ -1018,14 +987,14 @@ class _DynamicRelatedEntityScreenState
     if (linkedEntity == null) {
       if (linkedDeal['CONT_ID'] != null) {
         dynamic contact =
-        await ContactService().getEntity(linkedDeal['CONT_ID']);
+            await ContactService().getEntity(linkedDeal['CONT_ID']);
         linkedDeal['FIRSTNAME'] = contact.data['FIRSTNAME'];
         linkedDeal['SURNAME'] = contact.data['SURNAME'];
       }
 
       dynamic company = await CompanyService().getEntity(linkedDeal['ACCT_ID']);
       dynamic deal =
-      await OpportunityService().getEntity(linkedDeal['DEAL_ID']);
+          await OpportunityService().getEntity(linkedDeal['DEAL_ID']);
 
       linkedDeal['ACCTNAME'] = company.data['ACCTNAME'];
       linkedDeal['DEAL_NAME'] = deal.data['DESCRIPTION'];
@@ -1036,54 +1005,49 @@ class _DynamicRelatedEntityScreenState
       context,
       platformPageRoute(
         context: context,
-        builder: (BuildContext context) =>
-            AddRelatedEntityScreen(
-              type: type == 'OpportunityLinks?pageSize=1000&pageNumber=1'
-                  ? "Opportunity"
-                  : null,
-              linkId: list[index]['LINK_ID'],
-              multiId: list[index]['MULTI_ID'],
-              account: {
-                'ID': linkedEntity != null
-                    ? linkedEntity['ACCT_ID']
-                    : linkedDeal != null
+        builder: (BuildContext context) => AddRelatedEntityScreen(
+          type: type == 'OpportunityLinks?pageSize=1000&pageNumber=1'
+              ? "Opportunity"
+              : null,
+          linkId: list[index]['LINK_ID'],
+          multiId: list[index]['MULTI_ID'],
+          account: {
+            'ID': linkedEntity != null
+                ? linkedEntity['ACCT_ID']
+                : linkedDeal != null
                     ? linkedDeal['ACCT_ID']
                     : '',
-                'TEXT': linkedEntity != null
-                    ? linkedEntity['ACCTNAME']
-                    : linkedDeal != null
+            'TEXT': linkedEntity != null
+                ? linkedEntity['ACCTNAME']
+                : linkedDeal != null
                     ? linkedDeal['ACCTNAME']
                     : '',
-              },
-              contact: {
-                'ID': linkedEntity != null
-                    ? linkedEntity['CONT_ID']
-                    : linkedDeal != null
+          },
+          contact: {
+            'ID': linkedEntity != null
+                ? linkedEntity['CONT_ID']
+                : linkedDeal != null
                     ? linkedDeal['CONT_ID']
                     : '',
-                'TEXT': linkedEntity != null
-                    ? '${linkedEntity['FIRSTNAME'] ??
-                    ''} ${linkedEntity['SURNAME'] ?? ''}'
-                    : linkedDeal != null
-                    ? '${linkedDeal['FIRSTNAME'] ??
-                    ''} ${linkedDeal['SURNAME'] ?? ''}'
+            'TEXT': linkedEntity != null
+                ? '${linkedEntity['FIRSTNAME'] ?? ''} ${linkedEntity['SURNAME'] ?? ''}'
+                : linkedDeal != null
+                    ? '${linkedDeal['FIRSTNAME'] ?? ''} ${linkedDeal['SURNAME'] ?? ''}'
                     : '',
-              },
-              project: {
-                'ID': linkedEntity != null ? linkedEntity['PROJECT_ID'] : '',
-                'TEXT': linkedEntity != null
-                    ? linkedEntity['PROJECT_TITLE']
-                    : '',
-              },
-              role: {
-                'ID': linkedEntity != null ? linkedEntity['ROLE_TYPE_ID'] : '',
-                // 'TEXT': linkedEntity['PROJECT_TITLE:'],
-              },
-              deal: {
-                'ID': linkedDeal != null ? linkedDeal['DEAL_ID'] : '',
-                'TEXT': linkedDeal != null ? linkedDeal['DEAL_NAME'] : '',
-              },
-            ),
+          },
+          project: {
+            'ID': linkedEntity != null ? linkedEntity['PROJECT_ID'] : '',
+            'TEXT': linkedEntity != null ? linkedEntity['PROJECT_TITLE'] : '',
+          },
+          role: {
+            'ID': linkedEntity != null ? linkedEntity['ROLE_TYPE_ID'] : '',
+            // 'TEXT': linkedEntity['PROJECT_TITLE:'],
+          },
+          deal: {
+            'ID': linkedDeal != null ? linkedDeal['DEAL_ID'] : '',
+            'TEXT': linkedDeal != null ? linkedDeal['DEAL_NAME'] : '',
+          },
+        ),
       ),
     );
   }
@@ -1092,65 +1056,63 @@ class _DynamicRelatedEntityScreenState
     if (list[index]['LINK_ID'] != null) {
       showPlatformDialog(
         context: context,
-        builder: (_) =>
-            PlatformAlertDialog(
-              title: Text('Delete Record'),
-              content: Text('Do you want to delete selected record?'),
-              actions: <Widget>[
-                PlatformDialogAction(
-                  child: PlatformText('Cancel'),
-                  onPressed: () {
-                    Navigator.pop(context);
-                  },
-                ),
-                PlatformDialogAction(
-                  child: PlatformText('Delete'),
-                  onPressed: () async {
-                    print('linkgdehrf id${list[index]['LINK_ID']}');
-                    await DynamicProjectService()
-                        .deleteProjectAccountLink(list[index]['LINK_ID']);
-
-                    setState(() {
-                      list.removeWhere((element) =>
-                      element['LINK_ID'] == list[index]['LINK_ID']);
-                    });
-
-                    Navigator.pop(context);
-                  },
-                ),
-              ],
+        builder: (_) => PlatformAlertDialog(
+          title: Text('Delete Record'),
+          content: Text('Do you want to delete selected record?'),
+          actions: <Widget>[
+            PlatformDialogAction(
+              child: PlatformText('Cancel'),
+              onPressed: () {
+                Navigator.pop(context);
+              },
             ),
+            PlatformDialogAction(
+              child: PlatformText('Delete'),
+              onPressed: () async {
+                print('linkgdehrf id${list[index]['LINK_ID']}');
+                await DynamicProjectService()
+                    .deleteProjectAccountLink(list[index]['LINK_ID']);
+
+                setState(() {
+                  list.removeWhere((element) =>
+                      element['LINK_ID'] == list[index]['LINK_ID']);
+                });
+
+                Navigator.pop(context);
+              },
+            ),
+          ],
+        ),
       );
     } else {
       showPlatformDialog(
         context: context,
-        builder: (_) =>
-            PlatformAlertDialog(
-              title: Text('Delete Record'),
-              content: Text('Do you want to delete selected record?'),
-              actions: <Widget>[
-                PlatformDialogAction(
-                  child: PlatformText('Cancel'),
-                  onPressed: () {
-                    Navigator.pop(context);
-                  },
-                ),
-                PlatformDialogAction(
-                  child: PlatformText('Delete'),
-                  onPressed: () async {
-                    await OpportunityService()
-                        .deleteCompanyOppLink(list[index]['MULTI_ID']);
-
-                    setState(() {
-                      list.removeWhere((element) =>
-                      element['MULTI_ID'] == list[index]['MULTI_ID']);
-                    });
-
-                    Navigator.pop(context);
-                  },
-                ),
-              ],
+        builder: (_) => PlatformAlertDialog(
+          title: Text('Delete Record'),
+          content: Text('Do you want to delete selected record?'),
+          actions: <Widget>[
+            PlatformDialogAction(
+              child: PlatformText('Cancel'),
+              onPressed: () {
+                Navigator.pop(context);
+              },
             ),
+            PlatformDialogAction(
+              child: PlatformText('Delete'),
+              onPressed: () async {
+                await OpportunityService()
+                    .deleteCompanyOppLink(list[index]['MULTI_ID']);
+
+                setState(() {
+                  list.removeWhere((element) =>
+                      element['MULTI_ID'] == list[index]['MULTI_ID']);
+                });
+
+                Navigator.pop(context);
+              },
+            ),
+          ],
+        ),
       );
     }
   }

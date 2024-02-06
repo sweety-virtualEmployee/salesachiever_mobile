@@ -9,14 +9,15 @@ class CommonHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    print("entity common ${entityType}");
     return Scaffold(
       body: entityType=="COMPANY"?DynamicPsaHeader(
         isVisible: true,
         icon: 'assets/images/company_icon.png',
-        title: entity?['ACCTNAME'],
+        title: entity?['ACCTNAME']??LangUtil.getString('Entities', 'Account.Description.Plural'),
         projectID: "",
-        status: entity?['TOWN'],
-        siteTown: entity?['ADDR1'],
+        status: entity?['TOWN']??"",
+        siteTown: entity?['ADDR1']??"",
         backgroundColor: Color(0xff3cab4f),
       ):entityType=="QUOTATION"?DynamicPsaHeader(
         isVisible: true,
@@ -34,15 +35,15 @@ class CommonHeader extends StatelessWidget {
         status: entity?['DESCRIPTION'],
         siteTown: entity?['DEAL_TYPE_ID'],
         backgroundColor: Color(0xffA4C400),
-      ): entityType=="CONTACT"?DynamicPsaHeader(
+      ): entityType=="CONTACT"||entityType=="CONTACTS"?DynamicPsaHeader(
         isVisible: true,
         icon: 'assets/images/contact_icon.png',
-        title: entity?['FIRSTNAME'],
+        title: entity?['FIRSTNAME']??entity?['LASTNAME']??LangUtil.getString('Entities', 'Contact.Description.Plural'),
         projectID: "",
         status: entity?['CONTACT_STATUS']==null?"":entity?['CONTACT_STATUS'],
-        siteTown: entity?['E_MAIL'],
+        siteTown: entity?['E_MAIL']??"",
         backgroundColor: Color(0xff4C99E0),
-      ): entityType=="ACTION"?DynamicPsaHeader(
+      ): entityType=="ACTION"||entityType=="ACTIONS"?DynamicPsaHeader(
         isVisible: true,
         icon:entity["CLASS"]=="A"?"assets/images/new_apmt_action.png":
         entity["CLASS"]=="T"? "assets/images/new_phone_action.png":
@@ -50,10 +51,10 @@ class CommonHeader extends StatelessWidget {
         entity["CLASS"]=="L"?"assets/images/new_doc_action.png":
         entity["CLASS"]=="G"?"assets/images/new_general_action.png":
             'assets/images/actions_icon.png',
-        title: entity?['DESCRIPTION'],
+        title: entity?['DESCRIPTION']?? LangUtil.getString('Entities', 'Action.Description.Plural'),
         projectID: "",
         status: "",
-        siteTown: entity?['ACTION_TIME'],
+        siteTown: entity?['ACTION_TIME']??"",
         backgroundColor: Colors.white,
       ):DynamicPsaHeader(
         isVisible: true,
@@ -61,8 +62,8 @@ class CommonHeader extends StatelessWidget {
         title: entity?['PROJECT_TITLE'] ??
             LangUtil.getString('Entities', 'Project.Create.Text'),
         projectID: "",
-        status: entity?['SELLINGSTATUS_ID'],
-        siteTown: entity?['OWNER_ID'],
+        status: entity?['SELLINGSTATUS_ID']?? "",
+        siteTown: entity?['OWNER_ID']?? "",
         backgroundColor: Color(0xffE67E6B),
       ),
     );

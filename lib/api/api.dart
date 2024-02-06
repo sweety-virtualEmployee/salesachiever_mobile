@@ -47,18 +47,17 @@ class Api {
       },
       onResponse: (response, handler) {
         print('Response: ${response.realUri}');
-        // Do something with response data
         return handler.next(response); // continue
         // If you want to reject the request with a error message,
         // you can reject a `DioError` object eg: return `dio.reject(dioError)`
       },
       onError: (DioError e, handler) {
-        print('Error: ${e.response}');
+        print('Dio eEdfhbs: ${e.error}');
 
         var message =
             MessageUtil.getMessage(e.response?.statusCode.toString() ?? '500');
 
-        var error = DioError(requestOptions: e.requestOptions, error: message);
+        var error = DioError(requestOptions: e.requestOptions, error: e.response?.data?["Errors"]);
 
         // Do something with response error
         return handler.next(error); //continue

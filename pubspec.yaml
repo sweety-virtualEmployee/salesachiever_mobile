@@ -42,7 +42,6 @@ dependencies:
   intl: ^0.17.0
   alphabet_list_scroll_view: ^2.0.0
   flutter_riverpod: ^1.0.4
-  # flutter_datetime_picker: ^1.5.1
   flutter_datetime_picker_plus: ^2.1.0
   package_info_plus: ^5.0.1
   local_session_timeout: ^2.2.0
@@ -55,7 +54,7 @@ dependencies:
   path_provider: ^2.0.2
   uuid: ^3.0.4
   signature: ^5.4.1
-
+  provider: ^6.1.1
 
 dev_dependencies:
   flutter_launcher_icons: ^0.13.1

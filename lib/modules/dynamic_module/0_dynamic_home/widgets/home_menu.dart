@@ -49,7 +49,6 @@ class _HomeMenuState extends State<DynamicHomeMenu> {
                   title: jsonDecode(jsonEncode(snapshot.data))[index]
                           ['MODULE_DESC']
                       .toString(),
-                  // subtitle: menuItem.subtitle,
                   image: jsonDecode(jsonEncode(snapshot.data))[index]['IMAGE']
                       .toString(),
                   onTap: () => widget.itemSelectedCallback(

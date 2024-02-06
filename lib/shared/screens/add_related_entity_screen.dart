@@ -8,6 +8,7 @@ import 'package:salesachiever_mobile/modules/3_company/screens/company_list_scre
 import 'package:salesachiever_mobile/modules/3_company/services/company_service.dart';
 import 'package:salesachiever_mobile/modules/5_project/screens/project_list_screen.dart';
 import 'package:salesachiever_mobile/modules/5_project/services/project_service.dart';
+import 'package:salesachiever_mobile/modules/dynamic_module/5_dynamic_project/provider/dynamic_tab_provider.dart';
 import 'package:salesachiever_mobile/modules/dynamic_module/5_dynamic_project/services/dynamic_project_service.dart';
 import 'package:salesachiever_mobile/shared/screens/related_entity_screen.dart';
 import 'package:salesachiever_mobile/shared/widgets/buttons/psa_edit_button.dart';
@@ -51,8 +52,12 @@ class _AddRelatedEntityScreenState extends State<AddRelatedEntityScreen> {
   dynamic deal;
   String? type;
 
+  late DynamicTabProvide _dynamicTabProvider;
+
   @override
   void initState() {
+    super.initState();
+    _dynamicTabProvider = DynamicTabProvide();
     project = widget.project;
     account = widget.account;
     contact = widget.contact;
@@ -68,6 +73,10 @@ class _AddRelatedEntityScreenState extends State<AddRelatedEntityScreen> {
 
   @override
   Widget build(BuildContext context) {
+    print("account check$account");
+    print("account check$project");
+    print("account check$contact");
+    print("account check$role");
     return Container(
       child: PsaScaffold(
         action: PsaEditButton(
@@ -84,21 +93,20 @@ class _AddRelatedEntityScreenState extends State<AddRelatedEntityScreen> {
                       "ACLOOKUP_ID": account != null ? account['ID'] : null,
                       "PROJECT_ID": project != null ? project['ID'] : null,
                     };
-
                     if (contact != null) projectLink['CONT_ID'] = contact['ID'];
                     if (role != null) projectLink['ROLE_TYPE_ID'] = role['ID'];
                     if (deal != null) projectLink['DEAL_ID'] = deal['ID'];
-                    if (role != null && deal != null)
-                      deal['ROLE_TYPE_ID'] = role['ID'];
-                    if (contact != null && deal != null)
-                      deal['CONT_ID'] = contact['ID'];
-                    if (contact != null) deal['CONTACT_NAME'] = contact['TEXT'];
+                    if (role != null && deal != null) deal['ROLE_TYPE_ID'] = role['ID'];
+                    print("deal check $contact");
+                    print("deal check $deal");
+                    if (contact != null && deal != null&&contact['ID']!=null) deal['CONT_ID'] = contact['ID'];
+                   if (contact != null&&contact['TEXT']!=null) deal['CONTACT_NAME'] = contact['TEXT'];
+                   print("deal check $deal");
                     if (deal != null) deal['DEAL_ID'] = deal['ID'];
-                    if (account != null && deal != null)
-                      deal['ACCT_ID'] = account['ID'];
-
+                    if (account != null && deal != null&&account['ID']!=null) deal['ACCT_ID'] = account['ID'];
+                    print("projectlink123$projectLink");
                     if (widget.multiId != null) {
-                      print("this api pof oop called${widget.multiId.toString()}");
+                      print("inder this condition");
                       await OpportunityService().updateCompanyOppLink(
                           widget.multiId.toString(), deal);
                     } else {
@@ -108,12 +116,16 @@ class _AddRelatedEntityScreenState extends State<AddRelatedEntityScreen> {
                     }
                     if (projectLink['ROLE_TYPE_ID'] != null) {
                       print("this api called");
-                      if (widget.linkId != null)
+                      if (widget.linkId != null) {
+                        print("this api called${widget.linkId}");
                         await ProjectService().updateProjectAccountLink(
                             widget.linkId!, projectLink);
-                      else
+                      }
+                      else {
+                        print("link id is null or not");
                         await ProjectService()
                             .createProjectAccountLink(projectLink);
+                      }
                     }
 
                     Navigator.pop(context);
@@ -121,6 +133,7 @@ class _AddRelatedEntityScreenState extends State<AddRelatedEntityScreen> {
 
                     context.loaderOverlay.hide();
                   } catch (e) {
+                    print("error$e");
                     context.loaderOverlay.hide();
                     Navigator.pop(context);
                   }
@@ -155,6 +168,7 @@ class _AddRelatedEntityScreenState extends State<AddRelatedEntityScreen> {
                       setState(() {
                         project = result;
                       });
+                      print("project updates${project}");
                     }
                   },
                 ),

@@ -37,9 +37,6 @@ class CompanyService extends EntityService {
 
   Future<List<dynamic>> getRelatedEntity(
       String entity, String id, String type) async {
-    print("entity${entity}");
-    print("type${type}");
-    print("id${id}");
     var data = await _companyApi.getRelatedEntity(entity, id, type);
     List<dynamic> items = data['Items'];
 

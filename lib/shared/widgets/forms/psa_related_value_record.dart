@@ -62,11 +62,11 @@ class _PsaRelatedValueRowState extends State<PsaRelatedValueRow> {
 
   callApi(String type) async {
     print("type check");
-    print(type);
+    print(widget.entity);
     context.loaderOverlay.show();
     if (type == "ACCT_ID") {
-      if (widget.value.isNotEmpty) {
-        var company = await CompanyService().getEntity(widget.value);
+      if (widget.entity.isNotEmpty) {
+        var company = await CompanyService().getEntity(widget.entity?["ACCT_ID"]);
         setState(() {
           companyData = company.data;
           selectedCompany = companyData["ACCTNAME"];
@@ -75,8 +75,8 @@ class _PsaRelatedValueRowState extends State<PsaRelatedValueRow> {
       }
     }
     if (type == "CONT_ID") {
-      if (widget.value.isNotEmpty) {
-        var contact = await ContactService().getEntity(widget.value);
+      if (widget.entity.isNotEmpty) {
+        var contact = await ContactService().getEntity(widget.entity?["CONT_ID"]);
         print(contact);
         setState(() {
           contactData = contact.data;
@@ -85,12 +85,8 @@ class _PsaRelatedValueRowState extends State<PsaRelatedValueRow> {
       }
     }
     if (type == "PROJECT_ID") {
-      print("this method");
-      print(widget.value);
-      if (widget.value.isNotEmpty) {
-        var project = await ProjectService().getEntity(widget.value);
-        print("project value");
-        print(project);
+      if (widget.entity.isNotEmpty) {
+        var project = await ProjectService().getEntity(widget.entity?["PROJECT_ID"]);
         setState(() {
           projectData = project.data;
           selectedProject = projectData["PROJECT_TITLE"];
@@ -98,11 +94,8 @@ class _PsaRelatedValueRowState extends State<PsaRelatedValueRow> {
       }
     }
       if(type=="DEAL_ID"){
-        print("deal id");
-        print(widget.value);
-        if (widget.value.isNotEmpty) {
-          print("come in this valuye");
-          var deal = await OpportunityService().getEntity(widget.value);
+        if (widget.entity.isNotEmpty) {
+          var deal = await OpportunityService().getEntity(widget.entity?["DEAL_ID"]);
           print("deal data check$deal");
           print("deal description${deal.data["DESCRIPTION"]}");
           setState(() {

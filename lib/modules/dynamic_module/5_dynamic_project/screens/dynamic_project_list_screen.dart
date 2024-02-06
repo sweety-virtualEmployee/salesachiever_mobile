@@ -8,6 +8,7 @@ import 'package:salesachiever_mobile/modules/3_company/screens/company_edit_scre
 import 'package:salesachiever_mobile/modules/4_contact/screens/contact_edit_screen.dart';
 import 'package:salesachiever_mobile/modules/5_project/screens/project_edit_screen.dart';
 import 'package:salesachiever_mobile/modules/dynamic_module/5_dynamic_project/screens/dynamic_quotation_add.dart';
+import 'package:salesachiever_mobile/modules/dynamic_module/5_dynamic_project/screens/dynamic_tab_screen.dart';
 import 'package:salesachiever_mobile/modules/dynamic_module/5_dynamic_project/services/dynamic_project_service.dart';
 import 'package:salesachiever_mobile/modules/dynamic_module/5_dynamic_project/widgets/dynamic_project_list_item.dart';
 import 'package:salesachiever_mobile/shared/widgets/buttons/psa_add_button.dart';
@@ -140,58 +141,92 @@ class _DynamicProjectListScreenState extends State<DynamicProjectListScreen> {
           if (widget.listType == "COMPANY") {
             Navigator.push(
               context,
-              platformPageRoute(
-                context: context,
-                builder: (BuildContext context) => CompanyEditScreen(
-                  company: {},
-                  readonly: false,
-                ),
+              MaterialPageRoute(
+                builder: (context) {
+                  return DynamicTabScreen(
+                    entity: {},
+                    title: "Add New Company",
+                    readonly: true,
+                    moduleId: "003",
+                    entityType: widget.listType,
+                  );
+                },
               ),
             );
           } else if (widget.listType == "CONTACT") {
             Navigator.push(
               context,
-              platformPageRoute(
-                context: context,
-                builder: (BuildContext context) => ContactEditScreen(
-                  contact: {},
-                  readonly: false,
-                ),
+              MaterialPageRoute(
+                builder: (context) {
+                  return DynamicTabScreen(
+                    entity: {},
+                    title: "Add New Contact",
+                    readonly: true,
+                    moduleId: "004",
+                    entityType: widget.listType,
+                  );
+                },
               ),
             );
           } else if (widget.listType == "ACTION") {
-            Navigator.pushNamed(context, '/action/type');
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) {
+                  return DynamicTabScreen(
+                    entity: {},
+                    title: "Add New Action",
+                    readonly: true,
+                    moduleId: "009",
+                    entityType: widget.listType,
+                  );
+                },
+              ),
+            );
           } else if (widget.listType == "OPPORTUNITY") {
             Navigator.push(
               context,
-              platformPageRoute(
-                context: context,
-                builder: (BuildContext context) => OpportunityEditScreen(
-                  deal: {},
-                  readonly: false,
-                ),
+              MaterialPageRoute(
+                builder: (context) {
+                  return DynamicTabScreen(
+                    entity: {},
+                    title: "Add New Opportunity",
+                    readonly: true,
+                    moduleId: "006",
+                    entityType: widget.listType,
+                  );
+                },
               ),
             );
           } else if (widget.listType == "QUOTATION") {
             Navigator.push(
               context,
-              platformPageRoute(
-                context: context,
-                builder: (BuildContext context) => DynamicQuotationAddScreen(
-                  quotation: {},
-                  readonly: false,
-                ),
+              MaterialPageRoute(
+                builder: (context) {
+                  return DynamicTabScreen(
+                    entity: {},
+                    title: "Add New Quotation",
+                    readonly: true,
+                    moduleId: "007",
+                    entityType: widget.listType,
+                  );
+                },
               ),
             );
           } else if (widget.listType == "PROJECT") {
+
             Navigator.push(
               context,
-              platformPageRoute(
-                context: context,
-                builder: (BuildContext context) => ProjectEditScreen(
-                  project: {},
-                  readonly: false,
-                ),
+              MaterialPageRoute(
+                builder: (context) {
+                  return DynamicTabScreen(
+                    entity: {},
+                    title: "Add New Project",
+                    readonly: true,
+                    moduleId: "005",
+                    entityType: widget.listType,
+                  );
+                },
               ),
             );
           }

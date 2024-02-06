@@ -17,9 +17,7 @@ class PsaListPicker extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    print("list print$contextId");
     List<Locale> listValues = LangUtil.getLocaleList(contextId);
-    print("list print$listValues");
 
     listValues.sort((a, b) => a.displayValue.compareTo(b.displayValue));
 

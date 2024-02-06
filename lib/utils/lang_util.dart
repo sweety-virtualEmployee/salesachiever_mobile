@@ -86,6 +86,7 @@ class LangUtil {
         .values
         .where((locale) => locale.contextId == contextId)
         .toList();
+    print("result$result");
 
     return result;
   }
