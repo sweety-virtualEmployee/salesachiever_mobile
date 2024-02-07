@@ -181,6 +181,7 @@ class _DynamicTabScreenState extends State<DynamicTabScreen> {
                                                   jsonEncode(snapshot.data))[
                                               index]['TAB_TYPE'] ==
                                                   "L") {
+                                                print("widget.entity${widget.entityType}");
                                                 if(provider.getEntity.isEmpty){
                                                   ErrorUtil.showErrorMessage(context, "Please create the record first");
                                                 }
@@ -188,13 +189,13 @@ class _DynamicTabScreenState extends State<DynamicTabScreen> {
                                                   String path = "";
                                                   String tableName = "";
                                                   String id = "";
-                                                  if (widget.entityType == "COMPANY") {
+                                                  if (widget.entityType.toUpperCase() == "COMPANY") {
                                                     path = jsonDecode(jsonEncode(
                                                         snapshot.data))[index]
                                                     ['TAB_LIST']
                                                         .replaceAll("@RECORDID",
                                                         provider.getEntity['ACCT_ID']);
-                                                  } else if (widget.entityType ==
+                                                  } else if (widget.entityType.toUpperCase() ==
                                                       "CONTACT") {
                                                     if (jsonDecode(jsonEncode(
                                                         snapshot.data))[index]
@@ -212,14 +213,14 @@ class _DynamicTabScreenState extends State<DynamicTabScreen> {
                                                       id = provider.getEntity['CONT_ID'];
                                                       tableName = "CONTACT";
                                                     }
-                                                  } else if (widget.entityType ==
+                                                  } else if (widget.entityType.toUpperCase() ==
                                                       "ACTION") {
                                                     path = jsonDecode(jsonEncode(
                                                         snapshot.data))[index]
                                                     ['TAB_LIST']
                                                         .replaceAll("@RECORDID",
                                                         provider.getEntity['ACTION_ID']);
-                                                  } else if (widget.entityType ==
+                                                  } else if (widget.entityType.toUpperCase() ==
                                                       "OPPORTUNITY") {
                                                     if (jsonDecode(jsonEncode(
                                                         snapshot.data))[index]
@@ -237,7 +238,7 @@ class _DynamicTabScreenState extends State<DynamicTabScreen> {
                                                       id = provider.getEntity['DEAL_ID'];
                                                       tableName = "DEAL";
                                                     }
-                                                  } else if (widget.entityType ==
+                                                  } else if (widget.entityType.toUpperCase() ==
                                                       "PROJECT") {
                                                     path = jsonDecode(jsonEncode(
                                                         snapshot.data))[index]
@@ -251,6 +252,7 @@ class _DynamicTabScreenState extends State<DynamicTabScreen> {
                                                       tableName,
                                                       id,
                                                       1);
+                                                  print("result$result");
                                                   Navigator.push(
                                                     context,
                                                     platformPageRoute(
@@ -275,7 +277,7 @@ class _DynamicTabScreenState extends State<DynamicTabScreen> {
                                                                         .data))[index]
                                                             ['TAB_DESC']
                                                                 .toString(),
-                                                            list: result,
+                                                            list: result??[],
                                                             isSelectable: false,
                                                             isEditable: true,
                                                           ),

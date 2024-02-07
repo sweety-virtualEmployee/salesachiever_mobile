@@ -76,6 +76,8 @@ class _DynamicRelatedEntityScreenState
     _dynamicTabProvider = DynamicTabProvide();
     _dynamicTabProvider.setEntity(widget.entity);
     callApi();
+    print("list check");
+    print(widget.list);
     list = widget.list["Items"];
     isLastPage = widget.list["IsLastPage"];
     pageNumber = widget.list["PageNumber"];
@@ -432,9 +434,14 @@ class _DynamicRelatedEntityScreenState
                                 context,
                                 MaterialPageRoute(
                                   builder: (context) {
-                                    return CompanyEditScreen(
-                                      company: company.data,
+                                    return DynamicTabScreen(
+                                      entity: company.data,
+                                      title: widget.entity['PROJECT_TITLE'] != null
+                                          ? widget.entity['PROJECT_TITLE']
+                                          : "",
                                       readonly: true,
+                                      moduleId: "003",
+                                      entityType: widget.type,
                                     );
                                   },
                                 ),
@@ -446,9 +453,14 @@ class _DynamicRelatedEntityScreenState
                                 context,
                                 MaterialPageRoute(
                                   builder: (context) {
-                                    return ContactEditScreen(
-                                      contact: contact.data,
+                                    return DynamicTabScreen(
+                                      entity: contact.data,
+                                      title: widget.entity['PROJECT_TITLE'] != null
+                                          ? widget.entity['PROJECT_TITLE']
+                                          : "",
                                       readonly: true,
+                                      moduleId: "004",
+                                      entityType: widget.type,
                                     );
                                   },
                                 ),
@@ -460,10 +472,14 @@ class _DynamicRelatedEntityScreenState
                                 context,
                                 MaterialPageRoute(
                                   builder: (context) {
-                                    return ActionEditScreen(
-                                      action: action.data,
+                                    return DynamicTabScreen(
+                                      entity: action.data,
+                                      title: widget.entity['PROJECT_TITLE'] != null
+                                          ? widget.entity['PROJECT_TITLE']
+                                          : "",
                                       readonly: true,
-                                      popScreens: 1,
+                                      moduleId: "009",
+                                      entityType: widget.type,
                                     );
                                   },
                                 ),
@@ -477,9 +493,14 @@ class _DynamicRelatedEntityScreenState
                                 context,
                                 MaterialPageRoute(
                                   builder: (context) {
-                                    return OpportunityEditScreen(
-                                      deal: deal.data,
+                                    return DynamicTabScreen(
+                                      entity: deal.data,
+                                      title: widget.entity['PROJECT_TITLE'] != null
+                                          ? widget.entity['PROJECT_TITLE']
+                                          : "",
                                       readonly: true,
+                                      moduleId: "006",
+                                      entityType: widget.type,
                                     );
                                   },
                                 ),
@@ -530,9 +551,14 @@ class _DynamicRelatedEntityScreenState
                                 context,
                                 MaterialPageRoute(
                                   builder: (context) {
-                                    return DynamicProjectAddScreen(
-                                      project: project.data,
+                                    return DynamicTabScreen(
+                                      entity: project.data,
+                                      title: widget.entity['PROJECT_TITLE'] != null
+                                          ? widget.entity['PROJECT_TITLE']
+                                          : "",
                                       readonly: true,
+                                      moduleId: "005",
+                                      entityType: widget.type,
                                     );
                                   },
                                 ),

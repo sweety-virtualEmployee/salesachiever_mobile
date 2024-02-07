@@ -471,8 +471,6 @@ class _DynamicEditScreenState extends State<DynamicEditScreen> {
         if (_dynamicTabProvide.getEntity['CONT_ID'] != null) {
           await ContactService().updateEntity(_dynamicTabProvide.getEntity['CONT_ID'], _dynamicTabProvide.getEntity);
         } else {
-          print("add contact");
-          print(_dynamicTabProvide.getEntity["PROJECT_ID"]);
           var newEntity = await ContactService().addNewEntity(_dynamicTabProvide.getEntity);
           _dynamicTabProvide.getEntity['CONT_ID'] = newEntity['CONT_ID'];
         }
