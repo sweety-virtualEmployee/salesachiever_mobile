@@ -183,107 +183,282 @@ class _DynamicTabScreenState extends State<DynamicTabScreen> {
                                             String path = "";
                                             String tableName = "";
                                             String id = "";
-                                            if (widget.entityType.toUpperCase() ==
+                                            if (widget.entityType
+                                                .toUpperCase() ==
                                                 "COMPANY") {
                                               path = provider.getTabData[index]
-                                                      ['TAB_LIST']
+                                              ['TAB_LIST']
                                                   .replaceAll(
-                                                      "@RECORDID",
-                                                      provider
-                                                          .getEntity['ACCT_ID']);
+                                                  "@RECORDID",
+                                                  provider
+                                                      .getEntity['ACCT_ID']);
                                             } else if (widget.entityType
-                                                    .toUpperCase() ==
+                                                .toUpperCase() ==
                                                 "CONTACT") {
                                               if (provider.getTabData[index]
-                                                      ['TAB_LIST']
+                                              ['TAB_LIST']
                                                   .contains("@RECORDID")) {
-                                                path = provider.getTabData[index]
-                                                        ['TAB_LIST']
-                                                    .replaceAll(
+                                                path =
+                                                    provider.getTabData[index]
+                                                    ['TAB_LIST']
+                                                        .replaceAll(
                                                         "@RECORDID",
                                                         provider.getEntity[
-                                                            'CONT_ID']);
+                                                        'CONT_ID']);
                                               } else {
-                                                path = provider.getTabData[index]
-                                                    ['TAB_LIST'];
+                                                path =
+                                                provider.getTabData[index]
+                                                ['TAB_LIST'];
                                                 id =
-                                                    provider.getEntity['CONT_ID'];
+                                                provider.getEntity['CONT_ID'];
                                                 tableName = "CONTACT";
                                               }
                                             } else if (widget.entityType
-                                                    .toUpperCase() ==
+                                                .toUpperCase() ==
                                                 "ACTION") {
                                               print("yes in action");
                                               print(provider.getTabData[index]
                                               ['TAB_DESC']);
                                               path = provider.getTabData[index]
-                                                      ['TAB_LIST']
+                                              ['TAB_LIST']
                                                   .replaceAll(
-                                                      "@RECORDID",
-                                                      provider.getEntity[
-                                                          'ACTION_ID']);
+                                                  "@RECORDID",
+                                                  provider.getEntity[
+                                                  'ACTION_ID']);
                                             } else if (widget.entityType
-                                                    .toUpperCase() ==
+                                                .toUpperCase() ==
                                                 "OPPORTUNITY") {
                                               if (provider.getTabData[index]
-                                                      ['TAB_LIST']
+                                              ['TAB_LIST']
                                                   .contains("@RECORDID")) {
-                                                path = provider.getTabData[index]
-                                                        ['TAB_LIST']
-                                                    .replaceAll(
+                                                path =
+                                                    provider.getTabData[index]
+                                                    ['TAB_LIST']
+                                                        .replaceAll(
                                                         "@RECORDID",
                                                         provider.getEntity[
-                                                            'DEAL_ID']);
+                                                        'DEAL_ID']);
                                               } else {
-                                                path = provider.getTabData[index]
-                                                    ['TAB_LIST'];
+                                                path =
+                                                provider.getTabData[index]
+                                                ['TAB_LIST'];
                                                 id =
-                                                    provider.getEntity['DEAL_ID'];
+                                                provider.getEntity['DEAL_ID'];
                                                 tableName = "DEAL";
                                               }
                                             } else if (widget.entityType
-                                                    .toUpperCase() ==
+                                                .toUpperCase() ==
                                                 "PROJECT") {
                                               path = provider.getTabData[index]
-                                                      ['TAB_LIST']
+                                              ['TAB_LIST']
                                                   .replaceAll(
-                                                      "@RECORDID",
-                                                      provider.getEntity[
-                                                          'PROJECT_ID']);
+                                                  "@RECORDID",
+                                                  provider.getEntity[
+                                                  'PROJECT_ID']);
                                             }
-                                            var result =
-                                                await service.getTabListEntityApi(
-                                                    path.replaceAll("&amp;", "&"),
-                                                    tableName,
-                                                    id,
-                                                    1);
-                                            print("result$result");
-                                            Navigator.push(
-                                              context,
-                                              platformPageRoute(
-                                                context: context,
-                                                builder: (BuildContext context) =>
-                                                    DynamicRelatedEntityScreen(
-                                                  entity: provider.getEntity,
-                                                  project: provider.getEntity,
-                                                  entityType: widget.entityType,
-                                                  path: path,
-                                                  tableName: tableName,
-                                                  id: id,
-                                                  type: provider.getTabData[index]
-                                                          ['TAB_LIST_MODULE']
-                                                      .toString()
-                                                      .toLowerCase(),
-                                                  title: provider
-                                                      .getTabData[index]
-                                                          ['TAB_DESC']
-                                                      .toString(),
-                                                  list: result ?? [],
-                                                  isSelectable: false,
-                                                  isEditable: true,
+                                            if (widget.entityType != "ACTION") {
+                                              var result =
+                                              await service.getTabListEntityApi(
+                                                  path.replaceAll("&amp;", "&"),
+                                                  tableName,
+                                                  id,
+                                                  1);
+                                              print("result$result");
+                                              Navigator.push(
+                                                context,
+                                                platformPageRoute(
+                                                  context: context,
+                                                  builder: (
+                                                      BuildContext context) =>
+                                                      DynamicRelatedEntityScreen(
+                                                        entity: provider
+                                                            .getEntity,
+                                                        project: provider
+                                                            .getEntity,
+                                                        entityType: widget
+                                                            .entityType,
+                                                        path: path,
+                                                        tableName: tableName,
+                                                        id: id,
+                                                        type: provider
+                                                            .getTabData[index]
+                                                        ['TAB_LIST_MODULE']
+                                                            .toString()
+                                                            .toLowerCase(),
+                                                        title: provider
+                                                            .getTabData[index]
+                                                        ['TAB_DESC']
+                                                            .toString(),
+                                                        list: result ?? [],
+                                                        isSelectable: false,
+                                                        isEditable: true,
+                                                      ),
                                                 ),
-                                              ),
-                                            );
+                                              );
+                                            }
+                                            else{
+                                              if(provider
+                                                  .getTabData[index]
+                                              ['TAB_DESC']=="Companies") {
+                                                if ( provider
+                                                    .getEntity["ACCT_ID"] ==
+                                                    null) {
+                                                  ErrorUtil.showErrorMessage(
+                                                      context,
+                                                      "No Company linked to this Action");
+                                                }
+                                                else {
+                                                  var entity =
+                                                  await DynamicProjectService()
+                                                      .getEntityById("COMPANY",
+                                                      provider
+                                                          .getEntity['ACCT_ID']);
+                                                  Map<String,
+                                                      dynamic>dynamicList = {
+                                                    "Items": [entity]
+                                                  };
+                                                  print(
+                                                      "entity check $dynamicList");
+                                                  Navigator.push(
+                                                    context,
+                                                    platformPageRoute(
+                                                      context: context,
+                                                      builder: (
+                                                          BuildContext context) =>
+                                                          DynamicRelatedEntityScreen(
+                                                            entity:  provider
+                                                                .getEntity,
+                                                            project:  provider
+                                                                .getEntity,
+                                                            entityType: widget
+                                                                .entityType,
+                                                            path: path,
+                                                            tableName: tableName,
+                                                            id: id,
+                                                            type:provider
+                                                                .getTabData[index]
+                                                            ['TAB_LIST_MODULE']
+                                                                .toString()
+                                                                .toLowerCase(),
+                                                            title: provider
+                                                                .getTabData[index]
+                                                            ['TAB_DESC']
+                                                                .toString(),
+                                                            list: dynamicList,
+                                                            isSelectable: false,
+                                                            isEditable: true,
+                                                          ),
+                                                    ),
+                                                  );
+                                                }
+                                              }
+                                              if(provider
+                                                  .getTabData[index]
+                                              ['TAB_DESC']=="Projects") {
+                                                if ( provider
+                                                    .getEntity["PROJECT_ID"] ==
+                                                    null) {
+                                                  ErrorUtil.showErrorMessage(
+                                                      context,
+                                                      "No Project linked to this Action");
+                                                }
+                                                else {
+                                                  var entity = await DynamicProjectService()
+                                                      .getEntityById("PROJECT",
+                                                      provider
+                                                          .getEntity['PROJECT_ID'] ?? "");
+                                                  Map<String,
+                                                      dynamic>dynamicList = {
+                                                    "Items": [entity] ?? []
+                                                  };
+                                                  print(
+                                                      "entity check $dynamicList");
+                                                  Navigator.push(
+                                                    context,
+                                                    platformPageRoute(
+                                                      context: context,
+                                                      builder: (
+                                                          BuildContext context) =>
+                                                          DynamicRelatedEntityScreen(
+                                                            entity:  provider
+                                                                .getEntity,
+                                                            project:  provider
+                                                                .getEntity,
+                                                            entityType: widget
+                                                                .entityType,
+                                                            path: path,
+                                                            tableName: tableName,
+                                                            id: id,
+                                                            type: provider
+                                                                .getTabData[index]
+                                                            ['TAB_LIST_MODULE']
+                                                                .toString()
+                                                                .toLowerCase(),
+                                                            title: provider
+                                                                .getTabData[index]
+                                                            ['TAB_DESC']
+                                                                .toString(),
+                                                            list: dynamicList,
+                                                            isSelectable: false,
+                                                            isEditable: true,
+                                                          ),
+                                                    ),
+                                                  );
+                                                }
+                                              }
+                                              if(provider
+                                                  .getTabData[index]
+                                              ['TAB_DESC']=="Contacts") {
+                                                if ( provider
+                                                    .getEntity["CONT_ID"]==null) {
+                                                  ErrorUtil.showErrorMessage(context, "No Contact linked to this Action");
+                                                }
+                                                else {
+                                                  var entity = await DynamicProjectService()
+                                                      .getEntityById("CONTACT",
+                                                      provider
+                                                          .getEntity['CONT_ID'] ?? "");
+                                                  print("entity$entity");
+                                                  Map<String,
+                                                      dynamic>dynamicList = {
+                                                    "Items": [entity] ?? []
+                                                  };
+                                                  print(
+                                                      "entity check $dynamicList");
+                                                  Navigator.push(
+                                                    context,
+                                                    platformPageRoute(
+                                                      context: context,
+                                                      builder: (
+                                                          BuildContext context) =>
+                                                          DynamicRelatedEntityScreen(
+                                                            entity:  provider
+                                                                .getEntity,
+                                                            project:  provider
+                                                                .getEntity,
+                                                            entityType: widget
+                                                                .entityType,
+                                                            path: path,
+                                                            tableName: tableName,
+                                                            id: id,
+                                                            type:provider
+                                                                .getTabData[index]
+                                                            ['TAB_LIST_MODULE']
+                                                                .toString()
+                                                                .toLowerCase(),
+                                                            title: provider
+                                                                .getTabData[index]
+                                                            ['TAB_DESC']
+                                                                .toString(),
+                                                            list: dynamicList,
+                                                            isSelectable: false,
+                                                            isEditable: true,
+                                                          ),
+                                                    ),
+                                                  );
+                                                }
+                                              }
+                                            }
                                           }
                                         }
                                       },
