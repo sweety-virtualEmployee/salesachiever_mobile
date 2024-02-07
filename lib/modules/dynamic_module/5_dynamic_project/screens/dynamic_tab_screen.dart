@@ -9,7 +9,6 @@ import 'package:salesachiever_mobile/modules/dynamic_module/5_dynamic_project/sc
 import 'package:salesachiever_mobile/modules/dynamic_module/5_dynamic_project/services/dynamic_project_service.dart';
 import 'package:salesachiever_mobile/modules/dynamic_module/5_dynamic_project/widgets/common_header.dart';
 import 'package:salesachiever_mobile/shared/screens/dynamic_related_entity_screen.dart';
-import 'package:salesachiever_mobile/shared/widgets/elements/psa_progress_indicator.dart';
 import 'package:salesachiever_mobile/shared/widgets/layout/psa_scaffold.dart';
 import 'package:salesachiever_mobile/utils/error_util.dart';
 import 'package:salesachiever_mobile/utils/lang_util.dart';

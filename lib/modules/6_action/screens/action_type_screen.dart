@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:salesachiever_mobile/data/action_types.dart';
-import 'package:salesachiever_mobile/modules/6_action/screens/action_edit_screen.dart';
+import 'package:salesachiever_mobile/modules/dynamic_module/5_dynamic_project/screens/dynamic_tab_screen.dart';
 import 'package:salesachiever_mobile/shared/widgets/layout/psa_scaffold.dart';
 import 'package:salesachiever_mobile/shared/widgets/psa_list_item.dart';
 import 'package:salesachiever_mobile/utils/lang_util.dart';
@@ -11,11 +10,13 @@ class ActionTypeScreen extends StatelessWidget {
   const ActionTypeScreen({
     Key? key,
     this.action,
+    this.listType,
     required this.popScreens,
   }) : super(key: key);
 
   final dynamic action;
   final int popScreens;
+  final String? listType;
 
   @override
   Widget build(BuildContext context) {
@@ -42,19 +43,14 @@ class ActionTypeScreen extends StatelessWidget {
             onTap: () {
               Navigator.push(
                 context,
-                platformPageRoute(
-                  context: context,
-                  builder: (BuildContext context) {
-                    if (action != null) action['CLASS'] = e['class'];
-
-                    return ActionEditScreen(
-                      action: action != null && e['class'] != 'G'
-                          ? action
-                          : {
-                              'CLASS': e['class'],
-                            },
-                      readonly: false,
-                      popScreens: popScreens,
+                MaterialPageRoute(
+                  builder: (context) {
+                    return DynamicTabScreen(
+                      entity: {"CLASS":e["class"]},
+                      title: "Add New Action",
+                      readonly: true,
+                      moduleId: "009",
+                      entityType:listType??"",
                     );
                   },
                 ),

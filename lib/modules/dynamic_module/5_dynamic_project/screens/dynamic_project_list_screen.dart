@@ -7,6 +7,7 @@ import 'package:salesachiever_mobile/modules/10_opportunities/screens/opportunit
 import 'package:salesachiever_mobile/modules/3_company/screens/company_edit_screen.dart';
 import 'package:salesachiever_mobile/modules/4_contact/screens/contact_edit_screen.dart';
 import 'package:salesachiever_mobile/modules/5_project/screens/project_edit_screen.dart';
+import 'package:salesachiever_mobile/modules/6_action/screens/action_type_screen.dart';
 import 'package:salesachiever_mobile/modules/dynamic_module/5_dynamic_project/screens/dynamic_quotation_add.dart';
 import 'package:salesachiever_mobile/modules/dynamic_module/5_dynamic_project/screens/dynamic_tab_screen.dart';
 import 'package:salesachiever_mobile/modules/dynamic_module/5_dynamic_project/services/dynamic_project_service.dart';
@@ -171,16 +172,13 @@ class _DynamicProjectListScreenState extends State<DynamicProjectListScreen> {
           } else if (widget.listType == "ACTION") {
             Navigator.push(
               context,
-              MaterialPageRoute(
-                builder: (context) {
-                  return DynamicTabScreen(
-                    entity: {},
-                    title: "Add New Action",
-                    readonly: true,
-                    moduleId: "009",
-                    entityType: widget.listType,
-                  );
-                },
+              platformPageRoute(
+                context: context,
+                builder: (BuildContext context) => ActionTypeScreen(
+                  action: {},
+                  popScreens: 2,
+                  listType: widget.listType,
+                ),
               ),
             );
           } else if (widget.listType == "OPPORTUNITY") {

@@ -291,16 +291,13 @@ class _DynamicRelatedEntityScreenState
                                 onTap: () {
                                   Navigator.push(
                                     context,
-                                    MaterialPageRoute(
-                                      builder: (context) {
-                                        return DynamicTabScreen(
-                                          entity:provider.getEntity,
-                                          title: "Add New Action",
-                                          readonly: true,
-                                          moduleId: "009",
-                                          entityType: widget.type,
-                                        );
-                                      },
+                                    platformPageRoute(
+                                      context: context,
+                                      builder: (BuildContext context) => ActionTypeScreen(
+                                        action: {},
+                                        popScreens: 2,
+                                        listType: widget.entityType,
+                                      ),
                                     ),
                                   );
                                 }
