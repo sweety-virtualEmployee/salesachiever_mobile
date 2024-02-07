@@ -42,10 +42,8 @@ class DynamicTabScreen extends StatefulWidget {
 }
 
 class _DynamicTabScreenState extends State<DynamicTabScreen> {
-
   DynamicProjectService service = DynamicProjectService();
   DynamicProjectApi service1 = DynamicProjectApi();
-  bool _readonly = true;
   late DynamicTabProvide _dynamicTabProvider;
 
   @override
@@ -53,321 +51,310 @@ class _DynamicTabScreenState extends State<DynamicTabScreen> {
     super.initState();
     _dynamicTabProvider = DynamicTabProvide();
     _dynamicTabProvider.setEntity(widget.entity);
-    if (widget.tabType == "P") {
-      service.getEntitySubTabForm(
-          widget.moduleId.toString(), widget.tabId.toString());
-    } else {
-      service.getProjectTabs(widget.moduleId.toString());
-    }
+    fetchData();
     super.initState();
   }
 
-  onTap() async {
-    if (_readonly) {
-      setState(() => _readonly = !_readonly);
-      return;
+  @override
+  void dispose() {
+    _dynamicTabProvider.dispose(); // Dispose of the provider when the widget is disposed
+    super.dispose();
+  }
+  Future<void> fetchData() async {
+    try {
+      var data = await (widget.tabType == "P"
+          ? service.getEntitySubTabForm(
+              widget.moduleId.toString(), widget.tabId.toString())
+          : service.getProjectTabs(widget.moduleId.toString()));
+      _dynamicTabProvider.setData(data);
+    } catch (error) {
+      print("Error fetching data: $error");
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    print("widget.entityType${widget.entityType}");
     return PsaScaffold(
-      title: "${capitalizeFirstLetter(widget.entityType)} Tabs",
-      body: FutureBuilder(
-          future: widget.tabType == "P"
-              ? service.getEntitySubTabForm(
-              widget.moduleId.toString(), widget.tabId.toString())
-              : service.getProjectTabs(widget.moduleId.toString()),
-          builder: (context, snapshot) {
-            if (snapshot.hasData) {
-              return ChangeNotifierProvider<DynamicTabProvide>(
-                  create: (context) => _dynamicTabProvider,
-                  child: Consumer<DynamicTabProvide>(
-                      builder: (context, provider, child) {
-                      return Column(children: [
-                        Container(
-                            height: 70,
-                            child: CommonHeader(
-                                entityType: widget.entityType.toUpperCase(), entity: provider.getEntity)),
-                        Container(
-                          color: Colors.white,
-                          child: ListView(
-                            shrinkWrap: true,
+        title: "${capitalizeFirstLetter(widget.entityType)} Tabs",
+        body: ChangeNotifierProvider<DynamicTabProvide>(
+            create: (context) => _dynamicTabProvider,
+            child: Consumer<DynamicTabProvide>(
+                builder: (context, provider, child) {
+              print("provider.getentity${_dynamicTabProvider.getEntity}");
+              return Column(children: [
+                Container(
+                    height: 70,
+                    child: CommonHeader(
+                        entityType: widget.entityType.toUpperCase(),
+                        entity: provider.getEntity)),
+                Container(
+                  color: Colors.white,
+                  child: ListView(
+                    shrinkWrap: true,
+                    children: [
+                      CupertinoFormSection(
+                        backgroundColor:
+                            CupertinoColors.systemGroupedBackground,
+                        children: [
+                          Column(
                             children: [
-                              CupertinoFormSection(
-                                backgroundColor:
-                                CupertinoColors.systemGroupedBackground,
-                                children: [
-                                  Column(
-                                    children: [
-                                      ListView.separated(
-                                        shrinkWrap: true,
-                                        physics: NeverScrollableScrollPhysics(),
-                                        separatorBuilder: (context, index) =>
-                                            Divider(
-                                              height: 0,
-                                              endIndent: 1.0,
-                                              color: Colors.black12,
-                                            ),
-                                        itemCount: jsonDecode(jsonEncode(snapshot.data))
-                                            .length,
-                                        itemBuilder: (context, index) {
-                                          return GestureDetector(
-                                            onTap: () async {
-                                              if (jsonDecode(jsonEncode(snapshot.data))[
-                                              index]['TAB_TYPE'] ==
-                                                  "C") {
-                                                print("yes");
-                                                print("project data${provider.getEntity}");
+                              ListView.separated(
+                                shrinkWrap: true,
+                                physics: NeverScrollableScrollPhysics(),
+                                separatorBuilder: (context, index) => Divider(
+                                  height: 0,
+                                  endIndent: 1.0,
+                                  color: Colors.black12,
+                                ),
+                                itemCount: provider.getTabData.length,
+                                itemBuilder: (context, index) {
+                                  print("provider.getValue${provider.getEntity}");
+                                  return GestureDetector(
+                                    onTap: () async {
+                                      if (provider.getTabData[index]
+                                              ['TAB_TYPE'] ==
+                                          "C") {
+                                        print("yes");
+                                        print(
+                                            "project data${provider.getEntity}");
 
-                                                Navigator.push(
-                                                  context,
-                                                  MaterialPageRoute(
-                                                    builder: (context) {
-                                                      return DynamicEditScreen(
-                                                        entityName: jsonDecode(
-                                                            jsonEncode(snapshot
-                                                                .data))[index]
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) {
+                                              return DynamicEditScreen(
+                                                entityName: provider
+                                                    .getTabData[index]
                                                         ['TAB_DESC']
-                                                            .toString(),
-                                                        entity: provider.getEntity,
-                                                        tabId: jsonDecode(jsonEncode(
-                                                            snapshot.data))[index]
+                                                    .toString(),
+                                                entity: provider.getEntity,
+                                                tabId:
+                                                    provider.getTabData[index]
                                                         ['TAB_ID'],
-                                                        readonly: true,
-                                                        entityType: widget.entityType,
-                                                      );
-                                                    },
-                                                  ),
-                                                );
-                                              }else if (jsonDecode(
-                                                  jsonEncode(snapshot.data))[
-                                              index]['TAB_TYPE'] ==
-                                                  "P") {
-                                                Navigator.push(
-                                                  context,
-                                                  MaterialPageRoute(
-                                                    builder: (context) {
-                                                      return DynamicTabScreen(
-                                                        entity: provider.getEntity,
-                                                        entityType: widget.entityType,
-                                                        entityName: jsonDecode(
-                                                            jsonEncode(snapshot
-                                                                .data))[index]
-                                                        ['TAB_DESC']
-                                                            .toString(),
-                                                        tabId: jsonDecode(jsonEncode(
-                                                            snapshot.data))[index]
-                                                        ['TAB_ID'],
-                                                        moduleId: jsonDecode(jsonEncode(
-                                                            snapshot.data))[index]
-                                                        ['MODULE_ID'],
-                                                        tabType: jsonDecode(jsonEncode(
-                                                            snapshot.data))[index]
-                                                        ['TAB_TYPE'],
-                                                        title: provider.getEntity?[
-                                                        'PROJECT_TITLE'] ??
-                                                            LangUtil.getString(
-                                                                'Entities',
-                                                                'Project.Create.Text'),
-                                                        readonly: true,
-
-                                                      );
-                                                    },
-                                                  ),
-                                                );
-                                              }else if (jsonDecode(
-                                                  jsonEncode(snapshot.data))[
-                                              index]['TAB_TYPE'] ==
-                                                  "L") {
-                                                print("widget.entity${widget.entityType}");
-                                                if(provider.getEntity.isEmpty){
-                                                  ErrorUtil.showErrorMessage(context, "Please create the record first");
-                                                }
-                                                else {
-                                                  String path = "";
-                                                  String tableName = "";
-                                                  String id = "";
-                                                  if (widget.entityType.toUpperCase() == "COMPANY") {
-                                                    path = jsonDecode(jsonEncode(
-                                                        snapshot.data))[index]
-                                                    ['TAB_LIST']
-                                                        .replaceAll("@RECORDID",
-                                                        provider.getEntity['ACCT_ID']);
-                                                  } else if (widget.entityType.toUpperCase() ==
-                                                      "CONTACT") {
-                                                    if (jsonDecode(jsonEncode(
-                                                        snapshot.data))[index]
-                                                    ['TAB_LIST']
-                                                        .contains("@RECORDID")) {
-                                                      path = jsonDecode(jsonEncode(
-                                                          snapshot.data))[index]
-                                                      ['TAB_LIST']
-                                                          .replaceAll("@RECORDID",
-                                                          provider.getEntity['CONT_ID']);
-                                                    } else {
-                                                      path = jsonDecode(
-                                                          jsonEncode(snapshot.data))[
-                                                      index]['TAB_LIST'];
-                                                      id = provider.getEntity['CONT_ID'];
-                                                      tableName = "CONTACT";
-                                                    }
-                                                  } else if (widget.entityType.toUpperCase() ==
-                                                      "ACTION") {
-                                                    path = jsonDecode(jsonEncode(
-                                                        snapshot.data))[index]
-                                                    ['TAB_LIST']
-                                                        .replaceAll("@RECORDID",
-                                                        provider.getEntity['ACTION_ID']);
-                                                  } else if (widget.entityType.toUpperCase() ==
-                                                      "OPPORTUNITY") {
-                                                    if (jsonDecode(jsonEncode(
-                                                        snapshot.data))[index]
-                                                    ['TAB_LIST']
-                                                        .contains("@RECORDID")) {
-                                                      path = jsonDecode(jsonEncode(
-                                                          snapshot.data))[index]
-                                                      ['TAB_LIST']
-                                                          .replaceAll("@RECORDID",
-                                                          provider.getEntity['DEAL_ID']);
-                                                    } else {
-                                                      path = jsonDecode(
-                                                          jsonEncode(snapshot.data))[
-                                                      index]['TAB_LIST'];
-                                                      id = provider.getEntity['DEAL_ID'];
-                                                      tableName = "DEAL";
-                                                    }
-                                                  } else if (widget.entityType.toUpperCase() ==
-                                                      "PROJECT") {
-                                                    path = jsonDecode(jsonEncode(
-                                                        snapshot.data))[index]
-                                                    ['TAB_LIST']
-                                                        .replaceAll("@RECORDID",
-                                                        provider.getEntity['PROJECT_ID']);
-                                                  }
-                                                  var result =
-                                                  await service.getTabListEntityApi(
-                                                      path.replaceAll("&amp;", "&"),
-                                                      tableName,
-                                                      id,
-                                                      1);
-                                                  print("result$result");
-                                                  Navigator.push(
-                                                    context,
-                                                    platformPageRoute(
-                                                      context: context,
-                                                      builder: (BuildContext context) =>
-                                                          DynamicRelatedEntityScreen(
-                                                            entity: provider.getEntity,
-                                                            project: provider.getEntity,
-                                                            entityType: widget
-                                                                .entityType,
-                                                            path: path,
-                                                            tableName: tableName,
-                                                            id: id,
-                                                            type: jsonDecode(jsonEncode(
-                                                                snapshot.data))[index]
-                                                            ['TAB_LIST_MODULE']
-                                                                .toString()
-                                                                .toLowerCase(),
-                                                            title: jsonDecode(
-                                                                jsonEncode(
-                                                                    snapshot
-                                                                        .data))[index]
-                                                            ['TAB_DESC']
-                                                                .toString(),
-                                                            list: result??[],
-                                                            isSelectable: false,
-                                                            isEditable: true,
-                                                          ),
-                                                    ),
-                                                  );
-                                                }
-                                              }
+                                                readonly: true,
+                                                entityType: widget.entityType,
+                                              );
                                             },
-                                            child: Container(
-                                              color: Colors.white,
-                                              padding:
-                                              EdgeInsets.only(top: 10, bottom: 10),
-                                              child: Row(
-                                                mainAxisAlignment:
-                                                MainAxisAlignment.start,
-                                                crossAxisAlignment:
-                                                CrossAxisAlignment.center,
-                                                children: [
-                                                  Expanded(
-                                                    child: Padding(
-                                                      padding: const EdgeInsets.only(
-                                                          left: 8.0),
-                                                      child: PlatformText(
-                                                          jsonDecode(jsonEncode(snapshot
-                                                              .data))[index]
-                                                          ['TAB_DESC']
-                                                              .toString(),
-                                                          textAlign: TextAlign.right,
-                                                          softWrap: true,
-                                                          style: TextStyle()),
-                                                    ),
-                                                  ),
-                                                  Spacer(),
-                                                  if (jsonDecode(jsonEncode(
-                                                      snapshot.data))[index]
-                                                  ['TAB_TYPE'] ==
-                                                      'L') ...[
-                                                    Padding(
-                                                        padding: const EdgeInsets.only(
-                                                            right: 15.0),
-                                                        child: CircleAvatar(
-                                                          radius: 8,
-                                                          backgroundColor: Color(
-                                                              int.parse(jsonDecode(
-                                                                  jsonEncode(
-                                                                      snapshot
-                                                                          .data))[
-                                                              index]['TAB_HEX']
-                                                                  .toString())),
-                                                        )),
-                                                  ] else
-                                                    ...[
-                                                      SizedBox(
-                                                        width: 30,
-                                                      )
-                                                    ],
-                                                  Padding(
-                                                    padding: const EdgeInsets.only(
-                                                        right: 15.0),
-                                                    child: Icon(
-                                                      context
-                                                          .platformIcons.rightChevron,
-                                                      color: Colors.grey,
-                                                      size: 20,
-                                                    ),
-                                                  ),
-                                                ],
+                                          ),
+                                        );
+                                      } else if (provider.getTabData[index]
+                                              ['TAB_TYPE'] ==
+                                          "P") {
+                                        print(
+                                            "provider.entity${provider.getEntity}");
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) {
+                                              return DynamicTabScreen(
+                                                entity: provider.getEntity,
+                                                entityType: widget.entityType,
+                                                entityName: provider
+                                                    .getTabData[index]
+                                                        ['TAB_DESC']
+                                                    .toString(),
+                                                tabId:
+                                                    provider.getTabData[index]
+                                                        ['TAB_ID'],
+                                                moduleId:
+                                                    provider.getTabData[index]
+                                                        ['MODULE_ID'],
+                                                tabType:
+                                                    provider.getTabData[index]
+                                                        ['TAB_TYPE'],
+                                                title: provider.getEntity?[
+                                                        'PROJECT_TITLE'] ??
+                                                    LangUtil.getString(
+                                                        'Entities',
+                                                        'Project.Create.Text'),
+                                                readonly: true,
+                                              );
+                                            },
+                                          ),
+                                        );
+                                      } else if (provider.getTabData[index]
+                                              ['TAB_TYPE'] ==
+                                          "L") {
+                                        print(
+                                            "widget.entity${widget.entityType}");
+                                        if (provider.getEntity.isEmpty) {
+                                          ErrorUtil.showErrorMessage(context,
+                                              "Please create the record first");
+                                        } else {
+                                          String path = "";
+                                          String tableName = "";
+                                          String id = "";
+                                          if (widget.entityType.toUpperCase() ==
+                                              "COMPANY") {
+                                            path = provider.getTabData[index]
+                                                    ['TAB_LIST']
+                                                .replaceAll(
+                                                    "@RECORDID",
+                                                    provider
+                                                        .getEntity['ACCT_ID']);
+                                          } else if (widget.entityType
+                                                  .toUpperCase() ==
+                                              "CONTACT") {
+                                            if (provider.getTabData[index]
+                                                    ['TAB_LIST']
+                                                .contains("@RECORDID")) {
+                                              path = provider.getTabData[index]
+                                                      ['TAB_LIST']
+                                                  .replaceAll(
+                                                      "@RECORDID",
+                                                      provider.getEntity[
+                                                          'CONT_ID']);
+                                            } else {
+                                              path = provider.getTabData[index]
+                                                  ['TAB_LIST'];
+                                              id =
+                                                  provider.getEntity['CONT_ID'];
+                                              tableName = "CONTACT";
+                                            }
+                                          } else if (widget.entityType
+                                                  .toUpperCase() ==
+                                              "ACTION") {
+                                            print("yes in action");
+                                            print(provider.getTabData[index]
+                                            ['TAB_DESC']);
+                                            path = provider.getTabData[index]
+                                                    ['TAB_LIST']
+                                                .replaceAll(
+                                                    "@RECORDID",
+                                                    provider.getEntity[
+                                                        'ACTION_ID']);
+                                          } else if (widget.entityType
+                                                  .toUpperCase() ==
+                                              "OPPORTUNITY") {
+                                            if (provider.getTabData[index]
+                                                    ['TAB_LIST']
+                                                .contains("@RECORDID")) {
+                                              path = provider.getTabData[index]
+                                                      ['TAB_LIST']
+                                                  .replaceAll(
+                                                      "@RECORDID",
+                                                      provider.getEntity[
+                                                          'DEAL_ID']);
+                                            } else {
+                                              path = provider.getTabData[index]
+                                                  ['TAB_LIST'];
+                                              id =
+                                                  provider.getEntity['DEAL_ID'];
+                                              tableName = "DEAL";
+                                            }
+                                          } else if (widget.entityType
+                                                  .toUpperCase() ==
+                                              "PROJECT") {
+                                            path = provider.getTabData[index]
+                                                    ['TAB_LIST']
+                                                .replaceAll(
+                                                    "@RECORDID",
+                                                    provider.getEntity[
+                                                        'PROJECT_ID']);
+                                          }
+                                          var result =
+                                              await service.getTabListEntityApi(
+                                                  path.replaceAll("&amp;", "&"),
+                                                  tableName,
+                                                  id,
+                                                  1);
+                                          print("result$result");
+                                          Navigator.push(
+                                            context,
+                                            platformPageRoute(
+                                              context: context,
+                                              builder: (BuildContext context) =>
+                                                  DynamicRelatedEntityScreen(
+                                                entity: provider.getEntity,
+                                                project: provider.getEntity,
+                                                entityType: widget.entityType,
+                                                path: path,
+                                                tableName: tableName,
+                                                id: id,
+                                                type: provider.getTabData[index]
+                                                        ['TAB_LIST_MODULE']
+                                                    .toString()
+                                                    .toLowerCase(),
+                                                title: provider
+                                                    .getTabData[index]
+                                                        ['TAB_DESC']
+                                                    .toString(),
+                                                list: result ?? [],
+                                                isSelectable: false,
+                                                isEditable: true,
                                               ),
                                             ),
                                           );
-                                        },
-                                      )
-                                    ],
-                                  ),
-                                ],
-                              ),
+                                        }
+                                      }
+                                    },
+                                    child: Container(
+                                      color: Colors.white,
+                                      padding:
+                                          EdgeInsets.only(top: 10, bottom: 10),
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.start,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.center,
+                                        children: [
+                                          Expanded(
+                                            child: Padding(
+                                              padding: const EdgeInsets.only(
+                                                  left: 8.0),
+                                              child: PlatformText(
+                                                  provider.getTabData[index]
+                                                          ['TAB_DESC']
+                                                      .toString(),
+                                                  textAlign: TextAlign.right,
+                                                  softWrap: true,
+                                                  style: TextStyle()),
+                                            ),
+                                          ),
+                                          Spacer(),
+                                          if (provider.getTabData[index]
+                                                  ['TAB_TYPE'] ==
+                                              'L') ...[
+                                            Padding(
+                                                padding: const EdgeInsets.only(
+                                                    right: 15.0),
+                                                child: CircleAvatar(
+                                                  radius: 8,
+                                                  backgroundColor: Color(
+                                                      int.parse(provider
+                                                          .getTabData[index]
+                                                              ['TAB_HEX']
+                                                          .toString())),
+                                                )),
+                                          ] else ...[
+                                            SizedBox(
+                                              width: 30,
+                                            )
+                                          ],
+                                          Padding(
+                                            padding: const EdgeInsets.only(
+                                                right: 15.0),
+                                            child: Icon(
+                                              context
+                                                  .platformIcons.rightChevron,
+                                              color: Colors.grey,
+                                              size: 20,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  );
+                                },
+                              )
                             ],
                           ),
-                        ),
-                      ]);
-                    }
-                  ));
-                }
-            return Center(
-              child: PsaProgressIndicator(),
-            );
-          }),
-      action: SizedBox(
-        width: 20,
-      ),
-    );
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ]);
+            })));
   }
 }

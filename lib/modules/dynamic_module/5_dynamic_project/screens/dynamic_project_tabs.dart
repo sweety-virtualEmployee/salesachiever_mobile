@@ -12,6 +12,7 @@ import 'package:salesachiever_mobile/modules/dynamic_module/dynamic_staffzone/dy
 import 'package:salesachiever_mobile/shared/screens/dynamic_related_entity_screen.dart';
 import 'package:salesachiever_mobile/shared/widgets/elements/psa_progress_indicator.dart';
 import 'package:salesachiever_mobile/shared/widgets/layout/psa_scaffold.dart';
+import 'package:salesachiever_mobile/utils/error_util.dart';
 import 'package:salesachiever_mobile/utils/lang_util.dart';
 import 'package:salesachiever_mobile/utils/text_formatting_util.dart';
 
@@ -185,7 +186,7 @@ class _ProjectTabsState extends State<ProjectTabs> {
                                         String path = "";
                                         String tableName = "";
                                         String id = "";
-                                        print("tab type is L ${snapshot.data}");
+                                        print("tab type is L ${widget.entityType}");
                                         print(
                                             "tab type is L ${_entity
                                                 .toString()}");
@@ -260,39 +261,204 @@ class _ProjectTabsState extends State<ProjectTabs> {
                                           id = _entity?['CONT_ID'];
                                           tableName = "CONTACT";
                                         }
-                                        var result =
-                                        await service.getTabListEntityApi(
-                                            path.replaceAll("&amp;", "&"),
-                                            tableName,
-                                            id,
-                                            1);
-                                        Navigator.push(
-                                          context,
-                                          platformPageRoute(
-                                            context: context,
-                                            builder: (BuildContext context) =>
-                                                DynamicRelatedEntityScreen(
-                                                  entity: _entity,
-                                                  project: _entity,
-                                                  entityType: widget.entityType,
-                                                  path: path,
-                                                  tableName: tableName,
-                                                  id: id,
-                                                  type: jsonDecode(jsonEncode(
-                                                      snapshot.data))[index]
-                                                  ['TAB_LIST_MODULE']
-                                                      .toString()
-                                                      .toLowerCase(),
-                                                  title: jsonDecode(jsonEncode(
-                                                      snapshot.data))[index]
-                                                  ['TAB_DESC']
-                                                      .toString(),
-                                                  list: result,
-                                                  isSelectable: false,
-                                                  isEditable: true,
+                                        if(widget.entityType != "ACTION") {
+                                          var result = await service
+                                              .getTabListEntityApi(
+                                              path.replaceAll("&amp;", "&"),
+                                              tableName,
+                                              id,
+                                              1);
+                                          Navigator.push(
+                                            context,
+                                            platformPageRoute(
+                                              context: context,
+                                              builder: (BuildContext context) =>
+                                                  DynamicRelatedEntityScreen(
+                                                    entity: _entity,
+                                                    project: _entity,
+                                                    entityType: widget.entityType,
+                                                    path: path,
+                                                    tableName: tableName,
+                                                    id: id,
+                                                    type: jsonDecode(jsonEncode(
+                                                        snapshot.data))[index]
+                                                    ['TAB_LIST_MODULE']
+                                                        .toString()
+                                                        .toLowerCase(),
+                                                    title: jsonDecode(jsonEncode(
+                                                        snapshot.data))[index]
+                                                    ['TAB_DESC']
+                                                        .toString(),
+                                                    list: result,
+                                                    isSelectable: false,
+                                                    isEditable: true,
+                                                  ),
+                                            ),
+                                          );
+                                        }
+                                        else{
+                                          if(jsonDecode(jsonEncode(
+                                              snapshot.data))[index]
+                                          ['TAB_DESC']=="Companies") {
+                                            if (_entity?["ACCT_ID"] ==
+                                                null) {
+                                              ErrorUtil.showErrorMessage(
+                                                  context,
+                                                  "No Company linked to this Action");
+                                            }
+                                            else {
+                                              var entity =
+                                              await DynamicProjectService()
+                                                  .getEntityById("COMPANY",
+                                                  _entity?['ACCT_ID']);
+                                              Map<String,
+                                                  dynamic>dynamicList = {
+                                                "Items": [entity]
+                                              };
+                                              print(
+                                                  "entity check $dynamicList");
+                                              Navigator.push(
+                                                context,
+                                                platformPageRoute(
+                                                  context: context,
+                                                  builder: (
+                                                      BuildContext context) =>
+                                                      DynamicRelatedEntityScreen(
+                                                        entity: _entity,
+                                                        project: _entity,
+                                                        entityType: widget
+                                                            .entityType,
+                                                        path: path,
+                                                        tableName: tableName,
+                                                        id: id,
+                                                        type: jsonDecode(
+                                                            jsonEncode(
+                                                                snapshot
+                                                                    .data))[index]
+                                                        ['TAB_LIST_MODULE']
+                                                            .toString()
+                                                            .toLowerCase(),
+                                                        title: jsonDecode(
+                                                            jsonEncode(
+                                                                snapshot
+                                                                    .data))[index]
+                                                        ['TAB_DESC']
+                                                            .toString(),
+                                                        list: dynamicList,
+                                                        isSelectable: false,
+                                                        isEditable: true,
+                                                      ),
                                                 ),
-                                          ),
-                                        );
+                                              );
+                                            }
+                                          }
+                                          if(jsonDecode(jsonEncode(
+                                              snapshot.data))[index]
+                                          ['TAB_DESC']=="Projects") {
+                                            if (_entity?["PROJECT_ID"] ==
+                                                null) {
+                                              ErrorUtil.showErrorMessage(
+                                                  context,
+                                                  "No Project linked to this Action");
+                                            }
+                                            else {
+                                              var entity = await DynamicProjectService()
+                                                  .getEntityById("PROJECT",
+                                                  _entity?['PROJECT_ID'] ?? "");
+                                              Map<String,
+                                                  dynamic>dynamicList = {
+                                                "Items": [entity] ?? []
+                                              };
+                                              print(
+                                                  "entity check $dynamicList");
+                                              Navigator.push(
+                                                context,
+                                                platformPageRoute(
+                                                  context: context,
+                                                  builder: (
+                                                      BuildContext context) =>
+                                                      DynamicRelatedEntityScreen(
+                                                        entity: _entity,
+                                                        project: _entity,
+                                                        entityType: widget
+                                                            .entityType,
+                                                        path: path,
+                                                        tableName: tableName,
+                                                        id: id,
+                                                        type: jsonDecode(
+                                                            jsonEncode(
+                                                                snapshot
+                                                                    .data))[index]
+                                                        ['TAB_LIST_MODULE']
+                                                            .toString()
+                                                            .toLowerCase(),
+                                                        title: jsonDecode(
+                                                            jsonEncode(
+                                                                snapshot
+                                                                    .data))[index]
+                                                        ['TAB_DESC']
+                                                            .toString(),
+                                                        list: dynamicList,
+                                                        isSelectable: false,
+                                                        isEditable: true,
+                                                      ),
+                                                ),
+                                              );
+                                            }
+                                          }
+                                          if(jsonDecode(jsonEncode(
+                                              snapshot.data))[index]
+                                          ['TAB_DESC']=="Contacts") {
+                                            if (_entity?["CONT_ID"]==null) {
+                                              ErrorUtil.showErrorMessage(context, "No Contact linked to this Action");
+                                            }
+                                            else {
+                                              var entity = await DynamicProjectService()
+                                                  .getEntityById("CONTACT",
+                                                  _entity?['CONT_ID'] ?? "");
+                                              print("entity$entity");
+                                              Map<String,
+                                                  dynamic>dynamicList = {
+                                                "Items": [entity] ?? []
+                                              };
+                                              print(
+                                                  "entity check $dynamicList");
+                                              Navigator.push(
+                                                context,
+                                                platformPageRoute(
+                                                  context: context,
+                                                  builder: (
+                                                      BuildContext context) =>
+                                                      DynamicRelatedEntityScreen(
+                                                        entity: _entity,
+                                                        project: _entity,
+                                                        entityType: widget
+                                                            .entityType,
+                                                        path: path,
+                                                        tableName: tableName,
+                                                        id: id,
+                                                        type: jsonDecode(
+                                                            jsonEncode(
+                                                                snapshot
+                                                                    .data))[index]
+                                                        ['TAB_LIST_MODULE']
+                                                            .toString()
+                                                            .toLowerCase(),
+                                                        title: jsonDecode(
+                                                            jsonEncode(
+                                                                snapshot
+                                                                    .data))[index]
+                                                        ['TAB_DESC']
+                                                            .toString(),
+                                                        list: dynamicList,
+                                                        isSelectable: false,
+                                                        isEditable: true,
+                                                      ),
+                                                ),
+                                              );
+                                            }
+                                          }
+                                        }
                                       } else if (jsonDecode(
                                           jsonEncode(snapshot.data))[
                                       index]['TAB_TYPE'] ==

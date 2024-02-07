@@ -6,6 +6,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart' show ProviderScope;
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:provider/provider.dart';
+import 'package:salesachiever_mobile/modules/dynamic_module/5_dynamic_project/provider/dynamic_tab_provider.dart';
 import 'package:salesachiever_mobile/shared/models/locale.dart';
 import 'package:salesachiever_mobile/utils/local_session_timeout.dart';
 import 'package:salesachiever_mobile/utils/navigation_Services.dart';
@@ -83,18 +85,22 @@ class AppRootState extends State<AppRoot> {
   Widget build(BuildContext context) {
     const oneSec = Duration(seconds:120);
     Timer.periodic(oneSec, (Timer t) => checkTimeRemaining());
-    return PlatformApp(
-    debugShowCheckedModeBanner: false,
-    navigatorKey: NavigationService.navigatorKey,
-    initialRoute: '/',
-    routes: routes,
-    cupertino: (_, __) => CupertinoAppData(
-      localizationsDelegates: [
-        DefaultMaterialLocalizations.delegate,
-        DefaultCupertinoLocalizations.delegate,
-        DefaultWidgetsLocalizations.delegate,
-      ],
-    ),
+    return MultiProvider(
+      providers: [
+       ChangeNotifierProvider(create: (context) => DynamicTabProvide()),],
+      child: PlatformApp(
+      debugShowCheckedModeBanner: false,
+      navigatorKey: NavigationService.navigatorKey,
+      initialRoute: '/',
+      routes: routes,
+      cupertino: (_, __) => CupertinoAppData(
+        localizationsDelegates: [
+          DefaultMaterialLocalizations.delegate,
+          DefaultCupertinoLocalizations.delegate,
+          DefaultWidgetsLocalizations.delegate,
+        ],
+      ),
+      ),
     );
   }
 }

@@ -36,7 +36,7 @@ class LoginService {
     _fetchUserFieldVisibility();
     _fetchUserFields();
     _fetchSystemCounty();
-    _fetchCurrencyValue();
+    //_fetchCurrencyValue();
     _dynamicFormData();
   }
 

@@ -54,21 +54,20 @@ class DynamicEditScreen extends StatefulWidget {
 }
 
 class _DynamicEditScreenState extends State<DynamicEditScreen> {
-  bool _readonly = true;
   String _notes = '';
   bool? _isNewNote;
   static final _key = GlobalKey<FormState>();
 
   var mandatoryFields = LookupService().getMandatoryFields();
 
-  late DynamicTabProvide _dynamicTabProvide;
+  late DynamicTabProvide _dynamicTabProvider;
 
   @override
   void initState() {
     super.initState();
-    _dynamicTabProvide = DynamicTabProvide();
-    _dynamicTabProvide.setEntity(widget.entity);
-    _readonly = this.widget.readonly;
+    _dynamicTabProvider = DynamicTabProvide();
+    _dynamicTabProvider.setEntity(widget.entity);
+   _dynamicTabProvider.setReadOnly(widget.readonly);
     callApi();
 
     super.initState();
@@ -118,18 +117,18 @@ class _DynamicEditScreenState extends State<DynamicEditScreen> {
 
   void _onChange(String key, dynamic value, bool isRequired) {
     setState(() {
-      if (key == 'SITE_COUNTRY' && _dynamicTabProvide.getEntity[key] != value) {
-        _dynamicTabProvide.getEntity['SITE_COUNTY'] = '';
+      if (key == 'SITE_COUNTRY' && _dynamicTabProvider.getEntity[key] != value) {
+        _dynamicTabProvider.getEntity['SITE_COUNTY'] = '';
       }
 
-      _dynamicTabProvide.getEntity[key] = value;
+      _dynamicTabProvider.getEntity[key] = value;
     });
   }
 
   onRelatedValueSave(List<dynamic> entity) {
     entity.forEach((prop) {
       setState(() {
-        _dynamicTabProvide.getEntity[prop['KEY']] = prop['VALUE'];
+        _dynamicTabProvider.getEntity[prop['KEY']] = prop['VALUE'];
       });
     });
   }
@@ -146,7 +145,7 @@ class _DynamicEditScreenState extends State<DynamicEditScreen> {
     List<Widget> widgets = [];
     if (fieldData != null) {
       for (dynamic field in filedList) {
-        print("field of entity${_dynamicTabProvide.getEntity}");
+        print("field of entity${_dynamicTabProvider.getEntity}");
         var isRequired = mandatoryFields.any((e) =>
         e['TABLE_NAME'] == field['TABLE_NAME'] &&
             e['FIELD_NAME'] == field['FIELD_NAME']);
@@ -211,7 +210,7 @@ class _DynamicEditScreenState extends State<DynamicEditScreen> {
                 LangUtil.getString(field['TABLE_NAME'], field['FIELD_NAME']),
                 value: field['Data_Value'],
                 type: field['FIELD_NAME'],
-                entity: _dynamicTabProvide.getEntity,
+                entity: _dynamicTabProvider.getEntity,
                 onChange: onRelatedValueSave,
                 onTap: () {},
                 isVisible: true,
@@ -393,13 +392,12 @@ class _DynamicEditScreenState extends State<DynamicEditScreen> {
   Widget build(BuildContext context) {
     return PsaScaffold(
       action: PsaEditButton(
-        text: _readonly ? 'Edit' : 'Save',
+        text: _dynamicTabProvider.getReadOnly ? 'Edit' : 'Save',
         onTap: onTap ,
       ),
-      title:
-      "${capitalizeFirstLetter(widget.entityType)} - ${widget.entityName}",
+      title: "${capitalizeFirstLetter(widget.entityType)} - ${widget.entityName}",
       body:  ChangeNotifierProvider<DynamicTabProvide>(
-        create: (context) => _dynamicTabProvide,
+        create: (context) => _dynamicTabProvider,
         child: Consumer<DynamicTabProvide>(
             builder: (context, provider, child) {
             return Container(
@@ -421,7 +419,7 @@ class _DynamicEditScreenState extends State<DynamicEditScreen> {
                                   provider.getEntity,
                                   fieldData,
                                   mandatoryFields,
-                                  _readonly,
+                                  _dynamicTabProvider.getReadOnly,
                                   _onChange)
                                   : Center(child: PsaProgressIndicator()))
                         ],
@@ -437,10 +435,11 @@ class _DynamicEditScreenState extends State<DynamicEditScreen> {
     );
   }
   onTap() async {
-    if (_readonly) {
-      setState(() => _readonly = !_readonly);
+    if (_dynamicTabProvider.getReadOnly) {
+      _dynamicTabProvider.setReadOnly(!_dynamicTabProvider.getReadOnly);
       return;
     }
+
 
     await saveProject();
   }
@@ -448,88 +447,83 @@ class _DynamicEditScreenState extends State<DynamicEditScreen> {
   Future<void> saveProject() async {
     try {
       context.loaderOverlay.show();
-      print("saving the project");
-      print(_dynamicTabProvide.getEntity["PROJECT_ID"]);
-      print("widget.entityType == ${widget.entityType}");
       if (widget.entityType.toUpperCase() == "COMPANY") {
-        if (_dynamicTabProvide.getEntity['ACCT_ID'] != null) {
-          await CompanyService().updateEntity(_dynamicTabProvide.getEntity!['ACCT_ID'], _dynamicTabProvide.getEntity);
+        if (_dynamicTabProvider.getEntity['ACCT_ID'] != null) {
+          await CompanyService().updateEntity(_dynamicTabProvider.getEntity!['ACCT_ID'], _dynamicTabProvider.getEntity);
         } else {
-          var newEntity = await CompanyService().addNewEntity(_dynamicTabProvide.getEntity);
-          _dynamicTabProvide.getEntity['ACCT_ID'] = newEntity['ACCT_ID'];
+          var newEntity = await CompanyService().addNewEntity(_dynamicTabProvider.getEntity);
+          _dynamicTabProvider.getEntity['ACCT_ID'] = newEntity['ACCT_ID'];
         }
 
         if (_isNewNote != null) {
           if (_isNewNote!) {
-            await CompanyService().addCompanyNote(_dynamicTabProvide.getEntity['ACCT_ID'], _notes);
+            await CompanyService().addCompanyNote(_dynamicTabProvider.getEntity['ACCT_ID'], _notes);
           } else {
             await CompanyService()
-                .updateCompanyNote(_dynamicTabProvide.getEntity['ACCT_ID'], _notes);
+                .updateCompanyNote(_dynamicTabProvider.getEntity['ACCT_ID'], _notes);
           }
         }
       } else if (widget.entityType.toUpperCase() == "CONTACT"||widget.entityType.toUpperCase() == "CONTACTS") {
-        if (_dynamicTabProvide.getEntity['CONT_ID'] != null) {
-          await ContactService().updateEntity(_dynamicTabProvide.getEntity['CONT_ID'], _dynamicTabProvide.getEntity);
+        if (_dynamicTabProvider.getEntity['CONT_ID'] != null) {
+          await ContactService().updateEntity(_dynamicTabProvider.getEntity['CONT_ID'], _dynamicTabProvider.getEntity);
         } else {
-          var newEntity = await ContactService().addNewEntity(_dynamicTabProvide.getEntity);
-          _dynamicTabProvide.getEntity['CONT_ID'] = newEntity['CONT_ID'];
+          var newEntity = await ContactService().addNewEntity(_dynamicTabProvider.getEntity);
+          _dynamicTabProvider.getEntity['CONT_ID'] = newEntity['CONT_ID'];
         }
 
         if (_isNewNote != null) {
           if (_isNewNote!) {
-            await ContactService().addContactNote(_dynamicTabProvide.getEntity['CONT_ID'], _notes);
+            await ContactService().addContactNote(_dynamicTabProvider.getEntity['CONT_ID'], _notes);
           } else {
             await ContactService()
-                .updateContactNote(_dynamicTabProvide.getEntity['CONT_ID'], _notes)
+                .updateContactNote(_dynamicTabProvider.getEntity['CONT_ID'], _notes)
                 .onError((error, stackTrace) => null);
           }
         }
       } else if (widget.entityType.toUpperCase() == "ACTION"||widget.entityType.toUpperCase() == "ACTIONS") {
-        if (_dynamicTabProvide.getEntity['ACTION_ID'] != null) {
-          await ActionService().updateEntity(_dynamicTabProvide.getEntity!['ACTION_ID'], _dynamicTabProvide.getEntity);
+        if (_dynamicTabProvider.getEntity['ACTION_ID'] != null) {
+          await ActionService().updateEntity(_dynamicTabProvider.getEntity!['ACTION_ID'], _dynamicTabProvider.getEntity);
         } else {
-          var newEntity = await ActionService().addNewEntity(_dynamicTabProvide.getEntity);
-          _dynamicTabProvide.getEntity['ACTION_ID'] = newEntity['ACTION_ID'];
+          var newEntity = await ActionService().addNewEntity(_dynamicTabProvider.getEntity);
+          _dynamicTabProvider.getEntity['ACTION_ID'] = newEntity['ACTION_ID'];
         }
       } else if (widget.entityType.toUpperCase() == "OPPORTUNITY") {
-        if (_dynamicTabProvide.getEntity['DEAL_ID'] != null) {
-          await OpportunityService().updateEntity(_dynamicTabProvide.getEntity!['DEAL_ID'], _dynamicTabProvide.getEntity);
+        if (_dynamicTabProvider.getEntity['DEAL_ID'] != null) {
+          await OpportunityService().updateEntity(_dynamicTabProvider.getEntity!['DEAL_ID'], _dynamicTabProvider.getEntity);
         } else {
-          var newEntity = await OpportunityService().addNewEntity(_dynamicTabProvide.getEntity);
-          _dynamicTabProvide.getEntity['DEAL_ID'] = newEntity['DEAL_ID'];
+          var newEntity = await OpportunityService().addNewEntity(_dynamicTabProvider.getEntity);
+          _dynamicTabProvider.getEntity['DEAL_ID'] = newEntity['DEAL_ID'];
         }
 
         if (_isNewNote != null) {
           if (_isNewNote!) {
-            await OpportunityService().addDealNote(_dynamicTabProvide.getEntity['DEAL_ID'], _notes);
+            await OpportunityService().addDealNote(_dynamicTabProvider.getEntity['DEAL_ID'], _notes);
           } else {
             await OpportunityService()
-                .updateDealNote(_dynamicTabProvide.getEntity['DEAL_ID'], _notes);
+                .updateDealNote(_dynamicTabProvider.getEntity['DEAL_ID'], _notes);
           }
         }
       } else {
-        if (_dynamicTabProvide.getEntity['PROJECT_ID'] != null) {
-          await ProjectService().updateEntity(_dynamicTabProvide.getEntity['PROJECT_ID'], _dynamicTabProvide.getEntity);
+        if (_dynamicTabProvider.getEntity['PROJECT_ID'] != null) {
+          await ProjectService().updateEntity(_dynamicTabProvider.getEntity['PROJECT_ID'], _dynamicTabProvider.getEntity);
         } else {
-          var newEntity = await ProjectService().addNewEntity(_dynamicTabProvide.getEntity);
-          _dynamicTabProvide.getEntity['PROJECT_ID'] = newEntity['PROJECT_ID'];
-
+          var newEntity = await ProjectService().addNewEntity(_dynamicTabProvider.getEntity);
+          _dynamicTabProvider.getEntity['PROJECT_ID'] = newEntity['PROJECT_ID'];
         }
-
         if (_isNewNote != null) {
           if (_isNewNote!) {
             await ProjectService()
-                .addProjectNote(_dynamicTabProvide.getEntity['PROJECT_ID'], _notes);
+                .addProjectNote(_dynamicTabProvider.getEntity['PROJECT_ID'], _notes);
           } else {
             await ProjectService()
-                .updateProjectNote(_dynamicTabProvide.getEntity['PROJECT_ID'], _notes);
+                .updateProjectNote(_dynamicTabProvider.getEntity['PROJECT_ID'], _notes);
           }
         }
       }
-      _dynamicTabProvide.setEntity( _dynamicTabProvide.getEntity);
-      setState(() => _readonly = !_readonly);
+      _dynamicTabProvider.setEntity( _dynamicTabProvider.getEntity);
+    _dynamicTabProvider.setReadOnly(!_dynamicTabProvider.getReadOnly);
     } on DioError catch (e) {
-      _dynamicTabProvide.setEntity(_dynamicTabProvide.getEntity);
+      _dynamicTabProvider.setEntity(_dynamicTabProvider.getEntity);
       ErrorUtil.showErrorMessage(context, "${e.error[0]["Message"]}\n${e.error[0]["Data"]}");
     } catch (e) {
       ErrorUtil.showErrorMessage(context, MessageUtil.getMessage('500'));

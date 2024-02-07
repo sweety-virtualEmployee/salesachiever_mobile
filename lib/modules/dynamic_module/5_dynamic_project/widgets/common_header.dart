@@ -9,7 +9,6 @@ class CommonHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    print("entity common ${entityType}");
     return Scaffold(
       body: entityType=="COMPANY"?DynamicPsaHeader(
         isVisible: true,

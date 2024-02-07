@@ -81,7 +81,6 @@ class DynamicProjectService extends EntityService {
 
   @override
   Future<dynamic> getEntityById(String type,String entityId) async {
-     print("this api called");
     return DynamicProjectApi().getById(type,entityId);
   }
 

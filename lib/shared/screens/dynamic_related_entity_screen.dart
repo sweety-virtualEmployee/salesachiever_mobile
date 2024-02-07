@@ -77,10 +77,10 @@ class _DynamicRelatedEntityScreenState
     _dynamicTabProvider.setEntity(widget.entity);
     callApi();
     print("list check");
-    print(widget.list);
+    print(widget.list["Items"]);
     list = widget.list["Items"];
-    isLastPage = widget.list["IsLastPage"];
-    pageNumber = widget.list["PageNumber"];
+    isLastPage = widget.list["IsLastPage"]??true;
+    pageNumber = widget.list["PageNumber"]??1;
     _scrollController.addListener(() {
       if (_scrollController.position.pixels ==
           _scrollController.position.maxScrollExtent) {
@@ -130,6 +130,9 @@ class _DynamicRelatedEntityScreenState
 
   @override
   Widget build(BuildContext context) {
+    print("widget type uxbks${(widget.type == 'company' ||
+        widget.type == 'companies' ||
+        widget.type == 'companies?pageSize=1000&pageNumber=1')&& (widget.entityType != "ACTION")}");
     return  ChangeNotifierProvider<DynamicTabProvide>(
       create: (context) => _dynamicTabProvider,
       child: Consumer<DynamicTabProvide>(
@@ -137,7 +140,7 @@ class _DynamicRelatedEntityScreenState
           return PsaScaffold(
             action: (widget.type == 'company' ||
                     widget.type == 'companies' ||
-                    widget.type == 'companies?pageSize=1000&pageNumber=1')
+                    widget.type == 'companies?pageSize=1000&pageNumber=1')&& (widget.entityType != "ACTION")
                 ? PsaAddButton(
               onTap: () async {
                 if (provider.getEntity['DEAL_ID'] != null) {
@@ -211,7 +214,7 @@ class _DynamicRelatedEntityScreenState
                 }
               },
             )
-                : (widget.type == 'projects' && provider.getEntity['CONT_ID'] == null)
+                : ((widget.type == 'projects' && provider.getEntity['CONT_ID'] == null) && (widget.entityType != "ACTION"))
                     ? PsaAddButton(
                         onTap: () async {
                           if (provider.getEntity['ACCT_ID'] != null) {
@@ -264,7 +267,7 @@ class _DynamicRelatedEntityScreenState
                           }
                         },
                       )
-                    : (widget.type == 'contacts')
+                    : ((widget.type == 'contacts' && widget.entityType != "PROJECT") && (widget.entityType != "ACTION"))
                         ? PsaAddButton(
                             onTap: () async {
                               Navigator.push(
@@ -422,8 +425,8 @@ class _DynamicRelatedEntityScreenState
                       itemCount: list.length,
                       controller: _scrollController,
                       itemBuilder: (BuildContext context, int index) {
-                        final item = list[index];
-                        print(item);
+                       final item = list[index];
+                       print("item${item.data.entries}");
                         return InkWell(
                           onTap: () async {
                             print("widget.type check${widget.type}");
@@ -638,7 +641,7 @@ class _DynamicRelatedEntityScreenState
                                     child: Column(
                                       crossAxisAlignment: CrossAxisAlignment.start,
                                       children: [
-                                        for (final entry in item.entries)
+                                        for (final entry in item.data.entries)
                                           entry.key == "SAUSER_ID"
                                               ? Padding(
                                                   padding: const EdgeInsets.only(
@@ -959,8 +962,8 @@ class _DynamicRelatedEntityScreenState
                                       widget.type == 'companies' ||
                                       widget.type ==
                                           'companies?pageSize=1000&pageNumber=1') &&
-                                  (list[index]['LINK_ID'] != null ||
-                                      list[index]['MULTI_ID'] != null))
+                                  (item.data['LINK_ID'] != null ||
+                                      item.data['MULTI_ID'] != null))
                                 Row(
                                   mainAxisAlignment: MainAxisAlignment.end,
                                   children: [
