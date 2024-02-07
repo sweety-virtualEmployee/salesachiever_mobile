@@ -390,49 +390,49 @@ class _DynamicEditScreenState extends State<DynamicEditScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return PsaScaffold(
-      action: PsaEditButton(
-        text: _dynamicTabProvider.getReadOnly ? 'Edit' : 'Save',
-        onTap: onTap ,
-      ),
-      title: "${capitalizeFirstLetter(widget.entityType)} - ${widget.entityName}",
-      body:  ChangeNotifierProvider<DynamicTabProvide>(
+    return   ChangeNotifierProvider<DynamicTabProvide>(
         create: (context) => _dynamicTabProvider,
         child: Consumer<DynamicTabProvide>(
             builder: (context, provider, child) {
-            return Container(
-              child: Column(
-                children: [
-                  Container(
-                      height: 70,
-                      child: CommonHeader(
-                          entityType: widget.entityType.toUpperCase(), entity: provider.getEntity)),
-                  Expanded(
-                    child: SingleChildScrollView(
-                      child: Column(
-                        children: [
-                          Container(
-                              child: fieldData != null
-                                  ? generateFields(
-                                  _key,
-                                  widget.entityType,
-                                  provider.getEntity,
-                                  fieldData,
-                                  mandatoryFields,
-                                  _dynamicTabProvider.getReadOnly,
-                                  _onChange)
-                                  : Center(child: PsaProgressIndicator()))
-                        ],
+            return PsaScaffold(
+              action: PsaEditButton(
+                text: _dynamicTabProvider.getReadOnly ? 'Edit' : 'Save',
+                onTap: onTap ,
+              ),
+              title: "${capitalizeFirstLetter(widget.entityType)} - ${widget.entityName}",
+              body: Container(
+                child: Column(
+                  children: [
+                    Container(
+                        height: 70,
+                        child: CommonHeader(
+                            entityType: widget.entityType.toUpperCase(), entity: provider.getEntity)),
+                    Expanded(
+                      child: SingleChildScrollView(
+                        child: Column(
+                          children: [
+                            Container(
+                                child: fieldData != null
+                                    ? generateFields(
+                                    _key,
+                                    widget.entityType,
+                                    provider.getEntity,
+                                    fieldData,
+                                    mandatoryFields,
+                                    _dynamicTabProvider.getReadOnly,
+                                    _onChange)
+                                    : Center(child: PsaProgressIndicator()))
+                          ],
+                        ),
                       ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             );
           }
         ),
-      ),
-    );
+      );
   }
   onTap() async {
     if (_dynamicTabProvider.getReadOnly) {
@@ -463,6 +463,22 @@ class _DynamicEditScreenState extends State<DynamicEditScreen> {
                 .updateCompanyNote(_dynamicTabProvider.getEntity['ACCT_ID'], _notes);
           }
         }
+        _dynamicTabProvider.setEntity( _dynamicTabProvider.getEntity);
+        _dynamicTabProvider.setReadOnly(!_dynamicTabProvider.getReadOnly);
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) {
+              return DynamicTabScreen(
+                entity: _dynamicTabProvider.getEntity,
+                title: "Add New Company",
+                readonly: true,
+                moduleId: "003",
+                entityType: widget.entityType,
+              );
+            },
+          ),
+        );
       } else if (widget.entityType.toUpperCase() == "CONTACT"||widget.entityType.toUpperCase() == "CONTACTS") {
         if (_dynamicTabProvider.getEntity['CONT_ID'] != null) {
           await ContactService().updateEntity(_dynamicTabProvider.getEntity['CONT_ID'], _dynamicTabProvider.getEntity);
@@ -480,6 +496,22 @@ class _DynamicEditScreenState extends State<DynamicEditScreen> {
                 .onError((error, stackTrace) => null);
           }
         }
+        _dynamicTabProvider.setEntity( _dynamicTabProvider.getEntity);
+        _dynamicTabProvider.setReadOnly(!_dynamicTabProvider.getReadOnly);
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) {
+              return DynamicTabScreen(
+                entity: _dynamicTabProvider.getEntity,
+                title: "Add New Contact",
+                readonly: true,
+                moduleId: "004",
+                entityType: widget.entityType,
+              );
+            },
+          ),
+        );
       } else if (widget.entityType.toUpperCase() == "ACTION"||widget.entityType.toUpperCase() == "ACTIONS") {
         if (_dynamicTabProvider.getEntity['ACTION_ID'] != null) {
           await ActionService().updateEntity(_dynamicTabProvider.getEntity!['ACTION_ID'], _dynamicTabProvider.getEntity);
@@ -487,6 +519,22 @@ class _DynamicEditScreenState extends State<DynamicEditScreen> {
           var newEntity = await ActionService().addNewEntity(_dynamicTabProvider.getEntity);
           _dynamicTabProvider.getEntity['ACTION_ID'] = newEntity['ACTION_ID'];
         }
+        _dynamicTabProvider.setEntity( _dynamicTabProvider.getEntity);
+        _dynamicTabProvider.setReadOnly(!_dynamicTabProvider.getReadOnly);
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) {
+              return DynamicTabScreen(
+                entity: _dynamicTabProvider.getEntity,
+                title: "Add New Action",
+                readonly: true,
+                moduleId: "009",
+                entityType: widget.entityType,
+              );
+            },
+          ),
+        );
       } else if (widget.entityType.toUpperCase() == "OPPORTUNITY") {
         if (_dynamicTabProvider.getEntity['DEAL_ID'] != null) {
           await OpportunityService().updateEntity(_dynamicTabProvider.getEntity!['DEAL_ID'], _dynamicTabProvider.getEntity);
@@ -503,6 +551,22 @@ class _DynamicEditScreenState extends State<DynamicEditScreen> {
                 .updateDealNote(_dynamicTabProvider.getEntity['DEAL_ID'], _notes);
           }
         }
+        _dynamicTabProvider.setEntity( _dynamicTabProvider.getEntity);
+        _dynamicTabProvider.setReadOnly(!_dynamicTabProvider.getReadOnly);
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) {
+              return DynamicTabScreen(
+                entity: _dynamicTabProvider.getEntity,
+                title: "Add New Opportunity",
+                readonly: true,
+                moduleId: "006",
+                entityType: widget.entityType,
+              );
+            },
+          ),
+        );
       } else {
         if (_dynamicTabProvider.getEntity['PROJECT_ID'] != null) {
           await ProjectService().updateEntity(_dynamicTabProvider.getEntity['PROJECT_ID'], _dynamicTabProvider.getEntity);
@@ -519,9 +583,24 @@ class _DynamicEditScreenState extends State<DynamicEditScreen> {
                 .updateProjectNote(_dynamicTabProvider.getEntity['PROJECT_ID'], _notes);
           }
         }
+        _dynamicTabProvider.setEntity( _dynamicTabProvider.getEntity);
+        _dynamicTabProvider.setReadOnly(!_dynamicTabProvider.getReadOnly);
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) {
+              return DynamicTabScreen(
+                entity: _dynamicTabProvider.getEntity,
+                title: "Add New Company",
+                readonly: true,
+                moduleId: "005",
+                entityType: widget.entityType,
+              );
+            },
+          ),
+        );
       }
-      _dynamicTabProvider.setEntity( _dynamicTabProvider.getEntity);
-    _dynamicTabProvider.setReadOnly(!_dynamicTabProvider.getReadOnly);
+
     } on DioError catch (e) {
       _dynamicTabProvider.setEntity(_dynamicTabProvider.getEntity);
       ErrorUtil.showErrorMessage(context, "${e.error[0]["Message"]}\n${e.error[0]["Data"]}");

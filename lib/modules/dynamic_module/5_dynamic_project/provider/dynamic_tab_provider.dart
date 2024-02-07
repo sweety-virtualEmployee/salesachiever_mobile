@@ -22,6 +22,7 @@ class DynamicTabProvide extends ChangeNotifier {
   }
 
   setReadOnly(bool newRead) {
+     print("new REad$newRead");
     _readonly = newRead;
     notifyListeners();
   }

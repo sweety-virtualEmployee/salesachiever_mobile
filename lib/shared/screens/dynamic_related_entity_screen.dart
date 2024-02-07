@@ -425,8 +425,15 @@ class _DynamicRelatedEntityScreenState
                       itemCount: list.length,
                       controller: _scrollController,
                       itemBuilder: (BuildContext context, int index) {
-                       final item = list[index];
-                       print("item${item.data.entries}");
+                       final value = list[index];
+                       final item;
+                       if(value is Map<String,dynamic>){
+                         item = value;
+                       }
+                       else{
+                         item = value.data;
+                       }
+                       print("item${item.entries}");
                         return InkWell(
                           onTap: () async {
                             print("widget.type check${widget.type}");
@@ -641,7 +648,7 @@ class _DynamicRelatedEntityScreenState
                                     child: Column(
                                       crossAxisAlignment: CrossAxisAlignment.start,
                                       children: [
-                                        for (final entry in item.data.entries)
+                                        for (final entry in item.entries)
                                           entry.key == "SAUSER_ID"
                                               ? Padding(
                                                   padding: const EdgeInsets.only(
@@ -962,8 +969,8 @@ class _DynamicRelatedEntityScreenState
                                       widget.type == 'companies' ||
                                       widget.type ==
                                           'companies?pageSize=1000&pageNumber=1') &&
-                                  (item.data['LINK_ID'] != null ||
-                                      item.data['MULTI_ID'] != null))
+                                  (item['LINK_ID'] != null ||
+                                      item['MULTI_ID'] != null))
                                 Row(
                                   mainAxisAlignment: MainAxisAlignment.end,
                                   children: [
