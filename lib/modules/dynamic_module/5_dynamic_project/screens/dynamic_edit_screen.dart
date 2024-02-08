@@ -10,7 +10,6 @@ import 'package:salesachiever_mobile/modules/5_project/services/project_service.
 import 'package:salesachiever_mobile/modules/6_action/services/action_service.dart';
 import 'package:salesachiever_mobile/modules/dynamic_module/5_dynamic_project/api/dynamic_project_api.dart';
 import 'package:salesachiever_mobile/modules/dynamic_module/5_dynamic_project/provider/dynamic_tab_provider.dart';
-import 'package:salesachiever_mobile/modules/dynamic_module/5_dynamic_project/screens/dynamic_tab_screen.dart';
 import 'package:salesachiever_mobile/modules/dynamic_module/5_dynamic_project/widgets/common_header.dart';
 import 'package:salesachiever_mobile/modules/dynamic_module/5_dynamic_project/widgets/dynamicPsaLooksUp.dart';
 import 'package:salesachiever_mobile/shared/services/lookup_service.dart';
@@ -65,7 +64,7 @@ class _DynamicEditScreenState extends State<DynamicEditScreen> {
   @override
   void initState() {
     super.initState();
-    _dynamicTabProvider = DynamicTabProvide();
+    _dynamicTabProvider = Provider.of<DynamicTabProvide>(context,listen: false);
     _dynamicTabProvider.setEntity(widget.entity);
    _dynamicTabProvider.setReadOnly(widget.readonly);
     callApi();
@@ -390,9 +389,7 @@ class _DynamicEditScreenState extends State<DynamicEditScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return   ChangeNotifierProvider<DynamicTabProvide>(
-        create: (context) => _dynamicTabProvider,
-        child: Consumer<DynamicTabProvide>(
+    return Consumer<DynamicTabProvide>(
             builder: (context, provider, child) {
             return PsaScaffold(
               action: PsaEditButton(
@@ -431,8 +428,7 @@ class _DynamicEditScreenState extends State<DynamicEditScreen> {
               ),
             );
           }
-        ),
-      );
+        );
   }
   onTap() async {
     if (_dynamicTabProvider.getReadOnly) {
@@ -463,22 +459,6 @@ class _DynamicEditScreenState extends State<DynamicEditScreen> {
                 .updateCompanyNote(_dynamicTabProvider.getEntity['ACCT_ID'], _notes);
           }
         }
-        _dynamicTabProvider.setEntity( _dynamicTabProvider.getEntity);
-        _dynamicTabProvider.setReadOnly(!_dynamicTabProvider.getReadOnly);
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) {
-              return DynamicTabScreen(
-                entity: _dynamicTabProvider.getEntity,
-                title: "Add New Company",
-                readonly: true,
-                moduleId: "003",
-                entityType: widget.entityType,
-              );
-            },
-          ),
-        );
       } else if (widget.entityType.toUpperCase() == "CONTACT"||widget.entityType.toUpperCase() == "CONTACTS") {
         if (_dynamicTabProvider.getEntity['CONT_ID'] != null) {
           await ContactService().updateEntity(_dynamicTabProvider.getEntity['CONT_ID'], _dynamicTabProvider.getEntity);
@@ -496,22 +476,6 @@ class _DynamicEditScreenState extends State<DynamicEditScreen> {
                 .onError((error, stackTrace) => null);
           }
         }
-        _dynamicTabProvider.setEntity( _dynamicTabProvider.getEntity);
-        _dynamicTabProvider.setReadOnly(!_dynamicTabProvider.getReadOnly);
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) {
-              return DynamicTabScreen(
-                entity: _dynamicTabProvider.getEntity,
-                title: "Add New Contact",
-                readonly: true,
-                moduleId: "004",
-                entityType: widget.entityType,
-              );
-            },
-          ),
-        );
       } else if (widget.entityType.toUpperCase() == "ACTION"||widget.entityType.toUpperCase() == "ACTIONS") {
         if (_dynamicTabProvider.getEntity['ACTION_ID'] != null) {
           await ActionService().updateEntity(_dynamicTabProvider.getEntity!['ACTION_ID'], _dynamicTabProvider.getEntity);
@@ -519,22 +483,6 @@ class _DynamicEditScreenState extends State<DynamicEditScreen> {
           var newEntity = await ActionService().addNewEntity(_dynamicTabProvider.getEntity);
           _dynamicTabProvider.getEntity['ACTION_ID'] = newEntity['ACTION_ID'];
         }
-        _dynamicTabProvider.setEntity( _dynamicTabProvider.getEntity);
-        _dynamicTabProvider.setReadOnly(!_dynamicTabProvider.getReadOnly);
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) {
-              return DynamicTabScreen(
-                entity: _dynamicTabProvider.getEntity,
-                title: "Add New Action",
-                readonly: true,
-                moduleId: "009",
-                entityType: widget.entityType,
-              );
-            },
-          ),
-        );
       } else if (widget.entityType.toUpperCase() == "OPPORTUNITY") {
         if (_dynamicTabProvider.getEntity['DEAL_ID'] != null) {
           await OpportunityService().updateEntity(_dynamicTabProvider.getEntity!['DEAL_ID'], _dynamicTabProvider.getEntity);
@@ -551,22 +499,6 @@ class _DynamicEditScreenState extends State<DynamicEditScreen> {
                 .updateDealNote(_dynamicTabProvider.getEntity['DEAL_ID'], _notes);
           }
         }
-        _dynamicTabProvider.setEntity( _dynamicTabProvider.getEntity);
-        _dynamicTabProvider.setReadOnly(!_dynamicTabProvider.getReadOnly);
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) {
-              return DynamicTabScreen(
-                entity: _dynamicTabProvider.getEntity,
-                title: "Add New Opportunity",
-                readonly: true,
-                moduleId: "006",
-                entityType: widget.entityType,
-              );
-            },
-          ),
-        );
       } else {
         if (_dynamicTabProvider.getEntity['PROJECT_ID'] != null) {
           await ProjectService().updateEntity(_dynamicTabProvider.getEntity['PROJECT_ID'], _dynamicTabProvider.getEntity);
@@ -583,27 +515,19 @@ class _DynamicEditScreenState extends State<DynamicEditScreen> {
                 .updateProjectNote(_dynamicTabProvider.getEntity['PROJECT_ID'], _notes);
           }
         }
-        _dynamicTabProvider.setEntity( _dynamicTabProvider.getEntity);
-        _dynamicTabProvider.setReadOnly(!_dynamicTabProvider.getReadOnly);
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) {
-              return DynamicTabScreen(
-                entity: _dynamicTabProvider.getEntity,
-                title: "Add New Company",
-                readonly: true,
-                moduleId: "005",
-                entityType: widget.entityType,
-              );
-            },
-          ),
-        );
       }
-
+      _dynamicTabProvider.setEntity( _dynamicTabProvider.getEntity);
+      _dynamicTabProvider.setReadOnly(!_dynamicTabProvider.getReadOnly);
     } on DioError catch (e) {
       _dynamicTabProvider.setEntity(_dynamicTabProvider.getEntity);
-      ErrorUtil.showErrorMessage(context, "${e.error[0]["Message"]}\n${e.error[0]["Data"]}");
+      print("data ${e.error[0]["Data"]}");
+      List<String> values = [];
+      for (int i = 0; i < e.error[0]["Data"].length; i++) {
+        String fieldString = LangUtil.getString(widget.entityType, e.error[0]["Data"][i]); // Replace this with the actual LangUtil.getString call
+        values.add(fieldString);
+      }
+      print("values$values");
+      ErrorUtil.showErrorMessage(context, "${e.error[0]["Message"]}\n${values}");
     } catch (e) {
       ErrorUtil.showErrorMessage(context, MessageUtil.getMessage('500'));
     } finally {

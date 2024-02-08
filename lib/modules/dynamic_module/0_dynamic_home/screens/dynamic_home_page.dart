@@ -48,9 +48,6 @@ class _HomeScreenState extends State<DyanmicHomeScreen> {
     bool isContainActiveFeature = await feature.activeFeatures();
     try {
       print("item$item");
-      if(item == "Quotes"){
-        print("yes it is");
-      }
       Navigator.push(
         context,
         platformPageRoute(

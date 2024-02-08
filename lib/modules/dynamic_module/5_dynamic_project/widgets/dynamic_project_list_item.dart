@@ -1,13 +1,10 @@
-import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
-import 'package:hive/hive.dart';
 import 'package:intl/intl.dart';
 import 'package:loader_overlay/loader_overlay.dart';
 import 'package:salesachiever_mobile/modules/5_project/services/project_service.dart';
-import 'package:salesachiever_mobile/modules/dynamic_module/5_dynamic_project/screens/dynamic_project_tabs.dart';
+import 'package:salesachiever_mobile/modules/dynamic_module/5_dynamic_project/screens/dynamic_tab_screen.dart';
 import 'package:salesachiever_mobile/modules/dynamic_module/5_dynamic_project/services/dynamic_project_service.dart';
-import 'package:salesachiever_mobile/shared/api/lookup_api.dart';
 import 'package:salesachiever_mobile/utils/date_util.dart';
 import 'package:salesachiever_mobile/modules/base/entity/widgets/entity_list_item.dart';
 import 'package:salesachiever_mobile/utils/lang_util.dart';
@@ -46,40 +43,21 @@ class _ProjectListItemWidgetState
 
   @override
   void initState() {
-    //getCurrencyValue();
-    print("widget entry${widget.entity}");
     super.initState();
   }
 
-  getCurrencyValue() async {
-    final response = await LookupApi().getCurrencyValue();
-    print("resposne from the api");
-    print(response);
-    setState(() {
-      currencyDefaultValues = response["Items"];
-    });
-
-    print("currency default values $currencyDefaultValues");
-  }
-
   bool isStringDate(String input) {
-    print("let see the date $input");
     try {
       List<String> formats = [
         "yyyy-MM-dd'T'HH:mm:ss", // ISO 8601 format
-        // Add more formats as needed
       ];
       for (var format in formats) {
-        print("for lopp");
         var dateFormat = DateFormat(format);
-        print(dateFormat);
         DateTime dateTime = dateFormat.parseStrict(input);
-        print("Date time $dateTime");
         if (dateTime != null) {
           return true;
         }
       }
-
       return false; // None of the formats matched
     } catch (e) {
       return false; // Parsing error means it's not a date
@@ -102,10 +80,6 @@ class _ProjectListItemWidgetState
             String itemId =
                 key.contains("_") ? key.substring(key.indexOf("_") + 1) : key;
             List<String> parts = key.split('_');
-            print("parts$key${parts.length}");
-            print("conetxtsdbid${contextId}");
-            print("erfafxsgasjf${itemId}");
-            print("erfafxsgasjf${itemId}");
             bool containsCurrencyValue = currencyDefaultValues.any((entry) =>
                 entry["FIELD_NAME"] ==
                 LangUtil.getString(contextId, itemId).toUpperCase());
@@ -178,33 +152,26 @@ class _ProjectListItemWidgetState
             });
             return;
           }
-
           context.loaderOverlay.show();
           dynamic project = await DynamicProjectService()
               .getEntityById(widget.type, widget.entity['ACCT_ID']);
-
-          print("project list");
-          log("${project.data.toString()}");
-
           context.loaderOverlay.hide();
-
           Navigator.push(
             context,
             MaterialPageRoute(
               builder: (context) {
-                return ProjectTabs(
-                  project: project.data,
+                return DynamicTabScreen(
+                  entity: project.data,
                   title: widget.entity['PROJECT_TITLE'] != null
                       ? widget.entity['PROJECT_TITLE']
                       : "",
                   readonly: true,
-                  refresh: widget.refresh,
                   moduleId: "003",
                   entityType: widget.type,
                 );
               },
             ),
-          ).then((value) => widget.refresh());
+          );
         },
       );
     } else {
@@ -221,17 +188,11 @@ class _ProjectListItemWidgetState
               String itemId =
                   key.contains("_") ? key.substring(key.indexOf("_") + 1) : key;
               List<String> parts = key.split('_');
-              print("parts$key${parts.length}");
-              print("conetxtsdbid${contextId}");
-              print(
-                  "erfafxsgasjf${LangUtil.getString(contextId, itemId).toUpperCase()}");
               bool containsCurrencyValue = currencyDefaultValues.any((entry) =>
                   entry["FIELD_NAME"] ==
                   LangUtil.getString(contextId, itemId).toUpperCase());
-              print("iscondition$containsCurrencyValue");
               if (value is String) {
                 isStringDate(value);
-                print("keyvalue pair$key$value");
               }
               if (key.contains("_ID") && parts.length < 4) {
                 return SizedBox();
@@ -302,33 +263,26 @@ class _ProjectListItemWidgetState
               });
               return;
             }
-
             context.loaderOverlay.show();
             dynamic project = await DynamicProjectService()
                 .getEntityById(widget.type, widget.entity['DEAL_ID']);
-
-            print("project list");
-            log("${project.data.toString()}");
-
             context.loaderOverlay.hide();
-
             Navigator.push(
               context,
               MaterialPageRoute(
                 builder: (context) {
-                  return ProjectTabs(
-                    project: project.data,
+                  return DynamicTabScreen(
+                    entity: project.data,
                     title: widget.entity['PROJECT_TITLE'] != null
                         ? widget.entity['PROJECT_TITLE']
                         : "",
                     readonly: true,
-                    refresh: widget.refresh,
                     moduleId: "006",
                     entityType: widget.type,
                   );
                 },
               ),
-            ).then((value) => widget.refresh());
+            );
           },
         );
       } else {
@@ -348,7 +302,6 @@ class _ProjectListItemWidgetState
                 String itemId = key.contains("_")
                     ? key.substring(key.indexOf("_") + 1)
                     : key;
-                print("erfafxsgasjf${itemId}");
                 bool containsCurrencyValue = currencyDefaultValues.any(
                     (entry) =>
                         entry["FIELD_NAME"] ==
@@ -423,27 +376,20 @@ class _ProjectListItemWidgetState
                 });
                 return;
               }
-
               context.loaderOverlay.show();
               dynamic project = await DynamicProjectService()
                   .getEntityById(widget.type, widget.entity['CONT_ID']);
-
-              print("project list");
-              log("${project.data.toString()}");
-
               context.loaderOverlay.hide();
-
               Navigator.push(
                 context,
                 MaterialPageRoute(
                   builder: (context) {
-                    return ProjectTabs(
-                      project: project.data,
+                    return DynamicTabScreen(
+                      entity: project.data,
                       title: widget.entity['PROJECT_TITLE'] != null
                           ? widget.entity['PROJECT_TITLE']
                           : "",
                       readonly: true,
-                      refresh: widget.refresh,
                       moduleId: "004",
                       entityType: widget.type,
                     );
@@ -467,10 +413,6 @@ class _ProjectListItemWidgetState
                       ? key.substring(key.indexOf("_") + 1)
                       : key;
                   List<String> parts = key.split('_');
-                  print("parts$key${parts.length}");
-                  print("conetxtsdbid${contextId}");
-                  print("erfafxsgasjf${itemId}");
-                  print("erfafxsgasjf${itemId}");
                   bool containsCurrencyValue = currencyDefaultValues.any(
                       (entry) =>
                           entry["FIELD_NAME"] ==
@@ -545,28 +487,21 @@ class _ProjectListItemWidgetState
                   });
                   return;
                 }
-
                 context.loaderOverlay.show();
 
                 dynamic project = await ProjectService()
                     .getEntity(widget.entity['PROJECT_ID']);
-                print("project list");
-                log("${project.data.toString()}");
-
                 context.loaderOverlay.hide();
-
                 Navigator.push(
                   context,
                   MaterialPageRoute(
                     builder: (context) {
-                      return ProjectTabs(
-                        project: project.data,
+                      return DynamicTabScreen(
+                        entity: project.data,
                         title: widget.entity['PROJECT_TITLE'] != null
                             ? widget.entity['PROJECT_TITLE']
                             : "",
-                        readonly: true,
-                        refresh: widget.refresh,
-                        moduleId: "005",
+                        readonly: true, moduleId: "005",
                         entityType: widget.type,
                       );
                     },
@@ -594,9 +529,6 @@ class _ProjectListItemWidgetState
                     String itemId = key.contains("_")
                         ? key.substring(key.indexOf("_") + 1)
                         : key;
-                    print("conetxtchvs$contextId");
-                    print("itemID$itemId");
-                    print("erfafxsgasjf${itemId}");
                     bool containsCurrencyValue = currencyDefaultValues.any(
                         (entry) =>
                             entry["FIELD_NAME"] ==
@@ -676,31 +608,24 @@ class _ProjectListItemWidgetState
                   }
 
                   context.loaderOverlay.show();
-                  dynamic project = await DynamicProjectService()
-                      .getEntityById(widget.type, widget.entity['ACTION_ID']);
-
-                  print("project list");
-                  log("${project.data.toString()}");
-
+                  dynamic project = await DynamicProjectService().getEntityById(widget.type, widget.entity['ACTION_ID']);
                   context.loaderOverlay.hide();
-
                   Navigator.push(
                     context,
                     MaterialPageRoute(
                       builder: (context) {
-                        return ProjectTabs(
-                          project: project.data,
+                        return DynamicTabScreen(
+                          entity: project.data,
                           title: widget.entity['PROJECT_TITLE'] != null
                               ? widget.entity['PROJECT_TITLE']
                               : "",
                           readonly: true,
-                          refresh: widget.refresh,
                           moduleId: "009",
                           entityType: widget.type,
                         );
                       },
                     ),
-                  ).then((value) => widget.refresh());
+                  );
                 },
               );
             } else {
@@ -800,34 +725,27 @@ class _ProjectListItemWidgetState
                       });
                       return;
                     }
-
                     context.loaderOverlay.show();
-
                     dynamic project = await DynamicProjectService()
                         .getEntityById(
                             widget.type, widget.entity['QUOTATION_QUOTE_ID']);
-                    print("project list value");
-                    log("${project.data.toString()}");
-
                     context.loaderOverlay.hide();
-
                     Navigator.push(
                       context,
                       MaterialPageRoute(
                         builder: (context) {
-                          return ProjectTabs(
-                            project: project.data,
+                          return DynamicTabScreen(
+                            entity: project.data,
                             title: widget.entity['DESCRIPTION'] != null
                                 ? widget.entity['DESCRIPTION']
                                 : "",
                             readonly: true,
-                            refresh: widget.refresh,
                             moduleId: "007",
                             entityType: widget.type,
                           );
                         },
                       ),
-                    ).then((value) => widget.refresh());
+                    );
                   },
                 );
               } else {

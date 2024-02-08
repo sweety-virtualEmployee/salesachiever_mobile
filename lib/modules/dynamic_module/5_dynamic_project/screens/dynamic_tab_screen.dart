@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
@@ -48,7 +47,7 @@ class _DynamicTabScreenState extends State<DynamicTabScreen> {
   @override
   void initState() {
     super.initState();
-    _dynamicTabProvider = DynamicTabProvide();
+    _dynamicTabProvider = Provider.of<DynamicTabProvide>(context,listen: false);
     _dynamicTabProvider.setEntity(widget.entity);
     fetchData();
     super.initState();
@@ -73,11 +72,9 @@ class _DynamicTabScreenState extends State<DynamicTabScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return  ChangeNotifierProvider<DynamicTabProvide>(
-            create: (context) => _dynamicTabProvider,
-            child: Consumer<DynamicTabProvide>(
+    return  Consumer<DynamicTabProvide>(
                 builder: (context, provider, child) {
-              print("provider.getentity${_dynamicTabProvider.getEntity}");
+              print("provider.getentity${provider.getEntity}");
               return PsaScaffold(
                 title: "${capitalizeFirstLetter(widget.entityType)} Tabs",
                 body: Column(children: [
@@ -530,6 +527,6 @@ class _DynamicTabScreenState extends State<DynamicTabScreen> {
                   ),
                 ]),
               );
-            }));
+            });
   }
 }

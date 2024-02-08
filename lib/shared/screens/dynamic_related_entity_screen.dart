@@ -73,7 +73,7 @@ class _DynamicRelatedEntityScreenState
   @override
   void initState() {
     super.initState();
-    _dynamicTabProvider = DynamicTabProvide();
+    _dynamicTabProvider = Provider.of<DynamicTabProvide>(context,listen: false);
     _dynamicTabProvider.setEntity(widget.entity);
     callApi();
     print("list check");
