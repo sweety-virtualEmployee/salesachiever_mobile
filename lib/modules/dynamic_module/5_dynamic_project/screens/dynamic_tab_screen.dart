@@ -4,6 +4,7 @@ import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:provider/provider.dart';
 import 'package:salesachiever_mobile/modules/dynamic_module/5_dynamic_project/provider/dynamic_tab_provider.dart';
 import 'package:salesachiever_mobile/modules/dynamic_module/5_dynamic_project/screens/dynamic_edit_screen.dart';
+import 'package:salesachiever_mobile/modules/dynamic_module/5_dynamic_project/screens/dynamic_project_notes.dart';
 import 'package:salesachiever_mobile/modules/dynamic_module/5_dynamic_project/services/dynamic_project_service.dart';
 import 'package:salesachiever_mobile/modules/dynamic_module/5_dynamic_project/widgets/common_header.dart';
 import 'package:salesachiever_mobile/shared/screens/dynamic_related_entity_screen.dart';
@@ -228,7 +229,23 @@ class _DynamicTabScreenState extends State<DynamicTabScreen> {
           ),
         );
       } else {
-        if (provider.getTabData[index]['TAB_DESC'] == "Companies") {
+        if(provider.getTabData[index]['TAB_DESC'] == "Notes"){
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) {
+                return DynamicProjectNotes(
+                  project: provider.getEntity,
+                  notesData: {},
+                  typeNote: provider.getTabData[index]['TAB_LIST_MODULE'].toString().toLowerCase(),
+                  isNewNote: true,
+                  entityType: widget.entityType,
+                );
+              },
+            ),
+          );
+        }
+        else if (provider.getTabData[index]['TAB_DESC'] == "Companies") {
           if (provider.getEntity["ACCT_ID"] == null) {
             ErrorUtil.showErrorMessage(context, "No Company linked to this Action");
           } else {

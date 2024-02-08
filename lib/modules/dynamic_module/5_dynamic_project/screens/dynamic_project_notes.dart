@@ -41,21 +41,16 @@ class _DynamicProjectNotesState extends State<DynamicProjectNotes> {
 
 
   onTap() async {
-    print("readonly");
-    print(_readonly);
     if (_readonly) {
       setState(() => _readonly = !_readonly);
       return;
     }
-    print("readonlyafter");
     print(_readonly);
     await saveProject();
   }
 
   Future<void> saveProject() async {
     try {
-      print("UdateNotes${_updateNotes}");
-      print("isNotes${_isNewNote}");
       context.loaderOverlay.show();
       if (widget.isNewNote==true) {
         if(widget.entityType =="COMPANY"){
@@ -75,7 +70,6 @@ class _DynamicProjectNotesState extends State<DynamicProjectNotes> {
         await DynamicProjectService()
             .updateProjectNote(widget.typeNote,_notesData['NOTE_ID'], _updateNotes);
       }
-
       setState(() => _readonly = !_readonly);
     }
     on DioError catch (e) {
@@ -90,9 +84,6 @@ class _DynamicProjectNotesState extends State<DynamicProjectNotes> {
 
   @override
   Widget build(BuildContext context) {
-    print("fieldData12${_notesData["NOTES"]}");
-    print("fieldData12${ _notesData['DESCRIPTION']}");
-    print("fieldData12${widget.isNewNote}");
     return PsaScaffold(
         title: _readonly ? 'Edit Notes' : 'Add Notes',
         action: PsaEditButton(
@@ -135,8 +126,6 @@ class _DynamicProjectNotesState extends State<DynamicProjectNotes> {
   }
 
   void _onNoteChange(String value,int? state) {
-    print("state$state");
-    print(value);
     setState(() {
       _updateNotes = value;
       _isNewNote = state == null || state == 0;
