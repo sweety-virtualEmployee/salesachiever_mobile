@@ -65,13 +65,11 @@ class _DynamicProjectListScreenState extends State<DynamicProjectListScreen> {
       filterBy = widget.filterBy;
       isDataLoaded = true;
     });
-    print("sort by $sortBy");
   }
 
   Future<void> fetchData() async {
     List<dynamic> sortValue = await service.getSortValues(widget.listName);
     List<dynamic> filterValue = await service.getFilterValues(widget.listName);
-    print("filter value$filterValue");
     setState(() {
       int sortOrder;
       for (int i = 0; i < sortValue.length; i++) {
@@ -109,12 +107,10 @@ class _DynamicProjectListScreenState extends State<DynamicProjectListScreen> {
       }
       isDataLoaded = true;
     });
-    print("filter by array $filterBy"); 
   }
 
   @override
   Widget build(BuildContext context) {
-    print("sortby data check$filterBy");
     if (isDataLoaded) {
       return PsaScaffold(
       title: "${capitalizeFirstLetter(widget.listType)} - List",
@@ -150,6 +146,7 @@ class _DynamicProjectListScreenState extends State<DynamicProjectListScreen> {
                     readonly: true,
                     moduleId: "003",
                     entityType: widget.listType,
+                    isRelatedEntity: false,
                   );
                 },
               ),
@@ -165,6 +162,7 @@ class _DynamicProjectListScreenState extends State<DynamicProjectListScreen> {
                     readonly: true,
                     moduleId: "004",
                     entityType: widget.listType,
+                    isRelatedEntity: false,
                   );
                 },
               ),
@@ -192,6 +190,7 @@ class _DynamicProjectListScreenState extends State<DynamicProjectListScreen> {
                     readonly: true,
                     moduleId: "006",
                     entityType: widget.listType,
+                    isRelatedEntity: false,
                   );
                 },
               ),
@@ -207,6 +206,7 @@ class _DynamicProjectListScreenState extends State<DynamicProjectListScreen> {
                     readonly: true,
                     moduleId: "007",
                     entityType: widget.listType,
+                    isRelatedEntity: false,
                   );
                 },
               ),
@@ -223,6 +223,7 @@ class _DynamicProjectListScreenState extends State<DynamicProjectListScreen> {
                     readonly: true,
                     moduleId: "005",
                     entityType: widget.listType,
+                    isRelatedEntity: false,
                   );
                 },
               ),

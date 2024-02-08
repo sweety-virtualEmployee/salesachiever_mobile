@@ -10,7 +10,7 @@ class CommonHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: entityType=="COMPANY"?DynamicPsaHeader(
+      body: entityType=="COMPANY"||entityType.toUpperCase() == "COMPANIES"?DynamicPsaHeader(
         isVisible: true,
         icon: 'assets/images/company_icon.png',
         title: entity?['ACCTNAME']??LangUtil.getString('Entities', 'Account.Description.Plural'),

@@ -76,8 +76,6 @@ class _DynamicRelatedEntityScreenState
     _dynamicTabProvider = Provider.of<DynamicTabProvide>(context,listen: false);
     _dynamicTabProvider.setEntity(widget.entity);
     callApi();
-    print("list check");
-    print(widget.list["Items"]);
     list = widget.list["Items"];
     isLastPage = widget.list["IsLastPage"]??true;
     pageNumber = widget.list["PageNumber"]??1;
@@ -130,12 +128,7 @@ class _DynamicRelatedEntityScreenState
 
   @override
   Widget build(BuildContext context) {
-    print("widget type uxbks${(widget.type == 'company' ||
-        widget.type == 'companies' ||
-        widget.type == 'companies?pageSize=1000&pageNumber=1')&& (widget.entityType != "ACTION")}");
-    return  ChangeNotifierProvider<DynamicTabProvide>(
-      create: (context) => _dynamicTabProvider,
-      child: Consumer<DynamicTabProvide>(
+    return Consumer<DynamicTabProvide>(
           builder: (context, provider, child) {
           return PsaScaffold(
             action: (widget.type == 'company' ||
@@ -280,6 +273,7 @@ class _DynamicRelatedEntityScreenState
                                   readonly: true,
                                   moduleId: "004",
                                   entityType: widget.type,
+                                  isRelatedEntity: false,
                                 );
                               },
                               ));
@@ -422,15 +416,7 @@ class _DynamicRelatedEntityScreenState
                       itemCount: list.length,
                       controller: _scrollController,
                       itemBuilder: (BuildContext context, int index) {
-                       final value = list[index];
-                       final item;
-                       if(value is Map<String,dynamic>){
-                         item = value;
-                       }
-                       else{
-                         item = value.data;
-                       }
-                       print("item${item.entries}");
+                       final item = list[index];
                         return InkWell(
                           onTap: () async {
                             print("widget.type check${widget.type}");
@@ -449,6 +435,7 @@ class _DynamicRelatedEntityScreenState
                                       readonly: true,
                                       moduleId: "003",
                                       entityType: widget.type,
+                                      isRelatedEntity: true,
                                     );
                                   },
                                 ),
@@ -468,6 +455,7 @@ class _DynamicRelatedEntityScreenState
                                       readonly: true,
                                       moduleId: "004",
                                       entityType: widget.type,
+                                      isRelatedEntity: true,
                                     );
                                   },
                                 ),
@@ -487,6 +475,7 @@ class _DynamicRelatedEntityScreenState
                                       readonly: true,
                                       moduleId: "009",
                                       entityType: widget.type,
+                                      isRelatedEntity: true,
                                     );
                                   },
                                 ),
@@ -508,6 +497,7 @@ class _DynamicRelatedEntityScreenState
                                       readonly: true,
                                       moduleId: "006",
                                       entityType: widget.type,
+                                      isRelatedEntity: true,
                                     );
                                   },
                                 ),
@@ -531,11 +521,8 @@ class _DynamicRelatedEntityScreenState
                               );
                             } else if (widget.type == "opp history") {
                             } else if (widget.type == "quotes") {
-                              print("projectbalue${item}");
                               dynamic quotation = await DynamicProjectService()
                                   .getEntityById("QUOTATION", item['QUOTE_ID']);
-                              print("projectbalue${item['ACCT_ID']}");
-                              print("projectbalue${item['ACCTNAME']}");
                               quotation.data['ACCT_ID'] = item['ACCT_ID'];
                               quotation.data['ACCTNAME'] = item['ACCTNAME'];
                               Navigator.push(
@@ -566,6 +553,7 @@ class _DynamicRelatedEntityScreenState
                                       readonly: true,
                                       moduleId: "005",
                                       entityType: widget.type,
+                                      isRelatedEntity: true,
                                     );
                                   },
                                 ),
@@ -1000,8 +988,7 @@ class _DynamicRelatedEntityScreenState
             title: widget.title,
           );
         }
-      ),
-    );
+        );
   }
 
   onLinkEdit(int index) async {

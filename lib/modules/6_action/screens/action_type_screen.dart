@@ -51,6 +51,7 @@ class ActionTypeScreen extends StatelessWidget {
                       readonly: true,
                       moduleId: "009",
                       entityType:listType??"",
+                      isRelatedEntity: false,
                     );
                   },
                 ),

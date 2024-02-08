@@ -162,12 +162,13 @@ class _ProjectListItemWidgetState
               builder: (context) {
                 return DynamicTabScreen(
                   entity: project.data,
-                  title: widget.entity['PROJECT_TITLE'] != null
-                      ? widget.entity['PROJECT_TITLE']
+                  title: widget.entity['ACCOUNT_ACCTNAME'] != null
+                      ? widget.entity['ACCOUNT_ACCTNAME']
                       : "",
                   readonly: true,
                   moduleId: "003",
                   entityType: widget.type,
+                  isRelatedEntity: false,
                 );
               },
             ),
@@ -279,6 +280,7 @@ class _ProjectListItemWidgetState
                     readonly: true,
                     moduleId: "006",
                     entityType: widget.type,
+                    isRelatedEntity: false,
                   );
                 },
               ),
@@ -392,6 +394,7 @@ class _ProjectListItemWidgetState
                       readonly: true,
                       moduleId: "004",
                       entityType: widget.type,
+                      isRelatedEntity: false,
                     );
                   },
                 ),
@@ -503,10 +506,11 @@ class _ProjectListItemWidgetState
                             : "",
                         readonly: true, moduleId: "005",
                         entityType: widget.type,
+                        isRelatedEntity: false,
                       );
                     },
                   ),
-                ).then((value) => widget.refresh());
+                );
               },
             );
           } else {
@@ -622,6 +626,7 @@ class _ProjectListItemWidgetState
                           readonly: true,
                           moduleId: "009",
                           entityType: widget.type,
+                          isRelatedEntity: false,
                         );
                       },
                     ),
@@ -742,6 +747,7 @@ class _ProjectListItemWidgetState
                             readonly: true,
                             moduleId: "007",
                             entityType: widget.type,
+                            isRelatedEntity: false,
                           );
                         },
                       ),

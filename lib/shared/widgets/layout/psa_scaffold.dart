@@ -10,6 +10,7 @@ class PsaScaffold extends StatelessWidget {
   final Widget body;
   final Widget? action;
   final bool showHome;
+  final Function? onBackPressed;
 
   const PsaScaffold({
     Key? key,
@@ -17,6 +18,7 @@ class PsaScaffold extends StatelessWidget {
     required this.body,
     this.action,
     this.showHome = true,
+    this.onBackPressed,
   }) : super(key: key);
 
   @override
@@ -44,12 +46,12 @@ class PsaScaffold extends StatelessWidget {
       ),
       child: PlatformScaffold(
         appBar: PlatformAppBar(
-          material: (_, __) => MaterialAppBarData(
-            centerTitle: true,
-          ),
+          automaticallyImplyLeading: false,
           title: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
+              BackButton(onBackPressed),
+              SizedBox(width: 25,),
               showHome ? HomeButton() : Container(),
               Expanded(
                 child: Center(
@@ -64,7 +66,6 @@ class PsaScaffold extends StatelessWidget {
                 ),
               ),
               showHome ? SizedBox(width: 15,) : Container(),
-
             ],
           ),
           trailingActions: [action ?? Container()],
@@ -136,3 +137,31 @@ class _HomeButtonState extends State<HomeButton> {
     );
   }
 }
+
+class BackButton extends StatefulWidget {
+  final Function? onBackPressed;
+   BackButton(this.onBackPressed, {Key? key}) : super(key: key);
+
+  @override
+  State<BackButton> createState() => _BackButtonState();
+}
+
+class _BackButtonState extends State<BackButton> {
+  CustomActiveFeature feature = CustomActiveFeature();
+
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+        child: Icon(context.platformIcons.back),
+        onTap: () async {
+          if (widget.onBackPressed != null) {
+           widget.onBackPressed!();
+          } else {
+            Navigator.pop(context);
+          }
+        }
+    );
+  }
+}
+
