@@ -102,7 +102,9 @@ class _DynamicContactTabScreen extends State<DynamicContactTabScreen> {
                                 onTap: () async {
                                   if (provider.getContactTabData[index]['TAB_TYPE'] == "C") {
                                     _onCTap(provider, index);
-                                  } else if (provider.getContactTabData[index]['TAB_TYPE'] == "P") {
+                                  }  else if (provider.getContactTabData[index]['TAB_TYPE'] == "I") {
+                                    _onITap(provider, index);
+                                  }else if (provider.getContactTabData[index]['TAB_TYPE'] == "P") {
                                     _onPTap(provider, index);
                                   } else if (provider.getContactTabData[index]['TAB_TYPE'] == "L") {
                                     _onLTap(provider, index);
@@ -154,19 +156,19 @@ class _DynamicContactTabScreen extends State<DynamicContactTabScreen> {
       );
     });
   }
+  void _onITap(DynamicTabProvide provider, int index)  {
+     Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) =>
+                DynamicContactInfoScreen(
+                    contact: provider.getContactEntity,
+                    readonly: true,
+                    onBack: () {},
+                    onSave: () {}
+                )));
+  }
   void _onCTap(DynamicTabProvide provider, int index) {
-    if (provider.getContactTabData[index]['TAB_DESC'] == "Information") {
-      Navigator.push(
-          context,
-          MaterialPageRoute(
-              builder: (context) =>
-                  DynamicContactInfoScreen(
-                      contact: provider.getContactEntity,
-                      readonly: true,
-                      onBack: () {},
-                      onSave: () {}
-                  )));
-    } else {
       Navigator.push(
         context,
         MaterialPageRoute(
@@ -181,10 +183,10 @@ class _DynamicContactTabScreen extends State<DynamicContactTabScreen> {
               ),
         ),
       );
-    }
   }
 
-  void _onPTap(DynamicTabProvide provider, int index) {
+  Future<void> _onPTap(DynamicTabProvide provider, int index) async {
+    await provider.setTemporaryData(provider.getContactTabData);
     Navigator.push(
       context,
       MaterialPageRoute(

@@ -102,7 +102,9 @@ class _DynamicCompanyTabScreenState extends State<DynamicCompanyTabScreen> {
                                 onTap: () async {
                                   if (provider.getCompanyTabData[index]['TAB_TYPE'] == "C") {
                                     _onCTap(provider, index);
-                                  } else if (provider.getCompanyTabData[index]['TAB_TYPE'] == "P") {
+                                  }  else if (provider.getCompanyTabData[index]['TAB_TYPE'] == "I") {
+                                    _onITap(provider, index);
+                                  }else if (provider.getCompanyTabData[index]['TAB_TYPE'] == "P") {
                                     _onPTap(provider, index);
                                   } else if (provider.getCompanyTabData[index]['TAB_TYPE'] == "L") {
                                     _onLTap(provider, index);
@@ -154,19 +156,20 @@ class _DynamicCompanyTabScreenState extends State<DynamicCompanyTabScreen> {
       );
     });
   }
-  void _onCTap(DynamicTabProvide provider, int index) {
-    if (provider.getCompanyTabData[index]['TAB_DESC'] == "Information") {
+  void _onITap(DynamicTabProvide provider, int index) async {
+    print("I tav");
       Navigator.push(
-          context,
-          MaterialPageRoute(
-              builder: (context) =>
-                  DynamicCompanyInfoScreen(
-                      company: provider.getCompanyEntity,
-                      readonly: true,
-                      onBack: () {},
-                      onSave: () {}
-                  )));
-    } else {
+        context,
+        MaterialPageRoute(
+            builder: (context) =>
+                DynamicCompanyInfoScreen(
+                    company: provider.getCompanyEntity,
+                    readonly: true,
+                    onBack: () {},
+                    onSave: () {}
+                )));
+  }
+  void _onCTap(DynamicTabProvide provider, int index) {
       Navigator.push(
         context,
         MaterialPageRoute(
@@ -181,10 +184,10 @@ class _DynamicCompanyTabScreenState extends State<DynamicCompanyTabScreen> {
               ),
         ),
       );
-    }
   }
 
-  void _onPTap(DynamicTabProvide provider, int index) {
+  Future<void> _onPTap(DynamicTabProvide provider, int index) async {
+    await provider.setTemporaryData(provider.getCompanyTabData);
     Navigator.push(
       context,
       MaterialPageRoute(

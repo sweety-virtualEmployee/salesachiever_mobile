@@ -102,6 +102,8 @@ class _DynamicProjectTabScreenState extends State<DynamicProjectTabScreen> {
                                 onTap: () async {
                                   if (provider.getProjectTabData[index]['TAB_TYPE'] == "C") {
                                     _onCTap(provider, index);
+                                  } else if (provider.getProjectTabData[index]['TAB_TYPE'] == "I") {
+                                    _onITap(provider, index);
                                   } else if (provider.getProjectTabData[index]['TAB_TYPE'] == "P") {
                                     _onPTap(provider, index);
                                   } else if (provider.getProjectTabData[index]['TAB_TYPE'] == "L") {
@@ -154,21 +156,21 @@ class _DynamicProjectTabScreenState extends State<DynamicProjectTabScreen> {
       );
     });
   }
-  Future<void> _onCTap(DynamicTabProvide provider, int index) async {
-    if(provider.getProjectTabData[index]['TAB_DESC']=="Information"){
-      Navigator.push(
+
+  void _onITap(DynamicTabProvide provider, int index)  {
+     Navigator.push(
           context,
           MaterialPageRoute(
-          builder: (context) =>
-              DynamicProjectInfoScreen(
-                project:provider.getProjectEntity,
-                readonly: true,
-                onBack: (){},
-                onSave: (){}
-              )));
-    }
-    else {
-      await Navigator.push(
+              builder: (context) =>
+                  DynamicProjectInfoScreen(
+                      project:provider.getProjectEntity,
+                      readonly: true,
+                      onBack: (){},
+                      onSave: (){}
+                  )));
+  }
+    void _onCTap(DynamicTabProvide provider, int index)  {
+       Navigator.push(
         context,
         MaterialPageRoute(
           builder: (context) =>
@@ -182,7 +184,6 @@ class _DynamicProjectTabScreenState extends State<DynamicProjectTabScreen> {
               ),
         ),
       );
-    }
   }
 
   Future<void> _onPTap(DynamicTabProvide provider, int index) async {

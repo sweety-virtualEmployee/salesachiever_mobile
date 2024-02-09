@@ -103,6 +103,8 @@ class _DynamicOpportunityTabScreenState extends State<DynamicOpportunityTabScree
                                 onTap: () async {
                                   if (provider.getOpportunityTabData[index]['TAB_TYPE'] == "C") {
                                     _onCTap(provider, index);
+                                  }  else if (provider.getOpportunityTabData[index]['TAB_TYPE'] == "I") {
+                                    _onITap(provider, index);
                                   } else if (provider.getOpportunityTabData[index]['TAB_TYPE'] == "P") {
                                     _onPTap(provider, index);
                                   } else if (provider.getOpportunityTabData[index]['TAB_TYPE'] == "L") {
@@ -155,19 +157,19 @@ class _DynamicOpportunityTabScreenState extends State<DynamicOpportunityTabScree
       );
     });
   }
+  void _onITap(DynamicTabProvide provider, int index)  {
+     Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) =>
+                DynamicOpportunityInfoScreen(
+                    deal: provider.getOpportunityEntity,
+                    readonly: true,
+                    onBack: () {},
+                    onSave: () {}
+                )));
+  }
   void _onCTap(DynamicTabProvide provider, int index) {
-    if (provider.getOpportunityTabData[index]['TAB_DESC'] == "Information") {
-      Navigator.push(
-          context,
-          MaterialPageRoute(
-              builder: (context) =>
-                  DynamicOpportunityInfoScreen(
-                      deal: provider.getOpportunityEntity,
-                      readonly: true,
-                      onBack: () {},
-                      onSave: () {}
-                  )));
-    } else {
       Navigator.push(
         context,
         MaterialPageRoute(
@@ -182,10 +184,10 @@ class _DynamicOpportunityTabScreenState extends State<DynamicOpportunityTabScree
               ),
         ),
       );
-    }
   }
 
-  void _onPTap(DynamicTabProvide provider, int index) {
+  Future<void> _onPTap(DynamicTabProvide provider, int index) async {
+    await provider.setTemporaryData(provider.getOpportunityTabData);
     Navigator.push(
       context,
       MaterialPageRoute(
@@ -210,15 +212,8 @@ class _DynamicOpportunityTabScreenState extends State<DynamicOpportunityTabScree
       String path = provider.getOpportunityTabData[index]['TAB_LIST'];
       String tableName = "";
       String id = "";
-
-      if (widget.entityType.toUpperCase() == "COMPANY"||widget.entityType.toUpperCase() == "COMPANIES") {
-        path = path.replaceAll("@RECORDID", provider.getOpportunityEntity['ACCT_ID']);
-      } else if (widget.entityType.toUpperCase() == "CONTACT"||widget.entityType.toUpperCase() == "CONTACTS") {
-        path = path.replaceAll("@RECORDID", provider.getOpportunityEntity['CONT_ID']);
-      } else if (widget.entityType.toUpperCase() == "OPPORTUNITY") {
+      if (widget.entityType.toUpperCase() == "OPPORTUNITY") {
         path = path.replaceAll("@RECORDID", provider.getOpportunityEntity['DEAL_ID']);
-      } else if (widget.entityType.toUpperCase() == "PROJECT") {
-        path = path.replaceAll("@RECORDID", provider.getOpportunityEntity['PROJECT_ID']);
       }
 
       if (widget.entityType.toUpperCase() != "ACTION"&&widget.entityType.toUpperCase() != "ACTIONS") {

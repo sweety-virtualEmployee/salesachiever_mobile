@@ -103,7 +103,9 @@ class _DynamicActionTabScreenState extends State<DynamicActionTabScreen> {
                                 onTap: () async {
                                   if (provider.getActionTabData[index]['TAB_TYPE'] == "C") {
                                     _onCTap(provider, index);
-                                  } else if (provider.getActionTabData[index]['TAB_TYPE'] == "P") {
+                                  }  else if (provider.getActionTabData[index]['TAB_TYPE'] == "I") {
+                                    _onITap(provider, index);
+                                  }else if (provider.getActionTabData[index]['TAB_TYPE'] == "P") {
                                     _onPTap(provider, index);
                                   } else if (provider.getActionTabData[index]['TAB_TYPE'] == "L") {
                                     _onLTap(provider, index);
@@ -155,19 +157,20 @@ class _DynamicActionTabScreenState extends State<DynamicActionTabScreen> {
       );
     });
   }
+
+  void _onITap(DynamicTabProvide provider, int index) async {
+    await Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) =>
+                DynamicActionInfoScreen(
+                    action: provider.getActionEntity,
+                    readonly: true,
+                    onBack: () {},
+                    onSave: () {}
+                )));
+  }
   void _onCTap(DynamicTabProvide provider, int index) {
-    if (provider.getActionTabData[index]['TAB_DESC'] == "Information") {
-      Navigator.push(
-          context,
-          MaterialPageRoute(
-              builder: (context) =>
-                  DynamicActionInfoScreen(
-                      action: provider.getActionEntity,
-                      readonly: true,
-                      onBack: () {},
-                      onSave: () {}
-                  )));
-    } else {
       Navigator.push(
         context,
         MaterialPageRoute(
@@ -182,10 +185,10 @@ class _DynamicActionTabScreenState extends State<DynamicActionTabScreen> {
               ),
         ),
       );
-    }
   }
 
-  void _onPTap(DynamicTabProvide provider, int index) {
+  Future<void> _onPTap(DynamicTabProvide provider, int index) async {
+    await provider.setTemporaryData(provider.getActionTabData);
     Navigator.push(
       context,
       MaterialPageRoute(
