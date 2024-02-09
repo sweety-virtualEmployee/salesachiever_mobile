@@ -100,8 +100,8 @@ class _AddRelatedEntityScreenState extends State<AddRelatedEntityScreen> {
                     print("deal check $contact");
                     print("deal check $deal");
                     if (contact != null && deal != null&&contact['ID']!=null) deal['CONT_ID'] = contact['ID'];
-                   if (contact != null&&contact['TEXT']!=null) deal['CONTACT_NAME'] = contact['TEXT'];
-                   print("deal check $deal");
+                    if (contact != null && contact['TEXT'] != null) deal['FIRSTNAME'] = contact['TEXT'];
+                    print("deal check $deal");
                     if (deal != null) deal['DEAL_ID'] = deal['ID'];
                     if (account != null && deal != null&&account['ID']!=null) deal['ACCT_ID'] = account['ID'];
                     print("projectlink123$projectLink");
@@ -128,14 +128,14 @@ class _AddRelatedEntityScreenState extends State<AddRelatedEntityScreen> {
                       }
                     }
 
-                    Navigator.pop(context);
-                    Navigator.pop(context);
+                    //Navigator.pop(context);
+                   // Navigator.pop(context);
 
                     context.loaderOverlay.hide();
                   } catch (e) {
                     print("error$e");
                     context.loaderOverlay.hide();
-                    Navigator.pop(context);
+                    //Navigator.pop(context);
                   }
                 },
         ),

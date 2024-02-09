@@ -3,7 +3,12 @@ import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:intl/intl.dart';
 import 'package:loader_overlay/loader_overlay.dart';
 import 'package:salesachiever_mobile/modules/5_project/services/project_service.dart';
-import 'package:salesachiever_mobile/modules/dynamic_module/5_dynamic_project/screens/dynamic_tab_screen.dart';
+import 'package:salesachiever_mobile/modules/dynamic_module/5_dynamic_project/screens/action/dynamic_action_tab.dart';
+import 'package:salesachiever_mobile/modules/dynamic_module/5_dynamic_project/screens/company/dynamic_company_tab.dart';
+import 'package:salesachiever_mobile/modules/dynamic_module/5_dynamic_project/screens/contact/dynamic_contact_tab.dart';
+import 'package:salesachiever_mobile/modules/dynamic_module/5_dynamic_project/screens/opportunity/dynamic_opportunity_tab.dart';
+import 'package:salesachiever_mobile/modules/dynamic_module/5_dynamic_project/screens/project/dynamic_project_tab.dart';
+import 'package:salesachiever_mobile/modules/dynamic_module/5_dynamic_project/screens/quotation/dynamic_quotation_tab.dart';
 import 'package:salesachiever_mobile/modules/dynamic_module/5_dynamic_project/services/dynamic_project_service.dart';
 import 'package:salesachiever_mobile/utils/date_util.dart';
 import 'package:salesachiever_mobile/modules/base/entity/widgets/entity_list_item.dart';
@@ -160,7 +165,7 @@ class _ProjectListItemWidgetState
             context,
             MaterialPageRoute(
               builder: (context) {
-                return DynamicTabScreen(
+                return DynamicCompanyTabScreen(
                   entity: project.data,
                   title: widget.entity['ACCOUNT_ACCTNAME'] != null
                       ? widget.entity['ACCOUNT_ACCTNAME']
@@ -272,7 +277,7 @@ class _ProjectListItemWidgetState
               context,
               MaterialPageRoute(
                 builder: (context) {
-                  return DynamicTabScreen(
+                  return DynamicOpportunityTabScreen(
                     entity: project.data,
                     title: widget.entity['PROJECT_TITLE'] != null
                         ? widget.entity['PROJECT_TITLE']
@@ -386,7 +391,7 @@ class _ProjectListItemWidgetState
                 context,
                 MaterialPageRoute(
                   builder: (context) {
-                    return DynamicTabScreen(
+                    return DynamicContactTabScreen(
                       entity: project.data,
                       title: widget.entity['PROJECT_TITLE'] != null
                           ? widget.entity['PROJECT_TITLE']
@@ -398,7 +403,7 @@ class _ProjectListItemWidgetState
                     );
                   },
                 ),
-              ).then((value) => widget.refresh());
+              );
             },
           );
         } else {
@@ -499,7 +504,7 @@ class _ProjectListItemWidgetState
                   context,
                   MaterialPageRoute(
                     builder: (context) {
-                      return DynamicTabScreen(
+                      return DynamicProjectTabScreen(
                         entity: project.data,
                         title: widget.entity['PROJECT_TITLE'] != null
                             ? widget.entity['PROJECT_TITLE']
@@ -618,7 +623,7 @@ class _ProjectListItemWidgetState
                     context,
                     MaterialPageRoute(
                       builder: (context) {
-                        return DynamicTabScreen(
+                        return DynamicActionTabScreen(
                           entity: project.data,
                           title: widget.entity['PROJECT_TITLE'] != null
                               ? widget.entity['PROJECT_TITLE']
@@ -739,7 +744,7 @@ class _ProjectListItemWidgetState
                       context,
                       MaterialPageRoute(
                         builder: (context) {
-                          return DynamicTabScreen(
+                          return DynamicQuotationTabScreen(
                             entity: project.data,
                             title: widget.entity['DESCRIPTION'] != null
                                 ? widget.entity['DESCRIPTION']

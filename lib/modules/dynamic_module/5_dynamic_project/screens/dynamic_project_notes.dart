@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:loader_overlay/loader_overlay.dart';
+import 'package:salesachiever_mobile/modules/6_action/services/action_service.dart';
 import 'package:salesachiever_mobile/modules/dynamic_module/5_dynamic_project/widgets/common_header.dart';
 import 'package:salesachiever_mobile/shared/widgets/layout/psa_scaffold.dart';
 import '../../../../shared/widgets/buttons/psa_edit_button.dart';
@@ -17,7 +18,7 @@ class DynamicProjectNotes extends StatefulWidget {
   final String entityType;
   final String typeNote;
 
-  DynamicProjectNotes(
+   DynamicProjectNotes(
       {Key? key,
         required this.typeNote,
       required this.project,required this.notesData,required this.isNewNote,required this.entityType})
@@ -60,8 +61,7 @@ class _DynamicProjectNotesState extends State<DynamicProjectNotes> {
           await DynamicProjectService().addProjectNote(widget.typeNote,
               widget.project["CONT_ID"], _updateNotes, _updateDescription);
         } else if(widget.entityType =="ACTION"){
-          await DynamicProjectService().addProjectNote(widget.typeNote,
-              widget.project["ACTION_ID"], _updateNotes, _updateDescription);
+          await ActionService().updateEntity(widget.typeNote, {"NOTES":_updateNotes});
         }else {
           await DynamicProjectService().addProjectNote(widget.typeNote,
               widget.project["PROJECT_ID"], _updateNotes, _updateDescription);

@@ -6,8 +6,8 @@ import 'package:salesachiever_mobile/shared/widgets/layout/psa_scaffold.dart';
 import 'package:salesachiever_mobile/shared/widgets/psa_list_item.dart';
 import 'package:salesachiever_mobile/utils/lang_util.dart';
 
-class ActionTypeScreen extends StatelessWidget {
-  const ActionTypeScreen({
+class DynamicActionTypeScreen extends StatelessWidget {
+  const DynamicActionTypeScreen({
     Key? key,
     this.action,
     this.listType,
@@ -41,12 +41,14 @@ class ActionTypeScreen extends StatelessWidget {
               icon: e['icon'],
             ),
             onTap: () {
+              print("Action$listType");
+              action["CLASS"]=e["class"];
               Navigator.push(
                 context,
                 MaterialPageRoute(
                   builder: (context) {
                     return DynamicActionTabScreen(
-                      entity: {"CLASS":e["class"]},
+                      entity: action,
                       title: "Add New Action",
                       readonly: true,
                       moduleId: "009",

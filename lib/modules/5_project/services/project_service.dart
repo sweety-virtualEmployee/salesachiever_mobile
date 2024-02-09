@@ -119,8 +119,8 @@ class ProjectService extends EntityService {
             activeField['TABLE_NAME'] == mandatoryField['TABLE_NAME'] &&
             activeField['FIELD_NAME'] == mandatoryField['FIELD_NAME']))
         .where((activeField) =>
-            project[activeField['FIELD_NAME']] == null ||
-            project[activeField['FIELD_NAME']] == '')
+            project?[activeField['FIELD_NAME']] == null ||
+            project?[activeField['FIELD_NAME']] == '')
         .toList();
 
     return invalidFields.length <= 0;

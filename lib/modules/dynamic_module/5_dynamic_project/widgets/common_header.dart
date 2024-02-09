@@ -10,7 +10,7 @@ class CommonHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: entityType=="COMPANY"||entityType.toUpperCase() == "COMPANIES"?DynamicPsaHeader(
+      body: entityType.toUpperCase()=="COMPANY"||entityType.toUpperCase() == "COMPANIES"?DynamicPsaHeader(
         isVisible: true,
         icon: 'assets/images/company_icon.png',
         title: entity?['ACCTNAME']??LangUtil.getString('Entities', 'Account.Description.Plural'),
@@ -18,7 +18,7 @@ class CommonHeader extends StatelessWidget {
         status: entity?['TOWN']??"",
         siteTown: entity?['ADDR1']??"",
         backgroundColor: Color(0xff3cab4f),
-      ):entityType=="QUOTATION"?DynamicPsaHeader(
+      ):entityType.toUpperCase()=="QUOTATION"?DynamicPsaHeader(
         isVisible: true,
         icon: 'assets/images/Quote.png',
         title: entity?['DESCRIPTION'],
@@ -26,7 +26,7 @@ class CommonHeader extends StatelessWidget {
         status: "",
         siteTown: entity?['QUOTE_CATEGORY'],
         backgroundColor: Color(0xff00aba9),
-      ):entityType=="OPPORTUNITY"?DynamicPsaHeader(
+      ):entityType.toUpperCase()=="OPPORTUNITY"?DynamicPsaHeader(
         isVisible: true,
         icon: 'assets/images/opportunity_icon.png',
         title: entity?['CREATOR_ID'],
@@ -34,7 +34,7 @@ class CommonHeader extends StatelessWidget {
         status: entity?['DESCRIPTION'],
         siteTown: entity?['DEAL_TYPE_ID'],
         backgroundColor: Color(0xffA4C400),
-      ): entityType=="CONTACT"||entityType=="CONTACTS"?DynamicPsaHeader(
+      ): entityType.toUpperCase()=="CONTACT"||entityType.toUpperCase()=="CONTACTS"?DynamicPsaHeader(
         isVisible: true,
         icon: 'assets/images/contact_icon.png',
         title: entity?['FIRSTNAME']??entity?['LASTNAME']??LangUtil.getString('Entities', 'Contact.Description.Plural'),
@@ -42,7 +42,7 @@ class CommonHeader extends StatelessWidget {
         status: entity?['CONTACT_STATUS']==null?"":entity?['CONTACT_STATUS'],
         siteTown: entity?['E_MAIL']??"",
         backgroundColor: Color(0xff4C99E0),
-      ): entityType=="ACTION"||entityType=="ACTIONS"?DynamicPsaHeader(
+      ): entityType.toUpperCase()=="ACTION"||entityType.toUpperCase()=="ACTIONS"?DynamicPsaHeader(
         isVisible: true,
         icon:entity["CLASS"]=="A"?"assets/images/new_apmt_action.png":
         entity["CLASS"]=="T"? "assets/images/new_phone_action.png":

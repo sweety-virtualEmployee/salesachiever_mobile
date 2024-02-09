@@ -1,20 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
-import 'package:hive/hive.dart';
 import 'package:salesachiever_mobile/data/access_codes.dart';
-import 'package:salesachiever_mobile/modules/10_opportunities/screens/opportunity_edit_screen.dart';
-import 'package:salesachiever_mobile/modules/3_company/screens/company_edit_screen.dart';
-import 'package:salesachiever_mobile/modules/4_contact/screens/contact_edit_screen.dart';
-import 'package:salesachiever_mobile/modules/5_project/screens/project_edit_screen.dart';
-import 'package:salesachiever_mobile/modules/6_action/screens/action_type_screen.dart';
-import 'package:salesachiever_mobile/modules/dynamic_module/5_dynamic_project/screens/dynamic_quotation_add.dart';
-import 'package:salesachiever_mobile/modules/dynamic_module/5_dynamic_project/screens/dynamic_tab_screen.dart';
+import 'package:salesachiever_mobile/modules/dynamic_module/5_dynamic_project/screens/action/dynamic_action_type_screen.dart';
+import 'package:salesachiever_mobile/modules/dynamic_module/5_dynamic_project/screens/company/dynamic_company_tab.dart';
+import 'package:salesachiever_mobile/modules/dynamic_module/5_dynamic_project/screens/contact/dynamic_contact_tab.dart';
+import 'package:salesachiever_mobile/modules/dynamic_module/5_dynamic_project/screens/project/dynamic_project_tab.dart';
+import 'package:salesachiever_mobile/modules/dynamic_module/5_dynamic_project/screens/quotation/dynamic_quotation_tab.dart';
 import 'package:salesachiever_mobile/modules/dynamic_module/5_dynamic_project/services/dynamic_project_service.dart';
 import 'package:salesachiever_mobile/modules/dynamic_module/5_dynamic_project/widgets/dynamic_project_list_item.dart';
 import 'package:salesachiever_mobile/shared/widgets/buttons/psa_add_button.dart';
 import 'package:salesachiever_mobile/modules/base/entity/widgets/psa_entity_list_view.dart';
-import 'package:salesachiever_mobile/shared/widgets/elements/psa_progress_indicator.dart';
 import 'package:salesachiever_mobile/shared/widgets/layout/psa_scaffold.dart';
 import 'package:salesachiever_mobile/utils/auth_util.dart';
 import 'package:salesachiever_mobile/utils/text_formatting_util.dart';
@@ -140,7 +136,7 @@ class _DynamicProjectListScreenState extends State<DynamicProjectListScreen> {
               context,
               MaterialPageRoute(
                 builder: (context) {
-                  return DynamicTabScreen(
+                  return DynamicCompanyTabScreen(
                     entity: {},
                     title: "Add New Company",
                     readonly: true,
@@ -156,7 +152,7 @@ class _DynamicProjectListScreenState extends State<DynamicProjectListScreen> {
               context,
               MaterialPageRoute(
                 builder: (context) {
-                  return DynamicTabScreen(
+                  return DynamicContactTabScreen(
                     entity: {},
                     title: "Add New Contact",
                     readonly: true,
@@ -172,7 +168,7 @@ class _DynamicProjectListScreenState extends State<DynamicProjectListScreen> {
               context,
               platformPageRoute(
                 context: context,
-                builder: (BuildContext context) => ActionTypeScreen(
+                builder: (BuildContext context) => DynamicActionTypeScreen(
                   action: {},
                   popScreens: 2,
                   listType: widget.listType,
@@ -184,7 +180,7 @@ class _DynamicProjectListScreenState extends State<DynamicProjectListScreen> {
               context,
               MaterialPageRoute(
                 builder: (context) {
-                  return DynamicTabScreen(
+                  return DynamicProjectTabScreen(
                     entity: {},
                     title: "Add New Opportunity",
                     readonly: true,
@@ -200,7 +196,7 @@ class _DynamicProjectListScreenState extends State<DynamicProjectListScreen> {
               context,
               MaterialPageRoute(
                 builder: (context) {
-                  return DynamicTabScreen(
+                  return DynamicQuotationTabScreen(
                     entity: {},
                     title: "Add New Quotation",
                     readonly: true,
@@ -217,7 +213,7 @@ class _DynamicProjectListScreenState extends State<DynamicProjectListScreen> {
               context,
               MaterialPageRoute(
                 builder: (context) {
-                  return DynamicTabScreen(
+                  return DynamicProjectTabScreen(
                     entity: {},
                     title: "Add New Project",
                     readonly: true,

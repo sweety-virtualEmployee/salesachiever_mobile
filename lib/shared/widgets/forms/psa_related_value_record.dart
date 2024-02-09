@@ -70,6 +70,10 @@ class _PsaRelatedValueRowState extends State<PsaRelatedValueRow> {
         setState(() {
           companyData = company.data;
           selectedCompany = companyData["ACCTNAME"];
+          widget.onChange([
+            {'KEY': 'ACCT_ID', 'VALUE': companyData['ACCT_ID']},
+            {'KEY': 'ACCTNAME', 'VALUE': companyData['ACCTNAME']},
+          ]);
           print(companyData["ACCTNAME"]);
         });
       }
@@ -77,10 +81,14 @@ class _PsaRelatedValueRowState extends State<PsaRelatedValueRow> {
     if (type == "CONT_ID") {
       if (widget.entity?["CONT_ID"]!=null) {
         var contact = await ContactService().getEntity(widget.entity?["CONT_ID"]);
-        print(contact);
+        print("Contfdjkvbg$contact");
         setState(() {
           contactData = contact.data;
           selectedContact = contactData["FIRSTNAME"];
+          widget.onChange([
+            {'KEY': 'CONT_ID', 'VALUE': contactData['CONT_ID']},
+            {'KEY': 'FIRSTNAME', 'VALUE': contactData['FIRSTNAME']},
+          ]);
         });
       }
     }
@@ -90,17 +98,23 @@ class _PsaRelatedValueRowState extends State<PsaRelatedValueRow> {
         setState(() {
           projectData = project.data;
           selectedProject = projectData["PROJECT_TITLE"];
+          widget.onChange([
+            {'KEY': 'PROJECT_ID', 'VALUE': projectData['PROJECT_ID']},
+            {'KEY': 'PROJECT_TITLE', 'VALUE': projectData['PROJECT_TITLE']},
+          ]);
         });
       }
     }
       if(type=="DEAL_ID"){
         if (widget.entity?["DEAL_ID"]!=null) {
           var deal = await OpportunityService().getEntity(widget.entity?["DEAL_ID"]);
-          print("deal data check$deal");
-          print("deal description${deal.data["DESCRIPTION"]}");
           setState(() {
             opportunityData = deal.data;
             selectedOpportunity = opportunityData["DESCRIPTION"];
+            widget.onChange([
+              {'KEY': 'DEAL_ID', 'VALUE': projectData['DEAL_ID']},
+              {'KEY': 'DESCRIPTION', 'VALUE': projectData['DESCRIPTION']},
+            ]);
           });
         }
       }
@@ -148,7 +162,8 @@ class _PsaRelatedValueRowState extends State<PsaRelatedValueRow> {
                       ),
                     ),
                   );
-
+                  print("company value check$company");
+                  print("company value check$contactData");
                   if (company != null) {
                     widget.onChange([
                       {'KEY': 'ACCT_ID', 'VALUE': company['ID']},
@@ -177,11 +192,8 @@ class _PsaRelatedValueRowState extends State<PsaRelatedValueRow> {
                       widget.onChange([
                         {'KEY': 'ACCT_ID', 'VALUE': company['ID']},
                         {'KEY': 'ACCTNAME', 'VALUE': company['TEXT']},
-                        {'KEY': 'CONT_ID', 'VALUE': null},
-                        {'KEY': 'CONTACT_NAME', 'VALUE': null},
                         {'KEY': 'PROJECT_ID', 'VALUE': null},
                         {'KEY': 'PROJECT_TITLE', 'VALUE': null},
-                        // {'KEY': 'DESCRIPTION', 'VALUE': company['TEXT']},
                       ]);
                       setState(() {
                         selectedCompany = company['TEXT'];
@@ -304,14 +316,12 @@ class _PsaRelatedValueRowState extends State<PsaRelatedValueRow> {
                                       ),
                                     ),
                                   );
-
+                                   print("conatct data$contactData");
                                   if (company != null) {
                                     widget.onChange([
                                       {'KEY': 'ACCT_ID', 'VALUE': company['ID']},
                                       {'KEY': 'ACCTNAME', 'VALUE': company['TEXT']},
-                                      {'KEY': 'CONT_ID', 'VALUE': null},
-                                      {'KEY': 'CONTACT_NAME', 'VALUE': null},
-                                      {'KEY': 'PROJECT_ID', 'VALUE': null},
+                                       {'KEY': 'PROJECT_ID', 'VALUE': null},
                                       {'KEY': 'PROJECT_TITLE', 'VALUE': null},
                                       // {'KEY': 'DESCRIPTION', 'VALUE': company['TEXT']},
                                     ]);
