@@ -172,7 +172,7 @@ class _DynamicOpportunityTabScreenState extends State<DynamicOpportunityTabScree
             builder: (context) =>
                 DynamicOpportunityInfoScreen(
                     deal: provider.getOpportunityEntity,
-                    readonly: true,
+                    readonly: widget.readonly,
                     onBack: () {},
                     onSave: () {}
                 )));
@@ -187,7 +187,7 @@ class _DynamicOpportunityTabScreenState extends State<DynamicOpportunityTabScree
                     .toString(),
                 entity: provider.getOpportunityEntity,
                 tabId: tabOpportunityData[index]['TAB_ID'],
-                readonly: true,
+                readonly: widget.readonly,
                 entityType: widget.entityType,
               ),
         ),
@@ -206,7 +206,7 @@ class _DynamicOpportunityTabScreenState extends State<DynamicOpportunityTabScree
           moduleId: tabOpportunityData[index]['MODULE_ID'],
           tabType: tabOpportunityData[index]['TAB_TYPE'],
           title: provider.getOpportunityEntity['PROJECT_TITLE'] ?? LangUtil.getString('Entities', 'Project.Create.Text'),
-          readonly: true,
+          readonly: widget.readonly,
           isRelatedEntity: false,
         ),
       ),
@@ -222,111 +222,26 @@ class _DynamicOpportunityTabScreenState extends State<DynamicOpportunityTabScree
       if (widget.entityType.toUpperCase() == "OPPORTUNITY") {
         path = path.replaceAll("@RECORDID", provider.getOpportunityEntity['DEAL_ID']);
       }
-
-      if (widget.entityType.toUpperCase() != "ACTION"&&widget.entityType.toUpperCase() != "ACTIONS") {
-        print("widget.entityType.toUpperCase() ${widget.entityType.toUpperCase() }");
-        var result = await service.getTabListEntityApi(path.replaceAll("&amp;", "&"), tableName, id, 1);
-        Navigator.push(
-          context,
-          platformPageRoute(
-            context: context,
-            builder: (BuildContext context) => DynamicOpportunityRelatedEntityScreen(
-              entity: provider.getOpportunityEntity,
-              project: provider.getOpportunityEntity,
-              entityType: widget.entityType,
-              path: path,
-              tableName: tableName,
-              id: id,
-              type: tabOpportunityData[index]['TAB_LIST_MODULE'].toString().toLowerCase(),
-              title: tabOpportunityData[index]['TAB_DESC'].toString(),
-              list: result ?? [],
-              isSelectable: false,
-              isEditable: true,
-            ),
+      var result = await service.getTabListEntityApi(path.replaceAll("&amp;", "&"), tableName, id, 1);
+      Navigator.push(
+        context,
+        platformPageRoute(
+          context: context,
+          builder: (BuildContext context) => DynamicOpportunityRelatedEntityScreen(
+            entity: provider.getOpportunityEntity,
+            project: provider.getOpportunityEntity,
+            entityType: widget.entityType,
+            path: path,
+            tableName: tableName,
+            id: id,
+            type: tabOpportunityData[index]['TAB_LIST_MODULE'].toString().toLowerCase(),
+            title: tabOpportunityData[index]['TAB_DESC'].toString(),
+            list: result ?? [],
+            isSelectable: false,
+            isEditable: true,
           ),
-        );
-      } else {
-        if(tabOpportunityData[index]['TAB_DESC'] == "Notes"){
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) {
-                return DynamicProjectNotes(
-                  project: provider.getOpportunityEntity,
-                  notesData: {},
-                  typeNote: tabOpportunityData[index]['TAB_LIST_MODULE'].toString().toLowerCase(),
-                  isNewNote: true,
-                  entityType: widget.entityType,
-                );
-              },
-            ),
-          );
-        }
-        else if (tabOpportunityData[index]['TAB_DESC'] == "Companies") {
-          if (provider.getOpportunityEntity["ACCT_ID"] == null) {
-            ErrorUtil.showErrorMessage(context, "No Company linked to this Action");
-          } else {
-            var entity = await DynamicProjectService().getEntityById("COMPANY", provider.getOpportunityEntity['ACCT_ID']);
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => DynamicCompanyTabScreen(
-                  entity: entity.data,
-                  title: provider.getOpportunityEntity['ACCTNAME'] != null ? provider.getOpportunityEntity['ACCTNAME'] : "",
-                  readonly: true,
-                  moduleId: "003",
-                  entityType: "COMPANY",
-                  isRelatedEntity: true,
-                ),
-              ),
-            );
-          }
-        }if (tabOpportunityData[index]['TAB_DESC'] == "Projects") {
-          if (provider.getOpportunityEntity["PROJECT_ID"] == null) {
-            ErrorUtil.showErrorMessage(context, "No Project linked to this Action");
-          } else {
-            var entity = await DynamicProjectService().getEntityById("PROJECT", provider.getOpportunityEntity['PROJECT_ID']);
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => DynamicProjectTabScreen(
-                  entity: entity.data,
-                  title: provider.getOpportunityEntity['PROJECT_TITLE'] != null ? provider.getOpportunityEntity['PROJECT_TITLE'] : "",
-                  readonly: true,
-                  moduleId: "005",
-                  entityType: "PROJECT",
-                  isRelatedEntity: true,
-                ),
-              ),
-            );
-          }
-        }
-        if (tabOpportunityData[index]['TAB_DESC'] == "Contacts") {
-          if (provider.getOpportunityEntity["CONT_ID"] == null) {
-            ErrorUtil.showErrorMessage(context, "No Contact linked to this Action");
-          } else {
-            var entity = await DynamicProjectService().getEntityById("COMPANY", provider.getOpportunityEntity['CONT_ID']);
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) {
-                  return DynamicContactTabScreen(
-                    entity: entity.data,
-                    title: provider.getOpportunityEntity['FIRSTNAME'] != null
-                        ? provider.getOpportunityEntity['FIRSTNAME']
-                        : "",
-                    readonly: true,
-                    moduleId: "004",
-                    entityType: "CONTACT",
-                    isRelatedEntity: true,
-                  );
-                },
-              ),
-            );
-          }
-        }
-
-      }
+        ),
+      );
     }
   }
 

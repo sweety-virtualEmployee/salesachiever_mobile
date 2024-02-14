@@ -264,7 +264,7 @@ class _DynamicCompanyRelatedEntityScreenState
                         return DynamicContactTabScreen(
                           entity:provider.getCompanyEntity,
                           title: "Add New Contact",
-                          readonly: true,
+                          readonly: false,
                           moduleId: "004",
                           entityType: widget.type,
                           isRelatedEntity: false,

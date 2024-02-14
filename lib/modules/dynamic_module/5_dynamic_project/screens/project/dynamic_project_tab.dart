@@ -167,7 +167,7 @@ class _DynamicProjectTabScreenState extends State<DynamicProjectTabScreen> {
               builder: (context) =>
                   DynamicProjectInfoScreen(
                       project:provider.getProjectEntity,
-                      readonly: true,
+                      readonly: widget.readonly,
                       onBack: (){},
                       onSave: (){}
                   )));
@@ -182,7 +182,7 @@ class _DynamicProjectTabScreenState extends State<DynamicProjectTabScreen> {
                     .toString(),
                 entity: provider.getProjectEntity,
                 tabId: tabProjectData[index]['TAB_ID'],
-                readonly: true,
+                readonly: widget.readonly,
                 entityType: widget.entityType,
               ),
         ),
@@ -201,7 +201,7 @@ class _DynamicProjectTabScreenState extends State<DynamicProjectTabScreen> {
           moduleId: tabProjectData[index]['MODULE_ID'],
           tabType: tabProjectData[index]['TAB_TYPE'],
           title: provider.getProjectEntity['PROJECT_TITLE'] ?? LangUtil.getString('Entities', 'Project.Create.Text'),
-          readonly: true,
+          readonly: widget.readonly,
           isRelatedEntity: false,
         ),
       ),

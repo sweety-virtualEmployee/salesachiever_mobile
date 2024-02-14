@@ -6,7 +6,6 @@ import 'package:provider/provider.dart';
 import 'package:salesachiever_mobile/modules/dynamic_module/5_dynamic_project/provider/dynamic_tab_provider.dart';
 import 'package:salesachiever_mobile/modules/dynamic_module/5_dynamic_project/screens/action/dynamic_action_edit.dart';
 import 'package:salesachiever_mobile/modules/dynamic_module/5_dynamic_project/screens/action/dynamic_action_info_Screen.dart';
-import 'package:salesachiever_mobile/modules/dynamic_module/5_dynamic_project/screens/action/dynamic_action_related_entity.dart';
 import 'package:salesachiever_mobile/modules/dynamic_module/5_dynamic_project/screens/company/dynamic_company_tab.dart';
 import 'package:salesachiever_mobile/modules/dynamic_module/5_dynamic_project/screens/contact/dynamic_contact_tab.dart';
 import 'package:salesachiever_mobile/modules/dynamic_module/5_dynamic_project/screens/dynamic_project_notes.dart';
@@ -173,7 +172,7 @@ class _DynamicActionTabScreenState extends State<DynamicActionTabScreen> {
             builder: (context) =>
                 DynamicActionInfoScreen(
                     action: provider.getActionEntity,
-                    readonly: true,
+                    readonly: widget.readonly,
                     onBack: () {},
                     onSave: () {}
                 )));
@@ -188,7 +187,7 @@ class _DynamicActionTabScreenState extends State<DynamicActionTabScreen> {
                     .toString(),
                 entity: provider.getActionEntity,
                 tabId: tabActionData[index]['TAB_ID'],
-                readonly: true,
+                readonly: widget.readonly,
                 entityType: widget.entityType,
               ),
         ),
@@ -207,7 +206,7 @@ class _DynamicActionTabScreenState extends State<DynamicActionTabScreen> {
           moduleId: tabActionData[index]['MODULE_ID'],
           tabType: tabActionData[index]['TAB_TYPE'],
           title: provider.getActionEntity['PROJECT_TITLE'] ?? LangUtil.getString('Entities', 'Project.Create.Text'),
-          readonly: true,
+          readonly: widget.readonly,
           isRelatedEntity: false,
         ),
       ),

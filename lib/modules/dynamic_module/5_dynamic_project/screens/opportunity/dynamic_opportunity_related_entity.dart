@@ -269,7 +269,7 @@ class _DynamicOpportunityRelatedEntityScreenState
                         return DynamicContactTabScreen(
                           entity:provider.getOpportunityEntity,
                           title: "Add New Contact",
-                          readonly: true,
+                          readonly: false,
                           moduleId: "004",
                           entityType: widget.type,
                           isRelatedEntity: false,

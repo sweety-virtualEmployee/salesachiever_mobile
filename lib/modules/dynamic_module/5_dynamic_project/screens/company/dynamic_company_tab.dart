@@ -169,7 +169,7 @@ class _DynamicCompanyTabScreenState extends State<DynamicCompanyTabScreen> {
             builder: (context) =>
                 DynamicCompanyInfoScreen(
                     company: provider.getCompanyEntity,
-                    readonly: true,
+                    readonly: widget.readonly,
                     onBack: () {},
                     onSave: () {}
                 )));
@@ -184,7 +184,7 @@ class _DynamicCompanyTabScreenState extends State<DynamicCompanyTabScreen> {
                     .toString(),
                 entity: provider.getCompanyEntity,
                 tabId: tabCompanyData[index]['TAB_ID'],
-                readonly: true,
+                readonly: widget.readonly,
                 entityType: widget.entityType,
               ),
         ),
@@ -203,7 +203,7 @@ class _DynamicCompanyTabScreenState extends State<DynamicCompanyTabScreen> {
           moduleId: tabCompanyData[index]['MODULE_ID'],
           tabType: tabCompanyData[index]['TAB_TYPE'],
           title: provider.getCompanyEntity['PROJECT_TITLE'] ?? LangUtil.getString('Entities', 'Project.Create.Text'),
-          readonly: true,
+          readonly: widget.readonly,
           isRelatedEntity: false,
         ),
       ),

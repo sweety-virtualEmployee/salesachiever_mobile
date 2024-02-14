@@ -49,7 +49,7 @@ class DynamicActionTypeScreen extends StatelessWidget {
                     return DynamicActionTabScreen(
                       entity: {"CLASS":e["class"]},
                       title: "Add New Action",
-                      readonly: true,
+                      readonly: false,
                       moduleId: "009",
                       entityType:listType??"",
                       isRelatedEntity: false,

@@ -172,7 +172,7 @@ class _DynamicContactTabScreen extends State<DynamicContactTabScreen> {
             builder: (context) =>
                 DynamicContactInfoScreen(
                     contact: provider.getContactEntity,
-                    readonly: true,
+                    readonly: widget.readonly,
                     onBack: () {},
                     onSave: () {}
                 )));
@@ -187,7 +187,7 @@ class _DynamicContactTabScreen extends State<DynamicContactTabScreen> {
                     .toString(),
                 entity: provider.getContactEntity,
                 tabId: tabContactData[index]['TAB_ID'],
-                readonly: true,
+                readonly: widget.readonly,
                 entityType: widget.entityType,
               ),
         ),
@@ -206,7 +206,7 @@ class _DynamicContactTabScreen extends State<DynamicContactTabScreen> {
           moduleId: tabContactData[index]['MODULE_ID'],
           tabType: tabContactData[index]['TAB_TYPE'],
           title: provider.getContactEntity['PROJECT_TITLE'] ?? LangUtil.getString('Entities', 'Project.Create.Text'),
-          readonly: true,
+          readonly: widget.readonly,
           isRelatedEntity: false,
         ),
       ),
@@ -221,120 +221,30 @@ class _DynamicContactTabScreen extends State<DynamicContactTabScreen> {
       String tableName = "";
       String id = "";
 
-      if (widget.entityType.toUpperCase() == "COMPANY"||widget.entityType.toUpperCase() == "COMPANIES") {
-        path = path.replaceAll("@RECORDID", provider.getContactEntity['ACCT_ID']);
-      } else if (widget.entityType.toUpperCase() == "CONTACT"||widget.entityType.toUpperCase() == "CONTACTS") {
+    if (widget.entityType.toUpperCase() == "CONTACT"||widget.entityType.toUpperCase() == "CONTACTS") {
         path = path.replaceAll("@RECORDID", provider.getContactEntity['CONT_ID']);
-      } else if (widget.entityType.toUpperCase() == "OPPORTUNITY") {
-        path = path.replaceAll("@RECORDID", provider.getContactEntity['DEAL_ID']);
-      } else if (widget.entityType.toUpperCase() == "PROJECT") {
-        path = path.replaceAll("@RECORDID", provider.getContactEntity['PROJECT_ID']);
       }
-
-      if (widget.entityType.toUpperCase() != "ACTION"&&widget.entityType.toUpperCase() != "ACTIONS") {
-        print("widget.entityType.toUpperCase() ${widget.entityType.toUpperCase() }");
-        var result = await service.getTabListEntityApi(path.replaceAll("&amp;", "&"), tableName, id, 1);
-        Navigator.push(
-          context,
-          platformPageRoute(
-            context: context,
-            builder: (BuildContext context) => DynamicContactRelatedEntityScreen(
-              entity: provider.getContactEntity,
-              project: provider.getContactEntity,
-              entityType: widget.entityType,
-              path: path,
-              tableName: tableName,
-              id: id,
-              type: tabContactData[index]['TAB_LIST_MODULE'].toString().toLowerCase(),
-              title: tabContactData[index]['TAB_DESC'].toString(),
-              list: result ?? [],
-              isSelectable: false,
-              isEditable: true,
-            ),
+      print("widget.entityType.toUpperCase() ${widget.entityType.toUpperCase() }");
+      var result = await service.getTabListEntityApi(path.replaceAll("&amp;", "&"), tableName, id, 1);
+      Navigator.push(
+        context,
+        platformPageRoute(
+          context: context,
+          builder: (BuildContext context) => DynamicContactRelatedEntityScreen(
+            entity: provider.getContactEntity,
+            project: provider.getContactEntity,
+            entityType: widget.entityType,
+            path: path,
+            tableName: tableName,
+            id: id,
+            type: tabContactData[index]['TAB_LIST_MODULE'].toString().toLowerCase(),
+            title: tabContactData[index]['TAB_DESC'].toString(),
+            list: result ?? [],
+            isSelectable: false,
+            isEditable: true,
           ),
-        );
-      } else {
-        if(tabContactData[index]['TAB_DESC'] == "Notes"){
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) {
-                return DynamicProjectNotes(
-                  project: provider.getContactEntity,
-                  notesData: {},
-                  typeNote: tabContactData[index]['TAB_LIST_MODULE'].toString().toLowerCase(),
-                  isNewNote: true,
-                  entityType: widget.entityType,
-                );
-              },
-            ),
-          );
-        }
-        else if (tabContactData[index]['TAB_DESC'] == "Companies") {
-          if (provider.getContactEntity["ACCT_ID"] == null) {
-            ErrorUtil.showErrorMessage(context, "No Company linked to this Action");
-          } else {
-            var entity = await DynamicProjectService().getEntityById("COMPANY", provider.getContactEntity['ACCT_ID']);
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => DynamicCompanyTabScreen(
-                  entity: entity.data,
-                  title: provider.getContactEntity['ACCTNAME'] != null ? provider.getContactEntity['ACCTNAME'] : "",
-                  readonly: true,
-                  moduleId: "003",
-                  entityType: "COMPANY",
-                  isRelatedEntity: true,
-                ),
-              ),
-            );
-          }
-        }if (tabContactData[index]['TAB_DESC'] == "Projects") {
-          if (provider.getContactEntity["PROJECT_ID"] == null) {
-            ErrorUtil.showErrorMessage(context, "No Project linked to this Action");
-          } else {
-            var entity = await DynamicProjectService().getEntityById("PROJECT", provider.getContactEntity['PROJECT_ID']);
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => DynamicProjectTabScreen(
-                  entity: entity.data,
-                  title: provider.getContactEntity['PROJECT_TITLE'] != null ? provider.getContactEntity['PROJECT_TITLE'] : "",
-                  readonly: true,
-                  moduleId: "005",
-                  entityType: "PROJECT",
-                  isRelatedEntity: true,
-                ),
-              ),
-            );
-          }
-        }
-        if (tabContactData[index]['TAB_DESC'] == "Contacts") {
-          if (provider.getContactEntity["CONT_ID"] == null) {
-            ErrorUtil.showErrorMessage(context, "No Contact linked to this Action");
-          } else {
-            var entity = await DynamicProjectService().getEntityById("COMPANY", provider.getContactEntity['CONT_ID']);
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) {
-                  return DynamicContactTabScreen(
-                    entity: entity.data,
-                    title: provider.getContactEntity['FIRSTNAME'] != null
-                        ? provider.getContactEntity['FIRSTNAME']
-                        : "",
-                    readonly: true,
-                    moduleId: "004",
-                    entityType: "CONTACT",
-                    isRelatedEntity: true,
-                  );
-                },
-              ),
-            );
-          }
-        }
-
-      }
+        ),
+      );
     }
   }
 

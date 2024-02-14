@@ -263,7 +263,7 @@ class _DynamicProjectRelatedEntityScreenState
                               return DynamicContactTabScreen(
                                 entity: provider.getProjectEntity,
                                 title: "Add New Contact",
-                                readonly: true,
+                                readonly: false,
                                 moduleId: "004",
                                 entityType: widget.type,
                                 isRelatedEntity: false,

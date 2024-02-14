@@ -139,7 +139,7 @@ class _DynamicProjectListScreenState extends State<DynamicProjectListScreen> {
                   return DynamicCompanyTabScreen(
                     entity: {},
                     title: "Add New Company",
-                    readonly: true,
+                    readonly: false,
                     moduleId: "003",
                     entityType: widget.listType,
                     isRelatedEntity: false,
@@ -155,7 +155,7 @@ class _DynamicProjectListScreenState extends State<DynamicProjectListScreen> {
                   return DynamicContactTabScreen(
                     entity: {},
                     title: "Add New Contact",
-                    readonly: true,
+                    readonly: false,
                     moduleId: "004",
                     entityType: widget.listType,
                     isRelatedEntity: false,
@@ -183,7 +183,7 @@ class _DynamicProjectListScreenState extends State<DynamicProjectListScreen> {
                   return DynamicProjectTabScreen(
                     entity: {},
                     title: "Add New Opportunity",
-                    readonly: true,
+                    readonly: false,
                     moduleId: "006",
                     entityType: widget.listType,
                     isRelatedEntity: false,
@@ -199,7 +199,7 @@ class _DynamicProjectListScreenState extends State<DynamicProjectListScreen> {
                   return DynamicQuotationTabScreen(
                     entity: {},
                     title: "Add New Quotation",
-                    readonly: true,
+                    readonly: false,
                     moduleId: "007",
                     entityType: widget.listType,
                     isRelatedEntity: false,
@@ -216,7 +216,7 @@ class _DynamicProjectListScreenState extends State<DynamicProjectListScreen> {
                   return DynamicProjectTabScreen(
                     entity: {},
                     title: "Add New Project",
-                    readonly: true,
+                    readonly: false,
                     moduleId: "005",
                     entityType: widget.listType,
                     isRelatedEntity: false,
