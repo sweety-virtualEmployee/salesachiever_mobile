@@ -69,7 +69,6 @@ class _DynamicActionEditScreenState extends State<DynamicActionEditScreen> {
   var filedEntity;
 
   callApi() async {
-    print(widget.entity);
     await getProjectForm(widget.entity['ACTION_ID']??"Init");
   }
 
@@ -116,7 +115,7 @@ class _DynamicActionEditScreenState extends State<DynamicActionEditScreen> {
     List<Widget> widgets = [];
     if (fieldData != null) {
       for (dynamic field in filedList) {
-        print("field of entity${_dynamicTabProvider.getActionEntity}");
+        print("field of entity${field}");
         var isRequired = mandatoryFields.any((e) =>
         e['TABLE_NAME'] == field['TABLE_NAME'] &&
             e['FIELD_NAME'] == field['FIELD_NAME']);

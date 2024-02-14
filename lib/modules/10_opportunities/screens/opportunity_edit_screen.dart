@@ -43,7 +43,7 @@ class _OpportunityEditScreenState extends State<OpportunityEditScreen> {
   bool? _isNewNote;
   bool _isValid = false;
 
-  var activeFields = OpportunityService().getDynamicActiveFields();
+  var activeFields = OpportunityService().getActiveFields();
   var mandatoryFields = LookupService().getMandatoryFields();
 
   static final key = GlobalKey<FormState>();
@@ -157,7 +157,7 @@ class _OpportunityEditScreenState extends State<OpportunityEditScreen> {
 
   @override
   Widget build(BuildContext context) {
-    var visibleFields = activeFields.where((e) => e['COLVAL']=="1").toList();
+    var visibleFields = activeFields.where((e) => e['COLVAL']).toList();
 
     return PsaScaffold(
       action: PsaEditButton(

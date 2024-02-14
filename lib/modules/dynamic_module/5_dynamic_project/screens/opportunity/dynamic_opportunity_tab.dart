@@ -219,9 +219,7 @@ class _DynamicOpportunityTabScreenState extends State<DynamicOpportunityTabScree
       String path = tabOpportunityData[index]['TAB_LIST'];
       String tableName = "";
       String id = "";
-      if (widget.entityType.toUpperCase() == "OPPORTUNITY") {
-        path = path.replaceAll("@RECORDID", provider.getOpportunityEntity['DEAL_ID']);
-      }
+      path = path.replaceAll("@RECORDID", provider.getOpportunityEntity['DEAL_ID']);
       var result = await service.getTabListEntityApi(path.replaceAll("&amp;", "&"), tableName, id, 1);
       Navigator.push(
         context,

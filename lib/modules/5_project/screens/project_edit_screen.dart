@@ -7,7 +7,6 @@ import 'package:salesachiever_mobile/modules/5_project/services/project_service.
 import 'package:salesachiever_mobile/modules/5_project/widgets/project_create_related_records.dart';
 import 'package:salesachiever_mobile/modules/5_project/widgets/project_info_section.dart';
 import 'package:salesachiever_mobile/modules/5_project/widgets/project_view_related_records.dart';
-import 'package:salesachiever_mobile/modules/dynamic_module/5_dynamic_project/api/dynamic_project_api.dart';
 import 'package:salesachiever_mobile/shared/services/data_field_service.dart';
 import 'package:salesachiever_mobile/shared/services/lookup_service.dart';
 import 'package:salesachiever_mobile/shared/widgets/buttons/psa_edit_button.dart';
@@ -38,7 +37,7 @@ class _ProjectEditScreenState extends State<ProjectEditScreen> {
   bool? _isNewNote;
   bool _isValid = false;
 
-  var activeFields = ProjectService().getDynamicActiveFields();
+  var activeFields = ProjectService().getActiveFields();
   var mandatoryFields = LookupService().getMandatoryFields();
 
   static final key = GlobalKey<FormState>();
@@ -95,7 +94,7 @@ class _ProjectEditScreenState extends State<ProjectEditScreen> {
   Widget build(BuildContext context) {
     print("active field lenth");
     print(activeFields.length);
-    var visibleFileds = activeFields.where((e) => e['COLVAL']=="1").toList();
+    var visibleFileds = activeFields.where((e) => e['COLVAL']).toList();
      return PsaScaffold(
       action: PsaEditButton(
         text: _readonly ? 'Edit' : 'Save',

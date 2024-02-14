@@ -220,10 +220,7 @@ class _DynamicContactTabScreen extends State<DynamicContactTabScreen> {
       String path = tabContactData[index]['TAB_LIST'];
       String tableName = "";
       String id = "";
-
-    if (widget.entityType.toUpperCase() == "CONTACT"||widget.entityType.toUpperCase() == "CONTACTS") {
-        path = path.replaceAll("@RECORDID", provider.getContactEntity['CONT_ID']);
-      }
+      path = path.replaceAll("@RECORDID", provider.getContactEntity['CONT_ID']);
       print("widget.entityType.toUpperCase() ${widget.entityType.toUpperCase() }");
       var result = await service.getTabListEntityApi(path.replaceAll("&amp;", "&"), tableName, id, 1);
       Navigator.push(

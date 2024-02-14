@@ -217,9 +217,7 @@ class _DynamicCompanyTabScreenState extends State<DynamicCompanyTabScreen> {
       String path = tabCompanyData[index]['TAB_LIST'];
       String tableName = "";
       String id = "";
-
-      if (widget.entityType.toUpperCase() == "COMPANY"||widget.entityType.toUpperCase() == "COMPANIES") {
-        path = path.replaceAll("@RECORDID", provider.getCompanyEntity['ACCT_ID']);
+       path = path.replaceAll("@RECORDID", provider.getCompanyEntity['ACCT_ID']);
         print("widget.entityType.toUpperCase() ${widget.entityType.toUpperCase() }");
         var result = await service.getTabListEntityApi(path.replaceAll("&amp;", "&"), tableName, id, 1);
         Navigator.push(
@@ -241,8 +239,6 @@ class _DynamicCompanyTabScreenState extends State<DynamicCompanyTabScreen> {
             ),
           ),
         );
-
-      }
     }
   }
 

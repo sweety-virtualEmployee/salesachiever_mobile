@@ -42,7 +42,7 @@ class _ContactEditScreenState extends State<ContactEditScreen> {
   bool _isValid = false;
   String _updatedFieldKey = '';
 
-  var activeFields = ContactService().getDynamicActiveFields();
+  var activeFields = ContactService().getActiveFields();
   var mandatoryFields = LookupService().getMandatoryFields();
 
   static final key = GlobalKey<FormState>();
@@ -108,7 +108,7 @@ class _ContactEditScreenState extends State<ContactEditScreen> {
 
   @override
   Widget build(BuildContext context) {
-    var visibleFields = activeFields.where((e) => e['COLVAL']=="1").toList();
+    var visibleFields = activeFields.where((e) => e['COLVAL']).toList();
 
     return PsaScaffold(
       action: PsaEditButton(

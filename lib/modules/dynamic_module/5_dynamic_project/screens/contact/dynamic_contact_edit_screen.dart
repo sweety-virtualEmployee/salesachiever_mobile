@@ -75,29 +75,8 @@ class _DynamicContactEditScreenState extends State<DynamicContactEditScreen> {
   var filedEntity;
 
   callApi() async {
-    String id = "";
     print("lets check entity ${widget.entityType}");
-    if(widget.entity.isNotEmpty) {
-      if (widget.entityType == "COMPANY") {
-        id = widget.entity['ACCT_ID'];
-      } else if (widget.entityType == "CONTACT"||widget.entityType == "CONTACTS") {
-        id = widget.entity['CONT_ID']??"Init";
-      } else if (widget.entityType == "ACTION"||widget.entityType == "ACTIONS") {
-        id = widget.entity['ACTION_ID']??"Init";
-      } else if (widget.entityType == "OPPORTUNITY") {
-        id = widget.entity['DEAL_ID'];
-      } else if (widget.entityType == "QUOTATION") {
-        id = widget.entity['QUOTE_ID'];
-      } else if (widget.entityType == "PROJECTS"){
-        id = widget.entity['PROJECT_ID']??"Init";
-      }
-      else{
-        id ="Init";
-      }
-    }else{
-      id = "Init";
-    }
-    await getProjectForm(id);
+    await getProjectForm(widget.entity['CONT_ID']??"Init");
   }
 
   Future<List> getProjectForm(String id) async {

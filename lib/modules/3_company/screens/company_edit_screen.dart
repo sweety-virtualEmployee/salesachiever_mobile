@@ -37,7 +37,7 @@ class _CompanyEditScreenState extends State<CompanyEditScreen> {
   bool? _isNewNote;
   bool _isValid = false;
 
-  var activeFields = CompanyService().getDynamicActiveFields();
+  var activeFields = CompanyService().getActiveFields();
   var mandatoryFields = LookupService().getMandatoryFields();
 
   static final key = GlobalKey<FormState>();
@@ -92,7 +92,7 @@ class _CompanyEditScreenState extends State<CompanyEditScreen> {
   @override
   Widget build(BuildContext context) {
     print("_Comapny entity check${_company}");
-    var visibleFields = activeFields.where((e) => e['COLVAL']=="1").toList();
+    var visibleFields = activeFields.where((e) => e['COLVAL']).toList();
 
     return PsaScaffold(
       action: PsaEditButton(

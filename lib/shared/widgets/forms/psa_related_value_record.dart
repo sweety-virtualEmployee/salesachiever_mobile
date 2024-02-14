@@ -62,11 +62,26 @@ class _PsaRelatedValueRowState extends State<PsaRelatedValueRow> {
 
   callApi(String type) async {
     print("type check");
-    print(widget.entity);
+    print(type);
+    print(widget.entity?["ACCT_ID"]);
     context.loaderOverlay.show();
     if (type == "ACCT_ID") {
       if (widget.entity?["ACCT_ID"]!=null) {
         var company = await CompanyService().getEntity(widget.entity?["ACCT_ID"]);
+        print("comapny${company.data}");
+        setState(() {
+          companyData = company.data;
+          selectedCompany = companyData["ACCTNAME"];
+          widget.onChange([
+            {'KEY': 'ACCT_ID', 'VALUE': companyData['ACCT_ID']},
+            {'KEY': 'ACCTNAME', 'VALUE': companyData['ACCTNAME']},
+          ]);
+          print(companyData["ACCTNAME"]);
+        });
+      }
+      else if (widget.entity?["Data_Value"]) {
+        var company = await CompanyService().getEntity(widget.entity?["Data_Value"]);
+        print("comapny${company.data}");
         setState(() {
           companyData = company.data;
           selectedCompany = companyData["ACCTNAME"];
@@ -91,10 +106,33 @@ class _PsaRelatedValueRowState extends State<PsaRelatedValueRow> {
           ]);
         });
       }
+      else if (widget.entity?["Data_Value"]) {
+        var contact = await ContactService().getEntity(widget.entity?["Data_Value"]);
+        print("Contfdjkvbg$contact");
+        setState(() {
+          contactData = contact.data;
+          selectedContact = contactData["FIRSTNAME"];
+          widget.onChange([
+            {'KEY': 'CONT_ID', 'VALUE': contactData['CONT_ID']},
+            {'KEY': 'FIRSTNAME', 'VALUE': contactData['FIRSTNAME']},
+          ]);
+        });
+      }
     }
     if (type == "PROJECT_ID") {
       if (widget.entity?["PROJECT_ID"]!=null) {
         var project = await ProjectService().getEntity(widget.entity?["PROJECT_ID"]);
+        setState(() {
+          projectData = project.data;
+          selectedProject = projectData["PROJECT_TITLE"];
+          widget.onChange([
+            {'KEY': 'PROJECT_ID', 'VALUE': projectData['PROJECT_ID']},
+            {'KEY': 'PROJECT_TITLE', 'VALUE': projectData['PROJECT_TITLE']},
+          ]);
+        });
+      }
+      else if (widget.entity?["Data_Value"]) {
+        var project = await ProjectService().getEntity(widget.entity?["Data_Value"]);
         setState(() {
           projectData = project.data;
           selectedProject = projectData["PROJECT_TITLE"];
@@ -112,8 +150,19 @@ class _PsaRelatedValueRowState extends State<PsaRelatedValueRow> {
             opportunityData = deal.data;
             selectedOpportunity = opportunityData["DESCRIPTION"];
             widget.onChange([
-              {'KEY': 'DEAL_ID', 'VALUE': projectData['DEAL_ID']},
-              {'KEY': 'DESCRIPTION', 'VALUE': projectData['DESCRIPTION']},
+              {'KEY': 'DEAL_ID', 'VALUE': opportunityData['DEAL_ID']},
+              {'KEY': 'DESCRIPTION', 'VALUE': opportunityData['DESCRIPTION']},
+            ]);
+          });
+        }
+        else if (widget.entity?["Data_Value"]) {
+          var deal = await OpportunityService().getEntity(widget.entity?["Data_Value"]);
+          setState(() {
+            opportunityData = deal.data;
+            selectedOpportunity = opportunityData["DESCRIPTION"];
+            widget.onChange([
+              {'KEY': 'DEAL_ID', 'VALUE': opportunityData['DEAL_ID']},
+              {'KEY': 'DESCRIPTION', 'VALUE': opportunityData['DESCRIPTION']},
             ]);
           });
         }

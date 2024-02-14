@@ -26,7 +26,7 @@ class CommonHeader extends StatelessWidget {
         status: "",
         siteTown: entity?['QUOTE_CATEGORY']??"",
         backgroundColor: Color(0xff00aba9),
-      ):entityType.toUpperCase()=="OPPORTUNITY"?DynamicPsaHeader(
+      ):entityType.toUpperCase()=="OPPORTUNITY"||entityType.toUpperCase()=="OPPORTUNITIES"?DynamicPsaHeader(
         isVisible: true,
         icon: 'assets/images/opportunity_icon.png',
         title: entity?['CREATOR_ID'],

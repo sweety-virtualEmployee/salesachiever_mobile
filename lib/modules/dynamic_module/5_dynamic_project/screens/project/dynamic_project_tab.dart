@@ -215,7 +215,7 @@ class _DynamicProjectTabScreenState extends State<DynamicProjectTabScreen> {
       String path = tabProjectData[index]['TAB_LIST'];
       String tableName = "";
       String id = "";
-      if (widget.entityType.toUpperCase() == "PROJECT") {
+
         path = path.replaceAll("@RECORDID", provider.getProjectEntity['PROJECT_ID']);
         var result = await service.getTabListEntityApi(path.replaceAll("&amp;", "&"), tableName, id, 1);
         Navigator.push(
@@ -237,7 +237,6 @@ class _DynamicProjectTabScreenState extends State<DynamicProjectTabScreen> {
             ),
           ),
         );
-      }
     }
   }
 
