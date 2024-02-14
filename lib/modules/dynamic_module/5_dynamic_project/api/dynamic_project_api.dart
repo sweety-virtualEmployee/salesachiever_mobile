@@ -158,7 +158,7 @@ class DynamicProjectApi {
         final response = await Api().get('/Quotation/$id');
         return response;
       } else {
-        final response = await Api().get('/projects/$id');
+        final response = await Api().get('/project/$id');
         return response;
       }
     }catch(e){

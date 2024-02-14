@@ -7,13 +7,6 @@ class DynamicTabProvide extends ChangeNotifier {
   Map<String, dynamic> _actionEntity = {};
   Map<String, dynamic> _opportunityEntity = {};
   Map<String, dynamic> _quotationEntity = {};
-  List<dynamic> _temporaryTabData = [];
-  List<dynamic> _tabCompanyData = [];
-  List<dynamic> _tabContactData = [];
-  List<dynamic> _tabProjectData = [];
-  List<dynamic> _tabActionData = [];
-  List<dynamic> _tabOpportunityData = [];
-  List<dynamic> _tabQuotationData = [];
   bool _readonly = true;
 
 
@@ -23,13 +16,6 @@ class DynamicTabProvide extends ChangeNotifier {
   Map<String, dynamic> get getActionEntity => _actionEntity;
   Map<String, dynamic> get getOpportunityEntity => _opportunityEntity;
   Map<String, dynamic> get getQuotationEntity => _quotationEntity;
-  List<dynamic> get getTemporaryTabData => _temporaryTabData;
-  List<dynamic> get getCompanyTabData => _tabCompanyData;
-  List<dynamic> get getContactTabData => _tabContactData;
-  List<dynamic> get getActionTabData => _tabActionData;
-  List<dynamic> get getProjectTabData => _tabProjectData;
-  List<dynamic> get getOpportunityTabData => _tabOpportunityData;
-  List<dynamic> get getQuotationTabData => _tabQuotationData;
   bool get getReadOnly => _readonly;
 
    setCompanyEntity(Map<String, dynamic> newMap) async{
@@ -57,35 +43,7 @@ class DynamicTabProvide extends ChangeNotifier {
     notifyListeners();
   }
 
-  setTemporaryData(List<dynamic> newData) {
-    _temporaryTabData = newData;
-    notifyListeners();
-  }
 
-   setCompanyData(List<dynamic> newData) {
-    _tabCompanyData = newData;
-    notifyListeners();
-  }
-  setContactData(List<dynamic> newData) {
-    _tabContactData = newData;
-    notifyListeners();
-  }
-  setActionData(List<dynamic> newData) {
-    _tabActionData = newData;
-    notifyListeners();
-  }
-  setProjectData(List<dynamic> newData) {
-    _tabProjectData = newData;
-    notifyListeners();
-  }
-  setOpportunityData(List<dynamic> newData) {
-    _tabOpportunityData = newData;
-    notifyListeners();
-  }
-  setQuotationData(List<dynamic> newData) {
-    _tabQuotationData = newData;
-    notifyListeners();
-  }
 
   setReadOnly(bool newRead) {
      print("new REad$newRead");

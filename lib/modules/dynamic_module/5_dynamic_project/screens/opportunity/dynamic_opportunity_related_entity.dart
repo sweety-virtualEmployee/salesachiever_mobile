@@ -2,26 +2,21 @@ import 'package:flutter/material.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:loader_overlay/loader_overlay.dart';
 import 'package:provider/provider.dart';
-import 'package:salesachiever_mobile/modules/10_opportunities/screens/opportunity_edit_screen.dart';
 import 'package:salesachiever_mobile/modules/10_opportunities/screens/opportunity_list_screen.dart';
 import 'package:salesachiever_mobile/modules/10_opportunities/services/opportunity_service.dart';
-import 'package:salesachiever_mobile/modules/3_company/screens/company_edit_screen.dart';
 import 'package:salesachiever_mobile/modules/3_company/services/company_service.dart';
-import 'package:salesachiever_mobile/modules/4_contact/screens/contact_edit_screen.dart';
 import 'package:salesachiever_mobile/modules/4_contact/services/contact_service.dart';
 import 'package:salesachiever_mobile/modules/5_project/services/project_service.dart';
-import 'package:salesachiever_mobile/modules/6_action/screens/action_edit_screen.dart';
 import 'package:salesachiever_mobile/modules/6_action/services/action_service.dart';
 import 'package:salesachiever_mobile/modules/dynamic_module/5_dynamic_project/provider/dynamic_tab_provider.dart';
 import 'package:salesachiever_mobile/modules/dynamic_module/5_dynamic_project/screens/action/dynamic_action_tab.dart';
 import 'package:salesachiever_mobile/modules/dynamic_module/5_dynamic_project/screens/action/dynamic_action_type_screen.dart';
 import 'package:salesachiever_mobile/modules/dynamic_module/5_dynamic_project/screens/company/dynamic_company_tab.dart';
 import 'package:salesachiever_mobile/modules/dynamic_module/5_dynamic_project/screens/contact/dynamic_contact_tab.dart';
-import 'package:salesachiever_mobile/modules/dynamic_module/5_dynamic_project/screens/dynamic_project_add.dart';
 import 'package:salesachiever_mobile/modules/dynamic_module/5_dynamic_project/screens/opportunity/dynamic_opportunity_tab.dart';
 import 'package:salesachiever_mobile/modules/dynamic_module/5_dynamic_project/screens/dynamic_project_notes.dart';
 import 'package:salesachiever_mobile/modules/dynamic_module/5_dynamic_project/screens/project/dynamic_project_tab.dart';
-import 'package:salesachiever_mobile/modules/dynamic_module/5_dynamic_project/screens/dynamic_quotation_add.dart';
+import 'package:salesachiever_mobile/modules/dynamic_module/5_dynamic_project/screens/quotation/dynamic_quotation_tab.dart';
 import 'package:salesachiever_mobile/modules/dynamic_module/5_dynamic_project/services/dynamic_project_service.dart';
 import 'package:salesachiever_mobile/modules/dynamic_module/5_dynamic_project/widgets/common_header.dart';
 import 'package:salesachiever_mobile/shared/screens/add_related_entity_screen.dart';
@@ -533,9 +528,15 @@ class _DynamicOpportunityRelatedEntityScreenState
                                 context,
                                 MaterialPageRoute(
                                   builder: (context) {
-                                    return DynamicQuotationAddScreen(
-                                      quotation: quotation.data,
+                                    return DynamicQuotationTabScreen(
+                                      entity: quotation.data,
+                                      title: widget.entity['DESCRIPTION'] != null
+                                          ? widget.entity['DESCRIPTION']
+                                          : "",
                                       readonly: true,
+                                      moduleId: "007",
+                                      entityType: widget.type,
+                                      isRelatedEntity: true,
                                     );
                                   },
                                 ),
@@ -921,9 +922,15 @@ class _DynamicOpportunityRelatedEntityScreenState
                                                 context,
                                                 MaterialPageRoute(
                                                   builder: (context) {
-                                                    return DynamicQuotationAddScreen(
-                                                      quotation: quotation.data,
+                                                    return DynamicQuotationTabScreen(
+                                                      entity: quotation.data,
+                                                      title: widget.entity['DESCRIPTION'] != null
+                                                          ? widget.entity['DESCRIPTION']
+                                                          : "",
                                                       readonly: true,
+                                                      moduleId: "007",
+                                                      entityType: widget.type,
+                                                      isRelatedEntity: true,
                                                     );
                                                   },
                                                 ),

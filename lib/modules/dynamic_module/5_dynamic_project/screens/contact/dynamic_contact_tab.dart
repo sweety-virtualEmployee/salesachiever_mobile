@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
+import 'package:loader_overlay/loader_overlay.dart';
 import 'package:provider/provider.dart';
 import 'package:salesachiever_mobile/modules/dynamic_module/5_dynamic_project/provider/dynamic_tab_provider.dart';
 import 'package:salesachiever_mobile/modules/dynamic_module/5_dynamic_project/screens/company/dynamic_company_tab.dart';
@@ -59,16 +60,24 @@ class _DynamicContactTabScreen extends State<DynamicContactTabScreen> {
   }
 
 
+
+  List<dynamic> tabContactData = [];
+
+
   Future<void> fetchData() async {
+    context.loaderOverlay.show();
     try {
       var data = await (widget.tabType == "P"
           ? service.getEntitySubTabForm(
           widget.moduleId.toString(), widget.tabId.toString())
           : service.getProjectTabs(widget.moduleId.toString()));
-      _dynamicTabProvider.setContactData(data);
+      setState(() {
+        tabContactData = data;
+      });
     } catch (error) {
       print("Error fetching data: $error");
     }
+    context.loaderOverlay.hide();
   }
   @override
   Widget build(BuildContext context) {
@@ -96,17 +105,17 @@ class _DynamicContactTabScreen extends State<DynamicContactTabScreen> {
                               endIndent: 1.0,
                               color: Colors.black12,
                             ),
-                            itemCount: provider.getContactTabData.length,
+                            itemCount: tabContactData.length,
                             itemBuilder: (context, index) {
                               return GestureDetector(
                                 onTap: () async {
-                                  if (provider.getContactTabData[index]['TAB_TYPE'] == "C") {
+                                  if (tabContactData[index]['TAB_TYPE'] == "C") {
                                     _onCTap(provider, index);
-                                  }  else if (provider.getContactTabData[index]['TAB_TYPE'] == "I") {
+                                  }  else if (tabContactData[index]['TAB_TYPE'] == "I") {
                                     _onITap(provider, index);
-                                  }else if (provider.getContactTabData[index]['TAB_TYPE'] == "P") {
+                                  }else if (tabContactData[index]['TAB_TYPE'] == "P") {
                                     _onPTap(provider, index);
-                                  } else if (provider.getContactTabData[index]['TAB_TYPE'] == "L") {
+                                  } else if (tabContactData[index]['TAB_TYPE'] == "L") {
                                     _onLTap(provider, index);
                                   }
                                 },
@@ -121,7 +130,7 @@ class _DynamicContactTabScreen extends State<DynamicContactTabScreen> {
                                         child: Padding(
                                           padding: const EdgeInsets.only(left: 8.0),
                                           child: PlatformText(
-                                            provider.getContactTabData[index]['TAB_DESC'].toString(),
+                                            tabContactData[index]['TAB_DESC'].toString(),
                                             textAlign: TextAlign.right,
                                             softWrap: true,
                                             style: TextStyle(),
@@ -174,10 +183,10 @@ class _DynamicContactTabScreen extends State<DynamicContactTabScreen> {
         MaterialPageRoute(
           builder: (context) =>
               DynamicContactEditScreen(
-                entityName: provider.getContactTabData[index]['TAB_DESC']
+                entityName: tabContactData[index]['TAB_DESC']
                     .toString(),
                 entity: provider.getContactEntity,
-                tabId: provider.getContactTabData[index]['TAB_ID'],
+                tabId: tabContactData[index]['TAB_ID'],
                 readonly: true,
                 entityType: widget.entityType,
               ),
@@ -186,17 +195,16 @@ class _DynamicContactTabScreen extends State<DynamicContactTabScreen> {
   }
 
   Future<void> _onPTap(DynamicTabProvide provider, int index) async {
-    await provider.setTemporaryData(provider.getContactTabData);
     Navigator.push(
       context,
       MaterialPageRoute(
         builder: (context) => DynamicContactTabScreen(
           entity: provider.getContactEntity,
           entityType: widget.entityType,
-          entityName: provider.getContactTabData[index]['TAB_DESC'].toString(),
-          tabId: provider.getContactTabData[index]['TAB_ID'],
-          moduleId: provider.getContactTabData[index]['MODULE_ID'],
-          tabType: provider.getContactTabData[index]['TAB_TYPE'],
+          entityName: tabContactData[index]['TAB_DESC'].toString(),
+          tabId: tabContactData[index]['TAB_ID'],
+          moduleId: tabContactData[index]['MODULE_ID'],
+          tabType: tabContactData[index]['TAB_TYPE'],
           title: provider.getContactEntity['PROJECT_TITLE'] ?? LangUtil.getString('Entities', 'Project.Create.Text'),
           readonly: true,
           isRelatedEntity: false,
@@ -209,7 +217,7 @@ class _DynamicContactTabScreen extends State<DynamicContactTabScreen> {
     if (provider.getContactEntity.isEmpty) {
       ErrorUtil.showErrorMessage(context, "Please create the record first");
     } else {
-      String path = provider.getContactTabData[index]['TAB_LIST'];
+      String path = tabContactData[index]['TAB_LIST'];
       String tableName = "";
       String id = "";
 
@@ -237,8 +245,8 @@ class _DynamicContactTabScreen extends State<DynamicContactTabScreen> {
               path: path,
               tableName: tableName,
               id: id,
-              type: provider.getContactTabData[index]['TAB_LIST_MODULE'].toString().toLowerCase(),
-              title: provider.getContactTabData[index]['TAB_DESC'].toString(),
+              type: tabContactData[index]['TAB_LIST_MODULE'].toString().toLowerCase(),
+              title: tabContactData[index]['TAB_DESC'].toString(),
               list: result ?? [],
               isSelectable: false,
               isEditable: true,
@@ -246,7 +254,7 @@ class _DynamicContactTabScreen extends State<DynamicContactTabScreen> {
           ),
         );
       } else {
-        if(provider.getContactTabData[index]['TAB_DESC'] == "Notes"){
+        if(tabContactData[index]['TAB_DESC'] == "Notes"){
           Navigator.push(
             context,
             MaterialPageRoute(
@@ -254,7 +262,7 @@ class _DynamicContactTabScreen extends State<DynamicContactTabScreen> {
                 return DynamicProjectNotes(
                   project: provider.getContactEntity,
                   notesData: {},
-                  typeNote: provider.getContactTabData[index]['TAB_LIST_MODULE'].toString().toLowerCase(),
+                  typeNote: tabContactData[index]['TAB_LIST_MODULE'].toString().toLowerCase(),
                   isNewNote: true,
                   entityType: widget.entityType,
                 );
@@ -262,7 +270,7 @@ class _DynamicContactTabScreen extends State<DynamicContactTabScreen> {
             ),
           );
         }
-        else if (provider.getContactTabData[index]['TAB_DESC'] == "Companies") {
+        else if (tabContactData[index]['TAB_DESC'] == "Companies") {
           if (provider.getContactEntity["ACCT_ID"] == null) {
             ErrorUtil.showErrorMessage(context, "No Company linked to this Action");
           } else {
@@ -281,7 +289,7 @@ class _DynamicContactTabScreen extends State<DynamicContactTabScreen> {
               ),
             );
           }
-        }if (provider.getContactTabData[index]['TAB_DESC'] == "Projects") {
+        }if (tabContactData[index]['TAB_DESC'] == "Projects") {
           if (provider.getContactEntity["PROJECT_ID"] == null) {
             ErrorUtil.showErrorMessage(context, "No Project linked to this Action");
           } else {
@@ -301,7 +309,7 @@ class _DynamicContactTabScreen extends State<DynamicContactTabScreen> {
             );
           }
         }
-        if (provider.getContactTabData[index]['TAB_DESC'] == "Contacts") {
+        if (tabContactData[index]['TAB_DESC'] == "Contacts") {
           if (provider.getContactEntity["CONT_ID"] == null) {
             ErrorUtil.showErrorMessage(context, "No Contact linked to this Action");
           } else {
@@ -331,12 +339,12 @@ class _DynamicContactTabScreen extends State<DynamicContactTabScreen> {
   }
 
   Widget _buildTabTypeIcon(DynamicTabProvide provider, int index) {
-    if (provider.getContactTabData[index]['TAB_TYPE'] == 'L') {
+    if (tabContactData[index]['TAB_TYPE'] == 'L') {
       return Padding(
         padding: const EdgeInsets.only(right: 15.0),
         child: CircleAvatar(
           radius: 8,
-          backgroundColor: Color(int.parse(provider.getContactTabData[index]['TAB_HEX'].toString())),
+          backgroundColor: Color(int.parse(tabContactData[index]['TAB_HEX'].toString())),
         ),
       );
     } else {

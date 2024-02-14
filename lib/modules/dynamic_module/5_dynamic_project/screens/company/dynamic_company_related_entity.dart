@@ -22,6 +22,7 @@ import 'package:salesachiever_mobile/modules/dynamic_module/5_dynamic_project/sc
 import 'package:salesachiever_mobile/modules/dynamic_module/5_dynamic_project/screens/dynamic_project_notes.dart';
 import 'package:salesachiever_mobile/modules/dynamic_module/5_dynamic_project/screens/project/dynamic_project_tab.dart';
 import 'package:salesachiever_mobile/modules/dynamic_module/5_dynamic_project/screens/dynamic_quotation_add.dart';
+import 'package:salesachiever_mobile/modules/dynamic_module/5_dynamic_project/screens/quotation/dynamic_quotation_tab.dart';
 import 'package:salesachiever_mobile/modules/dynamic_module/5_dynamic_project/services/dynamic_project_service.dart';
 import 'package:salesachiever_mobile/modules/dynamic_module/5_dynamic_project/widgets/common_header.dart';
 import 'package:salesachiever_mobile/shared/screens/add_related_entity_screen.dart';
@@ -522,9 +523,15 @@ class _DynamicCompanyRelatedEntityScreenState
                                 context,
                                 MaterialPageRoute(
                                   builder: (context) {
-                                    return DynamicQuotationAddScreen(
-                                      quotation: quotation.data,
+                                    return DynamicQuotationTabScreen(
+                                      entity: quotation.data,
+                                      title: widget.entity['DESCRIPTION'] != null
+                                          ? widget.entity['DESCRIPTION']
+                                          : "",
                                       readonly: true,
+                                      moduleId: "007",
+                                      entityType: widget.type,
+                                      isRelatedEntity: true,
                                     );
                                   },
                                 ),
@@ -910,9 +917,15 @@ class _DynamicCompanyRelatedEntityScreenState
                                                 context,
                                                 MaterialPageRoute(
                                                   builder: (context) {
-                                                    return DynamicQuotationAddScreen(
-                                                      quotation: quotation.data,
+                                                    return DynamicQuotationTabScreen(
+                                                      entity: quotation.data,
+                                                      title: widget.entity['DESCRIPTION'] != null
+                                                          ? widget.entity['DESCRIPTION']
+                                                          : "",
                                                       readonly: true,
+                                                      moduleId: "007",
+                                                      entityType: widget.type,
+                                                      isRelatedEntity: true,
                                                     );
                                                   },
                                                 ),

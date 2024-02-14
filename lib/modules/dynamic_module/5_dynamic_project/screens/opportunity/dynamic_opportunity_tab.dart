@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
+import 'package:loader_overlay/loader_overlay.dart';
 import 'package:provider/provider.dart';
 import 'package:salesachiever_mobile/modules/dynamic_module/5_dynamic_project/provider/dynamic_tab_provider.dart';
 import 'package:salesachiever_mobile/modules/dynamic_module/5_dynamic_project/screens/company/dynamic_company_tab.dart';
@@ -59,18 +60,25 @@ class _DynamicOpportunityTabScreenState extends State<DynamicOpportunityTabScree
     super.initState();
   }
 
+  List<dynamic> tabOpportunityData = [];
+
 
   Future<void> fetchData() async {
+    context.loaderOverlay.show();
     try {
       var data = await (widget.tabType == "P"
           ? service.getEntitySubTabForm(
           widget.moduleId.toString(), widget.tabId.toString())
           : service.getProjectTabs(widget.moduleId.toString()));
-      _dynamicTabProvider.setOpportunityData(data);
+      setState(() {
+        tabOpportunityData = data;
+      });
     } catch (error) {
       print("Error fetching data: $error");
     }
+    context.loaderOverlay.hide();
   }
+  
   @override
   Widget build(BuildContext context) {
     return Consumer<DynamicTabProvide>(builder: (context, provider, child) {
@@ -97,17 +105,17 @@ class _DynamicOpportunityTabScreenState extends State<DynamicOpportunityTabScree
                               endIndent: 1.0,
                               color: Colors.black12,
                             ),
-                            itemCount: provider.getOpportunityTabData.length,
+                            itemCount: tabOpportunityData.length,
                             itemBuilder: (context, index) {
                               return GestureDetector(
                                 onTap: () async {
-                                  if (provider.getOpportunityTabData[index]['TAB_TYPE'] == "C") {
+                                  if (tabOpportunityData[index]['TAB_TYPE'] == "C") {
                                     _onCTap(provider, index);
-                                  }  else if (provider.getOpportunityTabData[index]['TAB_TYPE'] == "I") {
+                                  }  else if (tabOpportunityData[index]['TAB_TYPE'] == "I") {
                                     _onITap(provider, index);
-                                  } else if (provider.getOpportunityTabData[index]['TAB_TYPE'] == "P") {
+                                  } else if (tabOpportunityData[index]['TAB_TYPE'] == "P") {
                                     _onPTap(provider, index);
-                                  } else if (provider.getOpportunityTabData[index]['TAB_TYPE'] == "L") {
+                                  } else if (tabOpportunityData[index]['TAB_TYPE'] == "L") {
                                     _onLTap(provider, index);
                                   }
                                 },
@@ -122,7 +130,7 @@ class _DynamicOpportunityTabScreenState extends State<DynamicOpportunityTabScree
                                         child: Padding(
                                           padding: const EdgeInsets.only(left: 8.0),
                                           child: PlatformText(
-                                            provider.getOpportunityTabData[index]['TAB_DESC'].toString(),
+                                            tabOpportunityData[index]['TAB_DESC'].toString(),
                                             textAlign: TextAlign.right,
                                             softWrap: true,
                                             style: TextStyle(),
@@ -175,10 +183,10 @@ class _DynamicOpportunityTabScreenState extends State<DynamicOpportunityTabScree
         MaterialPageRoute(
           builder: (context) =>
               DynamicOpportunityEditScreen(
-                entityName: provider.getOpportunityTabData[index]['TAB_DESC']
+                entityName: tabOpportunityData[index]['TAB_DESC']
                     .toString(),
                 entity: provider.getOpportunityEntity,
-                tabId: provider.getOpportunityTabData[index]['TAB_ID'],
+                tabId: tabOpportunityData[index]['TAB_ID'],
                 readonly: true,
                 entityType: widget.entityType,
               ),
@@ -187,17 +195,16 @@ class _DynamicOpportunityTabScreenState extends State<DynamicOpportunityTabScree
   }
 
   Future<void> _onPTap(DynamicTabProvide provider, int index) async {
-    await provider.setTemporaryData(provider.getOpportunityTabData);
     Navigator.push(
       context,
       MaterialPageRoute(
         builder: (context) => DynamicOpportunityTabScreen(
           entity: provider.getOpportunityEntity,
           entityType: widget.entityType,
-          entityName: provider.getOpportunityTabData[index]['TAB_DESC'].toString(),
-          tabId: provider.getOpportunityTabData[index]['TAB_ID'],
-          moduleId: provider.getOpportunityTabData[index]['MODULE_ID'],
-          tabType: provider.getOpportunityTabData[index]['TAB_TYPE'],
+          entityName: tabOpportunityData[index]['TAB_DESC'].toString(),
+          tabId: tabOpportunityData[index]['TAB_ID'],
+          moduleId: tabOpportunityData[index]['MODULE_ID'],
+          tabType: tabOpportunityData[index]['TAB_TYPE'],
           title: provider.getOpportunityEntity['PROJECT_TITLE'] ?? LangUtil.getString('Entities', 'Project.Create.Text'),
           readonly: true,
           isRelatedEntity: false,
@@ -209,7 +216,7 @@ class _DynamicOpportunityTabScreenState extends State<DynamicOpportunityTabScree
     if (provider.getOpportunityEntity.isEmpty) {
       ErrorUtil.showErrorMessage(context, "Please create the record first");
     } else {
-      String path = provider.getOpportunityTabData[index]['TAB_LIST'];
+      String path = tabOpportunityData[index]['TAB_LIST'];
       String tableName = "";
       String id = "";
       if (widget.entityType.toUpperCase() == "OPPORTUNITY") {
@@ -230,8 +237,8 @@ class _DynamicOpportunityTabScreenState extends State<DynamicOpportunityTabScree
               path: path,
               tableName: tableName,
               id: id,
-              type: provider.getOpportunityTabData[index]['TAB_LIST_MODULE'].toString().toLowerCase(),
-              title: provider.getOpportunityTabData[index]['TAB_DESC'].toString(),
+              type: tabOpportunityData[index]['TAB_LIST_MODULE'].toString().toLowerCase(),
+              title: tabOpportunityData[index]['TAB_DESC'].toString(),
               list: result ?? [],
               isSelectable: false,
               isEditable: true,
@@ -239,7 +246,7 @@ class _DynamicOpportunityTabScreenState extends State<DynamicOpportunityTabScree
           ),
         );
       } else {
-        if(provider.getOpportunityTabData[index]['TAB_DESC'] == "Notes"){
+        if(tabOpportunityData[index]['TAB_DESC'] == "Notes"){
           Navigator.push(
             context,
             MaterialPageRoute(
@@ -247,7 +254,7 @@ class _DynamicOpportunityTabScreenState extends State<DynamicOpportunityTabScree
                 return DynamicProjectNotes(
                   project: provider.getOpportunityEntity,
                   notesData: {},
-                  typeNote: provider.getOpportunityTabData[index]['TAB_LIST_MODULE'].toString().toLowerCase(),
+                  typeNote: tabOpportunityData[index]['TAB_LIST_MODULE'].toString().toLowerCase(),
                   isNewNote: true,
                   entityType: widget.entityType,
                 );
@@ -255,7 +262,7 @@ class _DynamicOpportunityTabScreenState extends State<DynamicOpportunityTabScree
             ),
           );
         }
-        else if (provider.getOpportunityTabData[index]['TAB_DESC'] == "Companies") {
+        else if (tabOpportunityData[index]['TAB_DESC'] == "Companies") {
           if (provider.getOpportunityEntity["ACCT_ID"] == null) {
             ErrorUtil.showErrorMessage(context, "No Company linked to this Action");
           } else {
@@ -274,7 +281,7 @@ class _DynamicOpportunityTabScreenState extends State<DynamicOpportunityTabScree
               ),
             );
           }
-        }if (provider.getOpportunityTabData[index]['TAB_DESC'] == "Projects") {
+        }if (tabOpportunityData[index]['TAB_DESC'] == "Projects") {
           if (provider.getOpportunityEntity["PROJECT_ID"] == null) {
             ErrorUtil.showErrorMessage(context, "No Project linked to this Action");
           } else {
@@ -294,7 +301,7 @@ class _DynamicOpportunityTabScreenState extends State<DynamicOpportunityTabScree
             );
           }
         }
-        if (provider.getOpportunityTabData[index]['TAB_DESC'] == "Contacts") {
+        if (tabOpportunityData[index]['TAB_DESC'] == "Contacts") {
           if (provider.getOpportunityEntity["CONT_ID"] == null) {
             ErrorUtil.showErrorMessage(context, "No Contact linked to this Action");
           } else {
@@ -324,12 +331,12 @@ class _DynamicOpportunityTabScreenState extends State<DynamicOpportunityTabScree
   }
 
   Widget _buildTabTypeIcon(DynamicTabProvide provider, int index) {
-    if (provider.getOpportunityTabData[index]['TAB_TYPE'] == 'L') {
+    if (tabOpportunityData[index]['TAB_TYPE'] == 'L') {
       return Padding(
         padding: const EdgeInsets.only(right: 15.0),
         child: CircleAvatar(
           radius: 8,
-          backgroundColor: Color(int.parse(provider.getOpportunityTabData[index]['TAB_HEX'].toString())),
+          backgroundColor: Color(int.parse(tabOpportunityData[index]['TAB_HEX'].toString())),
         ),
       );
     } else {

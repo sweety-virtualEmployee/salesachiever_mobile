@@ -42,13 +42,12 @@ class DynamicActionTypeScreen extends StatelessWidget {
             ),
             onTap: () {
               print("Action$listType");
-              action["CLASS"]=e["class"];
               Navigator.push(
                 context,
                 MaterialPageRoute(
                   builder: (context) {
                     return DynamicActionTabScreen(
-                      entity: action,
+                      entity: {"CLASS":e["class"]},
                       title: "Add New Action",
                       readonly: true,
                       moduleId: "009",

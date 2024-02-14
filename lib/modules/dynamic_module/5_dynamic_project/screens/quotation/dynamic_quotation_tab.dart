@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
+import 'package:loader_overlay/loader_overlay.dart';
 import 'package:provider/provider.dart';
 import 'package:salesachiever_mobile/modules/dynamic_module/5_dynamic_project/provider/dynamic_tab_provider.dart';
 import 'package:salesachiever_mobile/modules/dynamic_module/5_dynamic_project/screens/company/dynamic_company_tab.dart';
@@ -59,16 +60,24 @@ class _DynamicQuotationTabScreenState extends State<DynamicQuotationTabScreen> {
   }
 
 
+
+  List<dynamic> tabQuotationData = [];
+
+
   Future<void> fetchData() async {
+    context.loaderOverlay.show();
     try {
       var data = await (widget.tabType == "P"
           ? service.getEntitySubTabForm(
           widget.moduleId.toString(), widget.tabId.toString())
           : service.getProjectTabs(widget.moduleId.toString()));
-      _dynamicTabProvider.setQuotationData(data);
+      setState(() {
+        tabQuotationData = data;
+      });
     } catch (error) {
       print("Error fetching data: $error");
     }
+    context.loaderOverlay.hide();
   }
   @override
   Widget build(BuildContext context) {
@@ -96,15 +105,15 @@ class _DynamicQuotationTabScreenState extends State<DynamicQuotationTabScreen> {
                               endIndent: 1.0,
                               color: Colors.black12,
                             ),
-                            itemCount:provider.getQuotationTabData.length,
+                            itemCount:tabQuotationData.length,
                             itemBuilder: (context, index) {
                               return GestureDetector(
                                 onTap: () async {
-                                  if (provider.getQuotationTabData[index]['TAB_TYPE'] == "C") {
+                                  if (tabQuotationData[index]['TAB_TYPE'] == "C") {
                                     _onCTap(provider, index);
-                                  } else if (provider.getQuotationTabData[index]['TAB_TYPE'] == "P") {
+                                  } else if (tabQuotationData[index]['TAB_TYPE'] == "P") {
                                     _onPTap(provider, index);
-                                  } else if (provider.getQuotationTabData[index]['TAB_TYPE'] == "L") {
+                                  } else if (tabQuotationData[index]['TAB_TYPE'] == "L") {
                                     _onLTap(provider, index);
                                   }
                                 },
@@ -119,7 +128,7 @@ class _DynamicQuotationTabScreenState extends State<DynamicQuotationTabScreen> {
                                         child: Padding(
                                           padding: const EdgeInsets.only(left: 8.0),
                                           child: PlatformText(
-                                           provider.getQuotationTabData[index]['TAB_DESC'].toString(),
+                                           tabQuotationData[index]['TAB_DESC'].toString(),
                                             textAlign: TextAlign.right,
                                             softWrap: true,
                                             style: TextStyle(),
@@ -159,9 +168,9 @@ class _DynamicQuotationTabScreenState extends State<DynamicQuotationTabScreen> {
       context,
       MaterialPageRoute(
         builder: (context) => DynamicQuotationEditScreen(
-          entityName:provider.getQuotationTabData[index]['TAB_DESC'].toString(),
+          entityName:tabQuotationData[index]['TAB_DESC'].toString(),
           entity: provider.getQuotationEntity,
-          tabId:provider.getQuotationTabData[index]['TAB_ID'],
+          tabId:tabQuotationData[index]['TAB_ID'],
           readonly: true,
           entityType: widget.entityType,
         ),
@@ -176,10 +185,10 @@ class _DynamicQuotationTabScreenState extends State<DynamicQuotationTabScreen> {
         builder: (context) => DynamicQuotationTabScreen(
           entity: provider.getQuotationEntity,
           entityType: widget.entityType,
-          entityName:provider.getQuotationTabData[index]['TAB_DESC'].toString(),
-          tabId:provider.getQuotationTabData[index]['TAB_ID'],
-          moduleId:provider.getQuotationTabData[index]['MODULE_ID'],
-          tabType:provider.getQuotationTabData[index]['TAB_TYPE'],
+          entityName:tabQuotationData[index]['TAB_DESC'].toString(),
+          tabId:tabQuotationData[index]['TAB_ID'],
+          moduleId:tabQuotationData[index]['MODULE_ID'],
+          tabType:tabQuotationData[index]['TAB_TYPE'],
           title: provider.getQuotationEntity['PROJECT_TITLE'] ?? LangUtil.getString('Entities', 'Project.Create.Text'),
           readonly: true,
           isRelatedEntity: false,
@@ -191,7 +200,7 @@ class _DynamicQuotationTabScreenState extends State<DynamicQuotationTabScreen> {
     if (provider.getQuotationEntity.isEmpty) {
       ErrorUtil.showErrorMessage(context, "Please create the record first");
     } else {
-      String path =provider.getQuotationTabData[index]['TAB_LIST'];
+      String path =tabQuotationData[index]['TAB_LIST'];
       String tableName = "";
       String id = "";
 
@@ -219,8 +228,8 @@ class _DynamicQuotationTabScreenState extends State<DynamicQuotationTabScreen> {
               path: path,
               tableName: tableName,
               id: id,
-              type:provider.getQuotationTabData[index]['TAB_LIST_MODULE'].toString().toLowerCase(),
-              title:provider.getQuotationTabData[index]['TAB_DESC'].toString(),
+              type:tabQuotationData[index]['TAB_LIST_MODULE'].toString().toLowerCase(),
+              title:tabQuotationData[index]['TAB_DESC'].toString(),
               list: result ?? [],
               isSelectable: false,
               isEditable: true,
@@ -228,7 +237,7 @@ class _DynamicQuotationTabScreenState extends State<DynamicQuotationTabScreen> {
           ),
         );
       } else {
-        if(provider.getQuotationTabData[index]['TAB_DESC'] == "Notes"){
+        if(tabQuotationData[index]['TAB_DESC'] == "Notes"){
           Navigator.push(
             context,
             MaterialPageRoute(
@@ -236,7 +245,7 @@ class _DynamicQuotationTabScreenState extends State<DynamicQuotationTabScreen> {
                 return DynamicProjectNotes(
                   project: provider.getQuotationEntity,
                   notesData: {},
-                  typeNote:provider.getQuotationTabData[index]['TAB_LIST_MODULE'].toString().toLowerCase(),
+                  typeNote:tabQuotationData[index]['TAB_LIST_MODULE'].toString().toLowerCase(),
                   isNewNote: true,
                   entityType: widget.entityType,
                 );
@@ -244,7 +253,7 @@ class _DynamicQuotationTabScreenState extends State<DynamicQuotationTabScreen> {
             ),
           );
         }
-        else if (provider.getQuotationTabData[index]['TAB_DESC'] == "Companies") {
+        else if (tabQuotationData[index]['TAB_DESC'] == "Companies") {
           if (provider.getQuotationEntity["ACCT_ID"] == null) {
             ErrorUtil.showErrorMessage(context, "No Company linked to this Action");
           } else {
@@ -263,7 +272,7 @@ class _DynamicQuotationTabScreenState extends State<DynamicQuotationTabScreen> {
               ),
             );
           }
-        }if (provider.getQuotationTabData[index]['TAB_DESC'] == "Projects") {
+        }if (tabQuotationData[index]['TAB_DESC'] == "Projects") {
           if (provider.getQuotationEntity["PROJECT_ID"] == null) {
             ErrorUtil.showErrorMessage(context, "No Project linked to this Action");
           } else {
@@ -283,7 +292,7 @@ class _DynamicQuotationTabScreenState extends State<DynamicQuotationTabScreen> {
             );
           }
         }
-        if (provider.getQuotationTabData[index]['TAB_DESC'] == "Contacts") {
+        if (tabQuotationData[index]['TAB_DESC'] == "Contacts") {
           if (provider.getQuotationEntity["CONT_ID"] == null) {
             ErrorUtil.showErrorMessage(context, "No Contact linked to this Action");
           } else {
@@ -313,12 +322,12 @@ class _DynamicQuotationTabScreenState extends State<DynamicQuotationTabScreen> {
   }
 
   Widget _buildTabTypeIcon(DynamicTabProvide provider, int index) {
-    if (provider.getQuotationTabData[index]['TAB_TYPE'] == 'L') {
+    if (tabQuotationData[index]['TAB_TYPE'] == 'L') {
       return Padding(
         padding: const EdgeInsets.only(right: 15.0),
         child: CircleAvatar(
           radius: 8,
-          backgroundColor: Color(int.parse(provider.getQuotationTabData[index]['TAB_HEX'].toString())),
+          backgroundColor: Color(int.parse(tabQuotationData[index]['TAB_HEX'].toString())),
         ),
       );
     } else {

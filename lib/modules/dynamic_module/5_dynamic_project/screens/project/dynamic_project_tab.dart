@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
+import 'package:loader_overlay/loader_overlay.dart';
 import 'package:provider/provider.dart';
 import 'package:salesachiever_mobile/modules/dynamic_module/5_dynamic_project/provider/dynamic_tab_provider.dart';
 import 'package:salesachiever_mobile/modules/dynamic_module/5_dynamic_project/screens/project/dynamic_project_info_screen.dart';
@@ -53,27 +54,29 @@ class _DynamicProjectTabScreenState extends State<DynamicProjectTabScreen> {
     fetchData();
     super.initState();
   }
+  List<dynamic> tabProjectData = [];
 
 
   Future<void> fetchData() async {
+    context.loaderOverlay.show();
     try {
       var data = await (widget.tabType == "P"
           ? service.getEntitySubTabForm(
           widget.moduleId.toString(), widget.tabId.toString())
           : service.getProjectTabs(widget.moduleId.toString()));
-      _dynamicTabProvider.setProjectData(data);
+        setState(() {
+          tabProjectData = data;
+        });
     } catch (error) {
       print("Error fetching data: $error");
     }
+    context.loaderOverlay.hide();
   }
+
   @override
   Widget build(BuildContext context) {
     return Consumer<DynamicTabProvide>(builder: (context, provider, child) {
       return PsaScaffold(
-        onBackPressed: () async {
-          await provider.setProjectData(provider.getTemporaryTabData);
-          Navigator.pop(context);
-        },
         title: "${capitalizeFirstLetter(widget.entityType)} Tabs",
         body: Column(
           children: [
@@ -96,17 +99,17 @@ class _DynamicProjectTabScreenState extends State<DynamicProjectTabScreen> {
                               endIndent: 1.0,
                               color: Colors.black12,
                             ),
-                            itemCount: provider.getProjectTabData.length,
+                            itemCount: tabProjectData.length,
                             itemBuilder: (context, index) {
                               return GestureDetector(
                                 onTap: () async {
-                                  if (provider.getProjectTabData[index]['TAB_TYPE'] == "C") {
+                                  if (tabProjectData[index]['TAB_TYPE'] == "C") {
                                     _onCTap(provider, index);
-                                  } else if (provider.getProjectTabData[index]['TAB_TYPE'] == "I") {
+                                  } else if (tabProjectData[index]['TAB_TYPE'] == "I") {
                                     _onITap(provider, index);
-                                  } else if (provider.getProjectTabData[index]['TAB_TYPE'] == "P") {
+                                  } else if (tabProjectData[index]['TAB_TYPE'] == "P") {
                                     _onPTap(provider, index);
-                                  } else if (provider.getProjectTabData[index]['TAB_TYPE'] == "L") {
+                                  } else if (tabProjectData[index]['TAB_TYPE'] == "L") {
                                     _onLTap(provider, index);
                                   }
                                 },
@@ -121,7 +124,7 @@ class _DynamicProjectTabScreenState extends State<DynamicProjectTabScreen> {
                                         child: Padding(
                                           padding: const EdgeInsets.only(left: 8.0),
                                           child: PlatformText(
-                                            provider.getProjectTabData[index]['TAB_DESC'].toString(),
+                                            tabProjectData[index]['TAB_DESC'].toString(),
                                             textAlign: TextAlign.right,
                                             softWrap: true,
                                             style: TextStyle(),
@@ -175,10 +178,10 @@ class _DynamicProjectTabScreenState extends State<DynamicProjectTabScreen> {
         MaterialPageRoute(
           builder: (context) =>
               DynamicProjectEditScreen(
-                entityName: provider.getProjectTabData[index]['TAB_DESC']
+                entityName: tabProjectData[index]['TAB_DESC']
                     .toString(),
                 entity: provider.getProjectEntity,
-                tabId: provider.getProjectTabData[index]['TAB_ID'],
+                tabId: tabProjectData[index]['TAB_ID'],
                 readonly: true,
                 entityType: widget.entityType,
               ),
@@ -187,17 +190,16 @@ class _DynamicProjectTabScreenState extends State<DynamicProjectTabScreen> {
   }
 
   Future<void> _onPTap(DynamicTabProvide provider, int index) async {
-    await provider.setTemporaryData(provider.getProjectTabData);
     Navigator.push(
       context,
       MaterialPageRoute(
         builder: (context) => DynamicProjectTabScreen(
           entity: provider.getProjectEntity,
           entityType: widget.entityType,
-          entityName: provider.getProjectTabData[index]['TAB_DESC'].toString(),
-          tabId: provider.getProjectTabData[index]['TAB_ID'],
-          moduleId: provider.getProjectTabData[index]['MODULE_ID'],
-          tabType: provider.getProjectTabData[index]['TAB_TYPE'],
+          entityName: tabProjectData[index]['TAB_DESC'].toString(),
+          tabId: tabProjectData[index]['TAB_ID'],
+          moduleId: tabProjectData[index]['MODULE_ID'],
+          tabType: tabProjectData[index]['TAB_TYPE'],
           title: provider.getProjectEntity['PROJECT_TITLE'] ?? LangUtil.getString('Entities', 'Project.Create.Text'),
           readonly: true,
           isRelatedEntity: false,
@@ -210,7 +212,7 @@ class _DynamicProjectTabScreenState extends State<DynamicProjectTabScreen> {
     if (provider.getProjectEntity.isEmpty) {
       ErrorUtil.showErrorMessage(context, "Please create the record first");
     } else {
-      String path = provider.getProjectTabData[index]['TAB_LIST'];
+      String path = tabProjectData[index]['TAB_LIST'];
       String tableName = "";
       String id = "";
       if (widget.entityType.toUpperCase() == "PROJECT") {
@@ -227,8 +229,8 @@ class _DynamicProjectTabScreenState extends State<DynamicProjectTabScreen> {
               path: path,
               tableName: tableName,
               id: id,
-              type: provider.getProjectTabData[index]['TAB_LIST_MODULE'].toString().toLowerCase(),
-              title: provider.getProjectTabData[index]['TAB_DESC'].toString(),
+              type: tabProjectData[index]['TAB_LIST_MODULE'].toString().toLowerCase(),
+              title: tabProjectData[index]['TAB_DESC'].toString(),
               list: result ?? [],
               isSelectable: false,
               isEditable: true,
@@ -240,12 +242,12 @@ class _DynamicProjectTabScreenState extends State<DynamicProjectTabScreen> {
   }
 
   Widget _buildTabTypeIcon(DynamicTabProvide provider, int index) {
-    if (provider.getProjectTabData[index]['TAB_TYPE'] == 'L') {
+    if (tabProjectData[index]['TAB_TYPE'] == 'L') {
       return Padding(
         padding: const EdgeInsets.only(right: 15.0),
         child: CircleAvatar(
           radius: 8,
-          backgroundColor: Color(int.parse(provider.getProjectTabData[index]['TAB_HEX'].toString())),
+          backgroundColor: Color(int.parse(tabProjectData[index]['TAB_HEX'].toString())),
         ),
       );
     } else {

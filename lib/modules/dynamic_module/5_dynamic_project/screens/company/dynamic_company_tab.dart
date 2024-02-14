@@ -1,14 +1,12 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
+import 'package:loader_overlay/loader_overlay.dart';
 import 'package:provider/provider.dart';
 import 'package:salesachiever_mobile/modules/dynamic_module/5_dynamic_project/provider/dynamic_tab_provider.dart';
 import 'package:salesachiever_mobile/modules/dynamic_module/5_dynamic_project/screens/company/dynamic_company_edit_screen.dart';
 import 'package:salesachiever_mobile/modules/dynamic_module/5_dynamic_project/screens/company/dynamic_company_info_screen.dart';
 import 'package:salesachiever_mobile/modules/dynamic_module/5_dynamic_project/screens/company/dynamic_company_related_entity.dart';
-import 'package:salesachiever_mobile/modules/dynamic_module/5_dynamic_project/screens/contact/dynamic_contact_tab.dart';
-import 'package:salesachiever_mobile/modules/dynamic_module/5_dynamic_project/screens/dynamic_project_notes.dart';
-import 'package:salesachiever_mobile/modules/dynamic_module/5_dynamic_project/screens/project/dynamic_project_tab.dart';
 import 'package:salesachiever_mobile/modules/dynamic_module/5_dynamic_project/services/dynamic_project_service.dart';
 import 'package:salesachiever_mobile/modules/dynamic_module/5_dynamic_project/widgets/common_header.dart';
 import 'package:salesachiever_mobile/shared/widgets/layout/psa_scaffold.dart';
@@ -58,18 +56,25 @@ class _DynamicCompanyTabScreenState extends State<DynamicCompanyTabScreen> {
     super.initState();
   }
 
+  List<dynamic> tabCompanyData = [];
+
 
   Future<void> fetchData() async {
+    context.loaderOverlay.show();
     try {
       var data = await (widget.tabType == "P"
           ? service.getEntitySubTabForm(
           widget.moduleId.toString(), widget.tabId.toString())
           : service.getProjectTabs(widget.moduleId.toString()));
-      _dynamicTabProvider.setCompanyData(data);
+      setState(() {
+        tabCompanyData = data;
+      });
     } catch (error) {
       print("Error fetching data: $error");
     }
+    context.loaderOverlay.hide();
   }
+  
   @override
   Widget build(BuildContext context) {
     return Consumer<DynamicTabProvide>(builder: (context, provider, child) {
@@ -96,17 +101,17 @@ class _DynamicCompanyTabScreenState extends State<DynamicCompanyTabScreen> {
                               endIndent: 1.0,
                               color: Colors.black12,
                             ),
-                            itemCount: provider.getCompanyTabData.length,
+                            itemCount: tabCompanyData.length,
                             itemBuilder: (context, index) {
                               return GestureDetector(
                                 onTap: () async {
-                                  if (provider.getCompanyTabData[index]['TAB_TYPE'] == "C") {
+                                  if (tabCompanyData[index]['TAB_TYPE'] == "C") {
                                     _onCTap(provider, index);
-                                  }  else if (provider.getCompanyTabData[index]['TAB_TYPE'] == "I") {
+                                  }  else if (tabCompanyData[index]['TAB_TYPE'] == "I") {
                                     _onITap(provider, index);
-                                  }else if (provider.getCompanyTabData[index]['TAB_TYPE'] == "P") {
+                                  }else if (tabCompanyData[index]['TAB_TYPE'] == "P") {
                                     _onPTap(provider, index);
-                                  } else if (provider.getCompanyTabData[index]['TAB_TYPE'] == "L") {
+                                  } else if (tabCompanyData[index]['TAB_TYPE'] == "L") {
                                     _onLTap(provider, index);
                                   }
                                 },
@@ -121,7 +126,7 @@ class _DynamicCompanyTabScreenState extends State<DynamicCompanyTabScreen> {
                                         child: Padding(
                                           padding: const EdgeInsets.only(left: 8.0),
                                           child: PlatformText(
-                                            provider.getCompanyTabData[index]['TAB_DESC'].toString(),
+                                            tabCompanyData[index]['TAB_DESC'].toString(),
                                             textAlign: TextAlign.right,
                                             softWrap: true,
                                             style: TextStyle(),
@@ -175,10 +180,10 @@ class _DynamicCompanyTabScreenState extends State<DynamicCompanyTabScreen> {
         MaterialPageRoute(
           builder: (context) =>
               DynamicCompanyEditScreen(
-                entityName: provider.getCompanyTabData[index]['TAB_DESC']
+                entityName: tabCompanyData[index]['TAB_DESC']
                     .toString(),
                 entity: provider.getCompanyEntity,
-                tabId: provider.getCompanyTabData[index]['TAB_ID'],
+                tabId: tabCompanyData[index]['TAB_ID'],
                 readonly: true,
                 entityType: widget.entityType,
               ),
@@ -187,17 +192,16 @@ class _DynamicCompanyTabScreenState extends State<DynamicCompanyTabScreen> {
   }
 
   Future<void> _onPTap(DynamicTabProvide provider, int index) async {
-    await provider.setTemporaryData(provider.getCompanyTabData);
     Navigator.push(
       context,
       MaterialPageRoute(
         builder: (context) => DynamicCompanyTabScreen(
           entity: provider.getCompanyEntity,
           entityType: widget.entityType,
-          entityName: provider.getCompanyTabData[index]['TAB_DESC'].toString(),
-          tabId: provider.getCompanyTabData[index]['TAB_ID'],
-          moduleId: provider.getCompanyTabData[index]['MODULE_ID'],
-          tabType: provider.getCompanyTabData[index]['TAB_TYPE'],
+          entityName: tabCompanyData[index]['TAB_DESC'].toString(),
+          tabId: tabCompanyData[index]['TAB_ID'],
+          moduleId: tabCompanyData[index]['MODULE_ID'],
+          tabType: tabCompanyData[index]['TAB_TYPE'],
           title: provider.getCompanyEntity['PROJECT_TITLE'] ?? LangUtil.getString('Entities', 'Project.Create.Text'),
           readonly: true,
           isRelatedEntity: false,
@@ -210,7 +214,7 @@ class _DynamicCompanyTabScreenState extends State<DynamicCompanyTabScreen> {
     if (provider.getCompanyEntity.isEmpty) {
       ErrorUtil.showErrorMessage(context, "Please create the record first");
     } else {
-      String path = provider.getCompanyTabData[index]['TAB_LIST'];
+      String path = tabCompanyData[index]['TAB_LIST'];
       String tableName = "";
       String id = "";
 
@@ -229,8 +233,8 @@ class _DynamicCompanyTabScreenState extends State<DynamicCompanyTabScreen> {
               path: path,
               tableName: tableName,
               id: id,
-              type: provider.getCompanyTabData[index]['TAB_LIST_MODULE'].toString().toLowerCase(),
-              title: provider.getCompanyTabData[index]['TAB_DESC'].toString(),
+              type: tabCompanyData[index]['TAB_LIST_MODULE'].toString().toLowerCase(),
+              title: tabCompanyData[index]['TAB_DESC'].toString(),
               list: result ?? [],
               isSelectable: false,
               isEditable: true,
@@ -243,12 +247,12 @@ class _DynamicCompanyTabScreenState extends State<DynamicCompanyTabScreen> {
   }
 
   Widget _buildTabTypeIcon(DynamicTabProvide provider, int index) {
-    if (provider.getCompanyTabData[index]['TAB_TYPE'] == 'L') {
+    if (tabCompanyData[index]['TAB_TYPE'] == 'L') {
       return Padding(
         padding: const EdgeInsets.only(right: 15.0),
         child: CircleAvatar(
           radius: 8,
-          backgroundColor: Color(int.parse(provider.getCompanyTabData[index]['TAB_HEX'].toString())),
+          backgroundColor: Color(int.parse(tabCompanyData[index]['TAB_HEX'].toString())),
         ),
       );
     } else {
