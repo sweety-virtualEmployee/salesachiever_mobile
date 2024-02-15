@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:loader_overlay/loader_overlay.dart';
 import 'package:provider/provider.dart';
+import 'package:salesachiever_mobile/data/access_codes.dart';
 import 'package:salesachiever_mobile/modules/10_opportunities/screens/opportunity_edit_screen.dart';
 import 'package:salesachiever_mobile/modules/10_opportunities/screens/opportunity_list_screen.dart';
 import 'package:salesachiever_mobile/modules/10_opportunities/services/opportunity_service.dart';
@@ -11,6 +12,7 @@ import 'package:salesachiever_mobile/modules/4_contact/screens/contact_edit_scre
 import 'package:salesachiever_mobile/modules/4_contact/services/contact_service.dart';
 import 'package:salesachiever_mobile/modules/5_project/services/project_service.dart';
 import 'package:salesachiever_mobile/modules/6_action/screens/action_edit_screen.dart';
+import 'package:salesachiever_mobile/modules/6_action/screens/action_type_screen.dart';
 import 'package:salesachiever_mobile/modules/6_action/services/action_service.dart';
 import 'package:salesachiever_mobile/modules/dynamic_module/5_dynamic_project/provider/dynamic_tab_provider.dart';
 import 'package:salesachiever_mobile/modules/dynamic_module/5_dynamic_project/screens/action/dynamic_action_tab.dart';
@@ -29,6 +31,7 @@ import 'package:salesachiever_mobile/shared/screens/add_related_entity_screen.da
 import 'package:salesachiever_mobile/shared/screens/dynamic_sub_tab_listing.dart';
 import 'package:salesachiever_mobile/shared/widgets/buttons/psa_add_button.dart';
 import 'package:salesachiever_mobile/shared/widgets/layout/psa_scaffold.dart';
+import 'package:salesachiever_mobile/utils/auth_util.dart';
 import 'package:salesachiever_mobile/utils/date_util.dart';
 import 'package:salesachiever_mobile/utils/lang_util.dart';
 
@@ -257,37 +260,104 @@ class _DynamicCompanyRelatedEntityScreenState
                 : ((widget.type == 'contacts' && widget.entityType != "PROJECT") && (widget.entityType != "ACTION"))
                 ? PsaAddButton(
               onTap: () async {
-                Navigator.push(
+                if(AuthUtil.hasAccess(
+                    int.parse(ACCESS_CODES['Show Dynamic Forms for New Records'].toString()))) {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) {
+                          return DynamicContactTabScreen(
+                            entity: provider.getCompanyEntity,
+                            title: "Add New Contact",
+                            readonly: false,
+                            moduleId: "004",
+                            entityType: widget.type,
+                            isRelatedEntity: false,
+                          );
+                        },
+                      ));
+                }
+                else{
+                  Navigator.push(
                     context,
-                    MaterialPageRoute(
-                      builder: (context) {
-                        return DynamicContactTabScreen(
-                          entity:provider.getCompanyEntity,
-                          title: "Add New Contact",
-                          readonly: false,
-                          moduleId: "004",
-                          entityType: widget.type,
-                          isRelatedEntity: false,
-                        );
-                      },
-                    ));
+                    platformPageRoute(
+                      context: context,
+                      builder: (BuildContext context) =>
+                          ContactEditScreen(
+                            contact: {
+                              'ACCT_ID': widget.entity['ACCT_ID'],
+                              'ACCTNAME': widget.entity['ACCTNAME'],
+                              'CONT_ID': widget.entity['CONT_ID'],
+                              'CONTACT_NAME': widget.entity['CONT_ID'] !=
+                                  null
+                                  ? '${widget.entity['FIRSTNAME'] ?? ''} ${widget
+                                  .entity['SURNAME'] ?? ''}'
+                                  : null,
+                              'PROJECT_ID': widget.entity['PROJECT_ID'],
+                              'PROJECT_TITLE':
+                              widget.entity['PROJECT_TITLE'],
+                              'DEAL_ID': widget.entity['DEAL_ID'],
+                              'DEAL_DESCRIPTION':
+                              widget.entity['DEAL_ID'] != null
+                                  ? widget.entity['DESCRIPTION']
+                                  : '',
+                            },
+                            readonly: false,
+                          ),
+                    ),
+                  );
+                }
               },
             )
                 : (widget.type == 'actions' ||
                 widget.type == "actions?pageSize=1000&pageNumber=1")
                 ? PsaAddButton(
                 onTap: () {
-                  Navigator.push(
-                    context,
-                    platformPageRoute(
-                      context: context,
-                      builder: (BuildContext context) => DynamicActionTypeScreen(
-                        action: {"ACCT_ID":widget.entity?["ACCT_ID"]},
-                        popScreens: 2,
-                        listType: widget.type,
+                  if(AuthUtil.hasAccess(
+                      int.parse(ACCESS_CODES['Show Dynamic Forms for New Records'].toString()))) {
+                    Navigator.push(
+                      context,
+                      platformPageRoute(
+                        context: context,
+                        builder: (BuildContext context) =>
+                            DynamicActionTypeScreen(
+                              action: {"ACCT_ID": widget.entity?["ACCT_ID"]},
+                              popScreens: 2,
+                              listType: widget.type,
+                            ),
                       ),
-                    ),
-                  );
+                    );
+                  }
+                  else{
+                    Navigator.push(
+                      context,
+                      platformPageRoute(
+                        context: context,
+                        builder: (BuildContext context) =>
+                            ActionTypeScreen(
+                              action: {
+                                'ACCT_ID': widget.entity['ACCT_ID'],
+                                'ACCTNAME': widget.entity['ACCTNAME'],
+                                'CONT_ID': widget.entity['CONT_ID'],
+                                'CONTACT_NAME': widget.entity['CONT_ID'] !=
+                                    null
+                                    ? '${widget.entity['FIRSTNAME'] ?? ''} ${widget
+                                    .entity['SURNAME'] ?? ''}'
+                                    : null,
+                                'PROJECT_ID': widget.entity['PROJECT_ID'],
+                                'PROJECT_TITLE':
+                                widget.entity['PROJECT_TITLE'],
+                                'DEAL_ID': widget.entity['DEAL_ID'],
+                                'DEAL_DESCRIPTION':
+                                widget.entity['DEAL_ID'] != null
+                                    ? widget.entity['DESCRIPTION']
+                                    : '',
+                              },
+                              popScreens: 3,
+                            ),
+                      ),
+                    );
+                  }
                 }
             )
                 : (widget.type == 'opportunities' ||
@@ -412,217 +482,14 @@ class _DynamicCompanyRelatedEntityScreenState
                       itemBuilder: (BuildContext context, int index) {
                         final item = list[index];
                         return InkWell(
-                          onTap: () async {
-                            print("widget.type check${widget.type}");
-                            if (widget.type == "companies") {
-                              dynamic company =
-                              await CompanyService().getEntity(item["ACCT_ID"]);
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) {
-                                    return DynamicCompanyTabScreen(
-                                      entity: company.data,
-                                      title: widget.entity['PROJECT_TITLE'] != null
-                                          ? widget.entity['PROJECT_TITLE']
-                                          : "",
-                                      readonly: true,
-                                      moduleId: "003",
-                                      entityType: widget.type,
-                                      isRelatedEntity: true,
-                                    );
-                                  },
-                                ),
-                              );
-                            } else if (widget.type == "contacts") {
-                              dynamic contact =
-                              await ContactService().getEntity(item['CONT_ID']);
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) {
-                                    return DynamicContactTabScreen(
-                                      entity: contact.data,
-                                      title: widget.entity['PROJECT_TITLE'] != null
-                                          ? widget.entity['PROJECT_TITLE']
-                                          : "",
-                                      readonly: true,
-                                      moduleId: "004",
-                                      entityType: widget.type,
-                                      isRelatedEntity: true,
-                                    );
-                                  },
-                                ),
-                              );
-                            } else if (widget.type == "actions") {
-                              dynamic action = await ActionService()
-                                  .getEntity(item['ACTION_ID']);
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) {
-                                    return DynamicActionTabScreen(
-                                      entity: action.data,
-                                      title: widget.entity['PROJECT_TITLE'] != null
-                                          ? widget.entity['PROJECT_TITLE']
-                                          : "",
-                                      readonly: true,
-                                      moduleId: "009",
-                                      entityType: widget.type,
-                                      isRelatedEntity: true,
-                                    );
-                                  },
-                                ),
-                              );
-                            } else if (widget.type == "opportunities") {
-                              print(
-                                  "deal id valeudifgc${provider.getCompanyEntity['DEAL_DEAL_ID']}");
-                              dynamic deal = await OpportunityService()
-                                  .getEntity(item['DEAL_ID'].toString());
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) {
-                                    return DynamicOpportunityTabScreen(
-                                      entity: deal.data,
-                                      title: widget.entity['PROJECT_TITLE'] != null
-                                          ? widget.entity['PROJECT_TITLE']
-                                          : "",
-                                      readonly: true,
-                                      moduleId: "006",
-                                      entityType: widget.type,
-                                      isRelatedEntity: true,
-                                    );
-                                  },
-                                ),
-                              );
-                            } else if (widget.type.contains("notes")) {
-                              dynamic response = await DynamicProjectService()
-                                  .getProjectNote(widget.type, item['NOTE_ID']);
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) {
-                                    return DynamicProjectNotes(
-                                      project: provider.getCompanyEntity,
-                                      typeNote: widget.type,
-                                      notesData: response,
-                                      isNewNote: false,
-                                      entityType: widget.entityType,
-                                    );
-                                  },
-                                ),
-                              );
-                            } else if (widget.type == "opp history") {
-                            } else if (widget.type == "quotes") {
-                              dynamic quotation = await DynamicProjectService()
-                                  .getEntityById("QUOTATION", item['QUOTE_ID']);
-                              quotation.data['ACCT_ID'] = item['ACCT_ID'];
-                              quotation.data['ACCTNAME'] = item['ACCTNAME'];
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) {
-                                    return DynamicQuotationTabScreen(
-                                      entity: quotation.data,
-                                      title: widget.entity['DESCRIPTION'] != null
-                                          ? widget.entity['DESCRIPTION']
-                                          : "",
-                                      readonly: true,
-                                      moduleId: "007",
-                                      entityType: widget.type,
-                                      isRelatedEntity: true,
-                                    );
-                                  },
-                                ),
-                              );
-                            } else if (widget.type == "projects") {
-                              print("widget.type${widget.type}");
-                              dynamic project = await ProjectService()
-                                  .getEntity(item['PROJECT_ID']);
-                              print("projectbalue$project");
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) {
-                                    return DynamicProjectTabScreen(
-                                      entity: project.data,
-                                      title: widget.entity['PROJECT_TITLE'] != null
-                                          ? widget.entity['PROJECT_TITLE']
-                                          : "",
-                                      readonly: true,
-                                      moduleId: "005",
-                                      entityType: widget.type,
-                                      isRelatedEntity: true,
-                                    );
-                                  },
-                                ),
-                              );
-                            } else {
-                              print("do nothing");
-                              print("item$item");
-                              if (widget.title == "P2P Quotes") {
-                                dynamic response =
-                                await service.getSubTabListEntityValues(
-                                    "QTIT_API", "QUOTE_ID", item["QUOTE_ID"]);
-                                print(response);
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) {
-                                      return DynamicSubTabListingScreen(
-                                        list: response,
-                                        title: widget.title,
-                                        entityType: widget.entityType,
-                                        project: provider.getCompanyEntity,
-                                      );
-                                    },
-                                  ),
-                                );
-                              } else if (widget.title == "Invoice Information") {
-                                dynamic response =
-                                await service.getSubTabListEntityValues(
-                                    "INITEM_API",
-                                    "INVOICE_ID",
-                                    item["INVOICE_ID"]);
-                                print(response);
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) {
-                                      return DynamicSubTabListingScreen(
-                                        list: response,
-                                        title: widget.title,
-                                        entityType: widget.entityType,
-                                        project: provider.getCompanyEntity,
-                                      );
-                                    },
-                                  ),
-                                );
-                              } else if (widget.title == "Order Information") {
-                                dynamic response =
-                                await service.getSubTabListEntityValues(
-                                    "ORITEM_API",
-                                    "ORDERINFO_ID",
-                                    item["ORDERINFO_ID"]);
-                                print(response);
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) {
-                                      return DynamicSubTabListingScreen(
-                                        list: response,
-                                        title: widget.title,
-                                        entityType: widget.entityType,
-                                        project: provider.getCompanyEntity,
-                                      );
-                                    },
-                                  ),
-                                );
-                              }
+                          onTap: () {
+                            if(AuthUtil.hasAccess(
+                                int.parse(ACCESS_CODES['Show Dynamic Forms for New Records'].toString()))) {
+                              handleOnTapFunction(item);
                             }
-
-                            context.loaderOverlay.hide();
+                            else{
+                              handleOnNonDynamic(item);
+                            }
                           },
                           child: Column(
                             children: [
@@ -806,217 +673,14 @@ class _DynamicCompanyRelatedEntityScreenState
                                       widget.type == "opp history"
                                           ? SizedBox()
                                           : IconButton(
-                                          onPressed: () async {
-                                            print("widget.type check${widget.type}");
-                                            if (widget.type == "companies") {
-                                              dynamic company =
-                                              await CompanyService().getEntity(item["ACCT_ID"]);
-                                              Navigator.push(
-                                                context,
-                                                MaterialPageRoute(
-                                                  builder: (context) {
-                                                    return DynamicCompanyTabScreen(
-                                                      entity: company.data,
-                                                      title: widget.entity['PROJECT_TITLE'] != null
-                                                          ? widget.entity['PROJECT_TITLE']
-                                                          : "",
-                                                      readonly: true,
-                                                      moduleId: "003",
-                                                      entityType: widget.type,
-                                                      isRelatedEntity: true,
-                                                    );
-                                                  },
-                                                ),
-                                              );
-                                            } else if (widget.type == "contacts") {
-                                              dynamic contact =
-                                              await ContactService().getEntity(item['CONT_ID']);
-                                              Navigator.push(
-                                                context,
-                                                MaterialPageRoute(
-                                                  builder: (context) {
-                                                    return DynamicContactTabScreen(
-                                                      entity: contact.data,
-                                                      title: widget.entity['PROJECT_TITLE'] != null
-                                                          ? widget.entity['PROJECT_TITLE']
-                                                          : "",
-                                                      readonly: true,
-                                                      moduleId: "004",
-                                                      entityType: widget.type,
-                                                      isRelatedEntity: true,
-                                                    );
-                                                  },
-                                                ),
-                                              );
-                                            } else if (widget.type == "actions") {
-                                              dynamic action = await ActionService()
-                                                  .getEntity(item['ACTION_ID']);
-                                              Navigator.push(
-                                                context,
-                                                MaterialPageRoute(
-                                                  builder: (context) {
-                                                    return DynamicActionTabScreen(
-                                                      entity: action.data,
-                                                      title: widget.entity['PROJECT_TITLE'] != null
-                                                          ? widget.entity['PROJECT_TITLE']
-                                                          : "",
-                                                      readonly: true,
-                                                      moduleId: "009",
-                                                      entityType: widget.type,
-                                                      isRelatedEntity: true,
-                                                    );
-                                                  },
-                                                ),
-                                              );
-                                            } else if (widget.type == "opportunities") {
-                                              print(
-                                                  "deal id valeudifgc${provider.getCompanyEntity['DEAL_DEAL_ID']}");
-                                              dynamic deal = await OpportunityService()
-                                                  .getEntity(item['DEAL_ID'].toString());
-                                              Navigator.push(
-                                                context,
-                                                MaterialPageRoute(
-                                                  builder: (context) {
-                                                    return DynamicOpportunityTabScreen(
-                                                      entity: deal.data,
-                                                      title: widget.entity['PROJECT_TITLE'] != null
-                                                          ? widget.entity['PROJECT_TITLE']
-                                                          : "",
-                                                      readonly: true,
-                                                      moduleId: "006",
-                                                      entityType: widget.type,
-                                                      isRelatedEntity: true,
-                                                    );
-                                                  },
-                                                ),
-                                              );
-                                            } else if (widget.type.contains("notes")) {
-                                              dynamic response = await DynamicProjectService()
-                                                  .getProjectNote(widget.type, item['NOTE_ID']);
-                                              Navigator.push(
-                                                context,
-                                                MaterialPageRoute(
-                                                  builder: (context) {
-                                                    return DynamicProjectNotes(
-                                                      project: provider.getCompanyEntity,
-                                                      typeNote: widget.type,
-                                                      notesData: response,
-                                                      isNewNote: false,
-                                                      entityType: widget.entityType,
-                                                    );
-                                                  },
-                                                ),
-                                              );
-                                            } else if (widget.type == "opp history") {
-                                            } else if (widget.type == "quotes") {
-                                              dynamic quotation = await DynamicProjectService()
-                                                  .getEntityById("QUOTATION", item['QUOTE_ID']);
-                                              quotation.data['ACCT_ID'] = item['ACCT_ID'];
-                                              quotation.data['ACCTNAME'] = item['ACCTNAME'];
-                                              Navigator.push(
-                                                context,
-                                                MaterialPageRoute(
-                                                  builder: (context) {
-                                                    return DynamicQuotationTabScreen(
-                                                      entity: quotation.data,
-                                                      title: widget.entity['DESCRIPTION'] != null
-                                                          ? widget.entity['DESCRIPTION']
-                                                          : "",
-                                                      readonly: true,
-                                                      moduleId: "007",
-                                                      entityType: widget.type,
-                                                      isRelatedEntity: true,
-                                                    );
-                                                  },
-                                                ),
-                                              );
-                                            } else if (widget.type == "projects") {
-                                              print("widget.type${widget.type}");
-                                              dynamic project = await ProjectService()
-                                                  .getEntity(item['PROJECT_ID']);
-                                              print("projectbalue$project");
-                                              Navigator.push(
-                                                context,
-                                                MaterialPageRoute(
-                                                  builder: (context) {
-                                                    return DynamicProjectTabScreen(
-                                                      entity: project.data,
-                                                      title: widget.entity['PROJECT_TITLE'] != null
-                                                          ? widget.entity['PROJECT_TITLE']
-                                                          : "",
-                                                      readonly: true,
-                                                      moduleId: "005",
-                                                      entityType: widget.type,
-                                                      isRelatedEntity: true,
-                                                    );
-                                                  },
-                                                ),
-                                              );
-                                            } else {
-                                              print("do nothing");
-                                              print("item$item");
-                                              if (widget.title == "P2P Quotes") {
-                                                dynamic response =
-                                                await service.getSubTabListEntityValues(
-                                                    "QTIT_API", "QUOTE_ID", item["QUOTE_ID"]);
-                                                print(response);
-                                                Navigator.push(
-                                                  context,
-                                                  MaterialPageRoute(
-                                                    builder: (context) {
-                                                      return DynamicSubTabListingScreen(
-                                                        list: response,
-                                                        title: widget.title,
-                                                        entityType: widget.entityType,
-                                                        project: provider.getCompanyEntity,
-                                                      );
-                                                    },
-                                                  ),
-                                                );
-                                              } else if (widget.title == "Invoice Information") {
-                                                dynamic response =
-                                                await service.getSubTabListEntityValues(
-                                                    "INITEM_API",
-                                                    "INVOICE_ID",
-                                                    item["INVOICE_ID"]);
-                                                print(response);
-                                                Navigator.push(
-                                                  context,
-                                                  MaterialPageRoute(
-                                                    builder: (context) {
-                                                      return DynamicSubTabListingScreen(
-                                                        list: response,
-                                                        title: widget.title,
-                                                        entityType: widget.entityType,
-                                                        project: provider.getCompanyEntity,
-                                                      );
-                                                    },
-                                                  ),
-                                                );
-                                              } else if (widget.title == "Order Information") {
-                                                dynamic response =
-                                                await service.getSubTabListEntityValues(
-                                                    "ORITEM_API",
-                                                    "ORDERINFO_ID",
-                                                    item["ORDERINFO_ID"]);
-                                                print(response);
-                                                Navigator.push(
-                                                  context,
-                                                  MaterialPageRoute(
-                                                    builder: (context) {
-                                                      return DynamicSubTabListingScreen(
-                                                        list: response,
-                                                        title: widget.title,
-                                                        entityType: widget.entityType,
-                                                        project: provider.getCompanyEntity,
-                                                      );
-                                                    },
-                                                  ),
-                                                );
-                                              }
+                                          onPressed: () {
+                                            if(AuthUtil.hasAccess(
+                                                int.parse(ACCESS_CODES['Show Dynamic Forms for New Records'].toString()))) {
+                                              handleOnTapFunction(item);
                                             }
-
-                                            context.loaderOverlay.hide();
+                                            else{
+                                              handleOnNonDynamic(item);
+                                            }
                                           },
                                           icon: Icon(context
                                               .platformIcons.rightChevron)),
@@ -1064,6 +728,400 @@ class _DynamicCompanyRelatedEntityScreenState
         }
     );
   }
+  Future<void> handleOnNonDynamic(dynamic item) async {
+    print("widget.type check${widget.type}");
+    if (widget.type == "companies") {
+      dynamic company =
+      await CompanyService().getEntity(item["ACCT_ID"]);
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) {
+            return CompanyEditScreen(
+              company: company.data,
+              readonly: true,
+            );
+          },
+        ),
+      );
+    } else if (widget.type == "contacts") {
+      dynamic contact =
+      await ContactService().getEntity(item['CONT_ID']);
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) {
+            return ContactEditScreen(
+              contact: contact.data,
+              readonly: true,
+            );
+          },
+        ),
+      );
+    } else if (widget.type == "actions") {
+      dynamic action = await ActionService()
+          .getEntity(item['ACTION_ID']);
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) {
+            return ActionEditScreen(
+              action: action.data,
+              readonly: true,
+              popScreens: 1,
+            );
+          },
+        ),
+      );
+    } else if (widget.type == "opportunities") {
+      print(
+          "deal id valeudifgc${widget
+              .entity['DEAL_DEAL_ID']}");
+      dynamic deal = await OpportunityService()
+          .getEntity(item['DEAL_ID'].toString());
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) {
+            return OpportunityEditScreen(
+              deal: deal.data,
+              readonly: true,
+            );
+          },
+        ),
+      );
+    } else if (widget.type.contains("notes")) {
+      dynamic response = await DynamicProjectService()
+          .getProjectNote(widget.type, item['NOTE_ID']);
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) {
+            return DynamicProjectNotes(
+              project: _dynamicTabProvider.getCompanyEntity,
+              typeNote: widget.type,
+              notesData: response,
+              isNewNote: false,
+              entityType: widget.entityType,
+            );
+          },
+        ),
+      );
+    } else if (widget.type == "opp history") {} else
+    if (widget.type == "quotes") {
+      print("projectbalue${item}");
+      dynamic quotation =
+      await DynamicProjectService()
+          .getEntityById("QUOTATION",
+          item['QUOTE_ID']);
+      print("projectbalue${item['ACCT_ID']}");
+      print("projectbalue${item['ACCTNAME']}");
+      quotation.data['ACCT_ID'] = item['ACCT_ID'];
+      quotation.data['ACCTNAME'] = item['ACCTNAME'];
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) {
+            return DynamicQuotationAddScreen(
+              quotation: quotation.data,
+              readonly: true,
+            );
+          },
+        ),
+      );
+    } else if (widget.type == "projects") {
+      print("widget.type${widget.type}");
+      dynamic project = await ProjectService()
+          .getEntity(item['PROJECT_ID']);
+      print("projectbalue$project");
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) {
+            return DynamicProjectAddScreen(
+              project: project.data,
+              readonly: true,
+            );
+          },
+        ),
+      );
+    }
+    else {
+      print("do nothing");
+      print("item$item");
+      if (widget.title == "P2P Quotes") {
+        dynamic response = await service
+            .getSubTabListEntityValues(
+            "QTIT_API", "QUOTE_ID", item["QUOTE_ID"]);
+        print(response);
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) {
+              return DynamicSubTabListingScreen(
+                list: response,
+                title: widget.title,
+                entityType: widget.entityType,
+                project: _dynamicTabProvider.getCompanyEntity,
+              );
+            },
+          ),
+        );
+      } else if (widget.title == "Invoice Information") {
+        dynamic response = await service
+            .getSubTabListEntityValues(
+            "INITEM_API", "INVOICE_ID", item["INVOICE_ID"]);
+        print(response);
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) {
+              return DynamicSubTabListingScreen(
+                list: response,
+                title: widget.title,
+                entityType: widget.entityType,
+                project: _dynamicTabProvider.getCompanyEntity,
+
+              );
+            },
+          ),
+        );
+      }
+      else if (widget.title == "Order Information") {
+        dynamic response = await service
+            .getSubTabListEntityValues(
+            "ORITEM_API", "ORDERINFO_ID", item["ORDERINFO_ID"]);
+        print(response);
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) {
+              return DynamicSubTabListingScreen(
+                list: response,
+                title: widget.title,
+                entityType: widget.entityType,
+                project: _dynamicTabProvider.getCompanyEntity,
+
+              );
+            },
+          ),
+        );
+      }
+    }
+    context.loaderOverlay.hide();
+  }
+
+  Future<void> handleOnTapFunction(dynamic item) async {
+      print("widget.type check${widget.type}");
+      if (widget.type == "companies") {
+        dynamic company =
+            await CompanyService().getEntity(item["ACCT_ID"]);
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) {
+              return DynamicCompanyTabScreen(
+                entity: company.data,
+                title: widget.entity['PROJECT_TITLE'] != null
+                    ? widget.entity['PROJECT_TITLE']
+                    : "",
+                readonly: true,
+                moduleId: "003",
+                entityType: widget.type,
+                isRelatedEntity: true,
+              );
+            },
+          ),
+        );
+      } else if (widget.type == "contacts") {
+        dynamic contact =
+            await ContactService().getEntity(item['CONT_ID']);
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) {
+              return DynamicContactTabScreen(
+                entity: contact.data,
+                title: widget.entity['PROJECT_TITLE'] != null
+                    ? widget.entity['PROJECT_TITLE']
+                    : "",
+                readonly: true,
+                moduleId: "004",
+                entityType: widget.type,
+                isRelatedEntity: true,
+              );
+            },
+          ),
+        );
+      } else if (widget.type == "actions") {
+        dynamic action = await ActionService()
+            .getEntity(item['ACTION_ID']);
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) {
+              return DynamicActionTabScreen(
+                entity: action.data,
+                title: widget.entity['PROJECT_TITLE'] != null
+                    ? widget.entity['PROJECT_TITLE']
+                    : "",
+                readonly: true,
+                moduleId: "009",
+                entityType: widget.type,
+                isRelatedEntity: true,
+              );
+            },
+          ),
+        );
+      } else if (widget.type == "opportunities") {
+        print(
+            "deal id valeudifgc${_dynamicTabProvider.getCompanyEntity['DEAL_DEAL_ID']}");
+        dynamic deal = await OpportunityService()
+            .getEntity(item['DEAL_ID'].toString());
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) {
+              return DynamicOpportunityTabScreen(
+                entity: deal.data,
+                title: widget.entity['PROJECT_TITLE'] != null
+                    ? widget.entity['PROJECT_TITLE']
+                    : "",
+                readonly: true,
+                moduleId: "006",
+                entityType: widget.type,
+                isRelatedEntity: true,
+              );
+            },
+          ),
+        );
+      } else if (widget.type.contains("notes")) {
+        dynamic response = await DynamicProjectService()
+            .getProjectNote(widget.type, item['NOTE_ID']);
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) {
+              return DynamicProjectNotes(
+                project: _dynamicTabProvider.getCompanyEntity,
+                typeNote: widget.type,
+                notesData: response,
+                isNewNote: false,
+                entityType: widget.entityType,
+              );
+            },
+          ),
+        );
+      } else
+      if (widget.type == "opp history") {} else if (widget.type == "quotes") {
+        dynamic quotation = await DynamicProjectService()
+            .getEntityById("QUOTATION", item['QUOTE_ID']);
+        quotation.data['ACCT_ID'] = item['ACCT_ID'];
+        quotation.data['ACCTNAME'] = item['ACCTNAME'];
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) {
+              return DynamicQuotationTabScreen(
+                entity: quotation.data,
+                title: widget.entity['DESCRIPTION'] != null
+                    ? widget.entity['DESCRIPTION']
+                    : "",
+                readonly: true,
+                moduleId: "007",
+                entityType: widget.type,
+                isRelatedEntity: true,
+              );
+            },
+          ),
+        );
+      } else if (widget.type == "projects") {
+        print("widget.type${widget.type}");
+        dynamic project = await ProjectService()
+            .getEntity(item['PROJECT_ID']);
+        print("projectbalue$project");
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) {
+              return DynamicProjectTabScreen(
+                entity: project.data,
+                title: widget.entity['PROJECT_TITLE'] != null
+                    ? widget.entity['PROJECT_TITLE']
+                    : "",
+                readonly: true,
+                moduleId: "005",
+                entityType: widget.type,
+                isRelatedEntity: true,
+              );
+            },
+          ),
+        );
+      } else {
+        print("do nothing");
+        print("item$item");
+        if (widget.title == "P2P Quotes") {
+          dynamic response =
+              await service.getSubTabListEntityValues(
+              "QTIT_API", "QUOTE_ID", item["QUOTE_ID"]);
+          print(response);
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) {
+                return DynamicSubTabListingScreen(
+                  list: response,
+                  title: widget.title,
+                  entityType: widget.entityType,
+                  project: _dynamicTabProvider.getCompanyEntity,
+                );
+              },
+            ),
+          );
+        } else if (widget.title == "Invoice Information") {
+          dynamic response =
+              await service.getSubTabListEntityValues(
+              "INITEM_API",
+              "INVOICE_ID",
+              item["INVOICE_ID"]);
+          print(response);
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) {
+                return DynamicSubTabListingScreen(
+                  list: response,
+                  title: widget.title,
+                  entityType: widget.entityType,
+                  project: _dynamicTabProvider.getCompanyEntity,
+                );
+              },
+            ),
+          );
+        } else if (widget.title == "Order Information") {
+          dynamic response =
+              await service.getSubTabListEntityValues(
+              "ORITEM_API",
+              "ORDERINFO_ID",
+              item["ORDERINFO_ID"]);
+          print(response);
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) {
+                return DynamicSubTabListingScreen(
+                  list: response,
+                  title: widget.title,
+                  entityType: widget.entityType,
+                  project: _dynamicTabProvider.getCompanyEntity,
+                );
+              },
+            ),
+          );
+        }
+      }
+      context.loaderOverlay.hide();
+    }
 
   onLinkEdit(int index) async {
     context.loaderOverlay.show();

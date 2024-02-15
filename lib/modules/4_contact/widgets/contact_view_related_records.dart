@@ -51,7 +51,7 @@ class ContactViewRelatedRecords extends StatelessWidget {
                     style: TextStyle(color: Colors.black),
                   ),
                   SizedBox(width: 20,),
-                  Text(_entity["ACCTNAME"]!=null?_entity["ACCTNAME"]:""),
+                  Expanded(child: Text(_entity["ACCTNAME"]!=null?_entity["ACCTNAME"]:"")),
                   Spacer(),
                   IconButton(onPressed: () async {
                       if (_entity['ACCT_ID'] != null) {

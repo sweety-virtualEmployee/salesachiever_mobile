@@ -63,6 +63,8 @@ class _PsaRelatedValueRowState extends State<PsaRelatedValueRow> {
   callApi(String type) async {
     print("type check");
     print(type);
+    print(widget.entity);
+    print(widget.entity?["Data_Value"]);
     print(widget.entity?["ACCT_ID"]);
     context.loaderOverlay.show();
     if (type == "ACCT_ID") {
@@ -79,7 +81,7 @@ class _PsaRelatedValueRowState extends State<PsaRelatedValueRow> {
           print(companyData["ACCTNAME"]);
         });
       }
-      else if (widget.entity?["Data_Value"]) {
+      else if (widget.entity?["Data_Value"]!=null) {
         var company = await CompanyService().getEntity(widget.entity?["Data_Value"]);
         print("comapny${company.data}");
         setState(() {
@@ -106,7 +108,7 @@ class _PsaRelatedValueRowState extends State<PsaRelatedValueRow> {
           ]);
         });
       }
-      else if (widget.entity?["Data_Value"]) {
+      else if (widget.entity?["Data_Value"]!=null) {
         var contact = await ContactService().getEntity(widget.entity?["Data_Value"]);
         print("Contfdjkvbg$contact");
         setState(() {
@@ -131,7 +133,7 @@ class _PsaRelatedValueRowState extends State<PsaRelatedValueRow> {
           ]);
         });
       }
-      else if (widget.entity?["Data_Value"]) {
+      else if (widget.entity?["Data_Value"]!=null) {
         var project = await ProjectService().getEntity(widget.entity?["Data_Value"]);
         setState(() {
           projectData = project.data;
@@ -155,7 +157,7 @@ class _PsaRelatedValueRowState extends State<PsaRelatedValueRow> {
             ]);
           });
         }
-        else if (widget.entity?["Data_Value"]) {
+        else if (widget.entity?["Data_Value"]!=null) {
           var deal = await OpportunityService().getEntity(widget.entity?["Data_Value"]);
           setState(() {
             opportunityData = deal.data;
