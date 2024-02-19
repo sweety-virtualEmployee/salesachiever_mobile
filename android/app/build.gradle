@@ -47,7 +47,7 @@ android {
     defaultConfig {
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
         applicationId "com.constructioncrm.universal"
-        minSdkVersion 20
+        minSdkVersion 21
         targetSdkVersion 33
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
@@ -68,6 +68,13 @@ android {
            //signingConfig signingConfigs.debug
        }
    }
+
+    task wrapper(type: Wrapper){
+        gradleVersion = '7.2'
+    }
+    task prepareKotlinBuildScriptModel {
+
+    }
 }
 
 flutter {

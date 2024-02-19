@@ -59,20 +59,36 @@ class DateUtil {
   }
 
   static String formatDate(String dateStr, String timeStr) {
+    print("datSrring$dateStr");
+    print("datSrring$timeStr");
+    print("datSrring${dateStr.contains("T")}");
     if(dateStr.contains("T")){
       List<String> arrActionDate = dateStr.split("T");
       String strDate = arrActionDate[0];
-      List<String> arrActionTime = timeStr.split(" ");
-      String strTime = arrActionTime[1];
+      List<String> arrActionTime;
+      String strTime;
+      if (timeStr.contains("T")) {
+        arrActionTime = timeStr.split("T");
+        strTime = arrActionTime[1];
+      } else {
+        arrActionTime = timeStr.split(" ");
+        strTime = arrActionTime[1];
+      }
       String formattedDate = "$strDate $strTime";
       return formattedDate;
-
     }
     else{
       List<String> arrActionDate = dateStr.split(" ");
       String strDate = arrActionDate[0];
-      List<String> arrActionTime = timeStr.split(" ");
-      String strTime = arrActionTime[1];
+      List<String> arrActionTime;
+      String strTime;
+      if (timeStr.contains("T")) {
+        arrActionTime = timeStr.split("T");
+        strTime = arrActionTime[1];
+      } else {
+        arrActionTime = timeStr.split(" ");
+        strTime = arrActionTime[1];
+      }
 
       String formattedDate = "$strDate $strTime";
       return formattedDate;
