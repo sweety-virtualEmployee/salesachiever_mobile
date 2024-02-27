@@ -37,7 +37,7 @@ class _DynamicReportScreenState extends State<DynamicReportScreen> {
               onTap: () async {
                 final String encodedString = await service.getGeneratedReports(widget.reports[index]["ID"],widget.reports[index]["Title"],widget.id);
                 print("encode string $encodedString");
-                saveBase64AsPdf(encodedString,context,widget.reports[index]["Title"]);
+                saveBase64AsPdf(encodedString,context,widget.reports[index]["Title"],false,"");
               },
               child: Container(
                 margin: EdgeInsets.symmetric(horizontal: 20,vertical: 10),

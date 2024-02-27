@@ -9,6 +9,7 @@ import 'package:salesachiever_mobile/modules/dynamic_module/5_dynamic_project/sc
 import 'package:salesachiever_mobile/modules/dynamic_module/5_dynamic_project/screens/project/dynamic_project_related_entity.dart';
 import 'package:salesachiever_mobile/modules/dynamic_module/5_dynamic_project/services/dynamic_project_service.dart';
 import 'package:salesachiever_mobile/modules/dynamic_module/5_dynamic_project/widgets/common_header.dart';
+import 'package:salesachiever_mobile/modules/dynamic_module/dynamic_staffzone/dynamic_Staffzone_list_Screen.dart';
 import 'package:salesachiever_mobile/shared/widgets/layout/psa_scaffold.dart';
 import 'package:salesachiever_mobile/utils/error_util.dart';
 import 'package:salesachiever_mobile/utils/lang_util.dart';
@@ -111,6 +112,8 @@ class _DynamicProjectTabScreenState extends State<DynamicProjectTabScreen> {
                                     _onPTap(provider, index);
                                   } else if (tabProjectData[index]['TAB_TYPE'] == "L") {
                                     _onLTap(provider, index);
+                                  } else if (tabProjectData[index]['TAB_TYPE'] == "S") {
+                                    _onSTap(provider, index);
                                   }
                                 },
                                 child: Container(
@@ -158,6 +161,25 @@ class _DynamicProjectTabScreenState extends State<DynamicProjectTabScreen> {
         ),
       );
     });
+  }
+
+  void _onSTap(DynamicTabProvide provider, int index)  {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) =>
+            DynamicStaffZoneListScreen(
+             relatedEntityType: widget.entityType,
+              staffZoneType: tabProjectData[index]['TAB_LIST']
+                  .toString(),
+              title:  tabProjectData[index]['TAB_DESC']
+                  .toString(),
+              tableName: tabProjectData[index]['TAB_TABLE_NAME']
+                .toString(),
+              id: provider.getProjectEntity["PROJECT_ID"],
+            ),
+      ),
+    );
   }
 
   void _onITap(DynamicTabProvide provider, int index)  {

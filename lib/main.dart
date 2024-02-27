@@ -8,6 +8,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart' show ProviderScope;
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:salesachiever_mobile/modules/dynamic_module/5_dynamic_project/provider/dynamic_tab_provider.dart';
+import 'package:salesachiever_mobile/modules/dynamic_module/dynamic_staffzone/provider/dynamic_staffzone_provider.dart';
 import 'package:salesachiever_mobile/shared/models/locale.dart';
 import 'package:salesachiever_mobile/utils/local_session_timeout.dart';
 import 'package:salesachiever_mobile/utils/navigation_Services.dart';
@@ -87,7 +88,9 @@ class AppRootState extends State<AppRoot> {
     Timer.periodic(oneSec, (Timer t) => checkTimeRemaining());
     return MultiProvider(
       providers: [
-       ChangeNotifierProvider(create: (context) => DynamicTabProvide()),],
+       ChangeNotifierProvider(create: (context) => DynamicTabProvide()),
+       ChangeNotifierProvider(create: (context) => DynamicStaffZoneProvider()),
+      ],
       child: PlatformApp(
       debugShowCheckedModeBanner: false,
       navigatorKey: NavigationService.navigatorKey,

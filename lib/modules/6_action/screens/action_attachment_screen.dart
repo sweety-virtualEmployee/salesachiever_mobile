@@ -148,7 +148,8 @@ class _ActionAttachmentScreenState extends State<ActionAttachmentScreen> {
     try {
       _imageList.forEach((image) async {
         print(path.extension(image["FILE"].toString()));
-        print(image["FILE"]);
+        print(image['ISNEW']);
+
         if (image['ISNEW'] == true) {
           var uuid = Uuid().v1().toUpperCase();
           print("dir$_dir");
@@ -171,7 +172,7 @@ class _ActionAttachmentScreenState extends State<ActionAttachmentScreen> {
             'FILENAME': '${widget.action['ACCTNAME']}' '$uuid' '${path.extension(image["FILE"].toString())}',
           };
 
-
+          await SitePhotoService().uploadBlob(blob);
           File('$_dir/$uuid.zip').deleteSync();
 
            _fetchImages();
@@ -267,7 +268,7 @@ class _ActionAttachmentScreenState extends State<ActionAttachmentScreen> {
           }
         });
       }
-
+      print("image list $_imageList");
       loadMore = !response['IsLastPage'];
       pageNumber++;
     }
@@ -414,6 +415,7 @@ class PhotoTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    print("fule copy$file");
     return GestureDetector(
       onTap: () => onTap(),
       child: Container(

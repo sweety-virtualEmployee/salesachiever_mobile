@@ -234,7 +234,12 @@ class DynamicProjectService extends EntityService {
     log("subscripbed values ---$dataResult");
     return dataResult;
   }
-
+  Future<List> getStaffZoneSubScribedReports(String type) async {
+    final dynamic response = await DynamicProjectApi().getStaffZoneSubscribedReports(type);
+    final List<dynamic> dataResult = response;
+    log("subscripbed values ---$dataResult");
+    return dataResult;
+  }
   Future<String> getGeneratedReports(String reportId,String reportTitle,String id) async {
     final dynamic response = await DynamicProjectApi().getGeneratedReports(reportId,reportTitle,id);
     final String dataResult = response;
@@ -321,7 +326,7 @@ class DynamicProjectService extends EntityService {
      return DynamicProjectApi().deleteSortApi(varname,type, listName);
 
   }
-  Future<List<dynamic>> getStaffZoneEntity(String entityType,String fieldName,String staffZoneType,String id,List<dynamic>? sortBy,) async{
+  Future<List<dynamic>> getStaffZoneEntity(String entityType,String fieldName,String staffZoneType,String id, [List<dynamic>? sortBy]) async{
     var data = await DynamicProjectApi().getStaffZoneEntityApi(entityType,fieldName,staffZoneType,id,sortBy);
     List<dynamic> items = data['Items'];
     return items;

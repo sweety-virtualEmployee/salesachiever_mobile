@@ -1,50 +1,62 @@
 import 'dart:convert';
 import 'dart:io';
-import 'dart:typed_data';
-import 'dart:ui' as ui;
 import 'package:archive/archive_io.dart';
 import 'package:dio/dio.dart';
-import 'package:archive/archive.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:loader_overlay/loader_overlay.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:provider/provider.dart';
 import 'package:salesachiever_mobile/modules/3_company/services/company_service.dart';
 import 'package:salesachiever_mobile/modules/4_contact/services/contact_service.dart';
 import 'package:salesachiever_mobile/modules/5_project/services/project_service.dart';
 import 'package:salesachiever_mobile/modules/99_50021_site_photos/services/site_photo_service.dart';
 import 'package:salesachiever_mobile/modules/dynamic_module/5_dynamic_project/services/dynamic_project_service.dart';
-import 'package:salesachiever_mobile/modules/dynamic_module/dynamic_staffzone/dynamic_staffzone_view_related_records.dart';
-import 'package:salesachiever_mobile/shared/services/data_field_service.dart';
+import 'package:salesachiever_mobile/modules/dynamic_module/5_dynamic_project/widgets/dynamicPsaLooksUp.dart';
+import 'package:salesachiever_mobile/modules/dynamic_module/dynamic_staffzone/provider/dynamic_staffzone_provider.dart';
 import 'package:salesachiever_mobile/shared/services/lookup_service.dart';
 import 'package:salesachiever_mobile/shared/widgets/buttons/psa_edit_button.dart';
+import 'package:salesachiever_mobile/shared/widgets/forms/psa_checkbox_row.dart';
+import 'package:salesachiever_mobile/shared/widgets/forms/psa_county_dropdown_row.dart';
+import 'package:salesachiever_mobile/shared/widgets/forms/psa_datefield_row.dart';
+import 'package:salesachiever_mobile/shared/widgets/forms/psa_dropdown_row.dart';
+import 'package:salesachiever_mobile/shared/widgets/forms/psa_floatfield_row.dart';
+import 'package:salesachiever_mobile/shared/widgets/forms/psa_multiselect_row.dart';
+import 'package:salesachiever_mobile/shared/widgets/forms/psa_numberfield_row.dart';
+import 'package:salesachiever_mobile/shared/widgets/forms/psa_related_value_record.dart';
+import 'package:salesachiever_mobile/shared/widgets/forms/psa_textareafield_row.dart';
+import 'package:salesachiever_mobile/shared/widgets/forms/psa_textfield_row.dart';
+import 'package:salesachiever_mobile/shared/widgets/forms/psa_timefield_row.dart';
 import 'package:salesachiever_mobile/shared/widgets/layout/psa_scaffold.dart';
 import 'package:salesachiever_mobile/shared/widgets/psa_header.dart';
 import 'package:salesachiever_mobile/utils/decode_base64_util.dart';
 import 'package:salesachiever_mobile/utils/error_util.dart';
+import 'package:salesachiever_mobile/utils/lang_util.dart';
 import 'package:salesachiever_mobile/utils/message_util.dart';
-import 'package:signature/signature.dart';
-import 'package:image/image.dart' as img;
 import 'package:uuid/uuid.dart';
 
 class DynamicStaffZoneEditScreen extends StatefulWidget {
   final Map<String, dynamic> entity;
   final bool readonly;
+  final bool isNew;
   final String id;
   final String relatedEntityType;
   final String tableName;
   final String title;
+  final String staffZoneType;
 
   const DynamicStaffZoneEditScreen({
     Key? key,
     required this.entity,
     required this.readonly,
+    required this.isNew,
     required this.id,
     required this.relatedEntityType,
     required this.tableName,
     required this.title,
+    required this.staffZoneType,
   }) : super(key: key);
 
   @override
@@ -64,20 +76,18 @@ class _DynamicStaffZoneEditScreenState
   bool isLoading = false;
   static final key = GlobalKey<FormState>();
   final picker = ImagePicker();
+  late DynamicStaffZoneProvider _dynamicStaffZoneProvider;
 
   @override
   void initState() {
+    super.initState();
+    _dynamicStaffZoneProvider = Provider.of<DynamicStaffZoneProvider>(context,listen: false);
     _readonly = widget.readonly;
     _entity = widget.entity;
     activeFields = [];
     mandatoryFields = [];
-    print("id${widget.id}");
-    print("tablename${widget.tableName}");
-    print("title${widget.title}");
-    print("id${widget.entity}");
     if (_entity['ENTITY_ID'] == null) {
       var defaultValues = LookupService().getDefaultValues(widget.tableName);
-
       defaultValues.forEach((element) {
         _entity[element['FIELD_NAME']] = element['PROPERTY_VALUE'];
       });
@@ -98,17 +108,13 @@ class _DynamicStaffZoneEditScreenState
   }
 
   Future<void> fetchDetails() async {
-    activeFields = await DynamicProjectService()
-        .getStaffZoneActiveFields(widget.tableName);
+    activeFields = await DynamicProjectService().getStaffZoneActiveFields(widget.tableName);
     mandatoryFields = await LookupService().getMandatoryFields();
-    print("mandatoryfields$mandatoryFields");
     if (_entity['ENTITY_ID'] != null) {
-      print("yes it is not null");
       if (_entity["ACCT_ID"] != null) {
         var company = await CompanyService().getEntity(_entity["ACCT_ID"]);
         if (company?.data != null) {
           var response1 = company.data;
-
           setState(() {
             _entity["ACCT_ID"] = response1["ACCT_ID"];
             _entity["ACCTNAME"] = response1["ACCTNAME"];
@@ -183,34 +189,276 @@ class _DynamicStaffZoneEditScreenState
     setState(() {
       _entity[key] = value;
     });
-
-    print("on change entity$_entity");
     validate();
   }
 
-  final SignatureController _controller = SignatureController(
-    penStrokeWidth: 1,
-    penColor: Colors.red,
-    exportBackgroundColor: Colors.white,
-    exportPenColor: Colors.black,
-    onDrawStart: () {
-      print("on draw started");
-    },
-    onDrawEnd: () {
-      print("on draw end");
-    },
-  );
+  onRelatedValueSave(List<dynamic> entity) {
+    entity.forEach((prop) {
+      setState(() {
+        _entity[prop['KEY']] = prop['VALUE'];
+      });
+    });
+    print("Efgerugvjrwi${_entity}");
+  }
+
+
+  Widget generateFields(
+      Key key,
+      String type,
+      dynamic entity,
+      List<dynamic> filedList,
+      List<dynamic> mandatoryFields,
+      bool readonly,
+      Function onChange,
+      [String? updatedFieldKey]) {
+    List<Widget> widgets = [];
+      for (dynamic field in filedList) {
+        print("field of entity${field}");
+        var isRequired = mandatoryFields.any((e) =>
+        e['TABLE_NAME'] == field['TABLE_NAME'] &&
+            e['FIELD_NAME'] == field['FIELD_NAME']);
+        switch (field['FIELD_TYPE']) {
+          case 'L':
+            if (field['TABLE_NAME'] == 'ACCOUNT' &&
+                field['FIELD_NAME'] == 'COUNTY') {
+              widgets.add(
+                PsaCountyDropdownRow(
+                  isRequired: isRequired,
+                  tableName: field['TABLE_NAME'],
+                  fieldName: field['FIELD_NAME'],
+                  title: LangUtil.getString(
+                      field['TABLE_NAME'], field['FIELD_NAME']),
+                  value: entity?[field['FIELD_NAME']]?.toString() ?? '',
+                  readOnly: readonly ||
+                      (field['DISABLED'] != null && field['DISABLED']),
+                  onChange: (_, __) => onChange(_, __, isRequired),
+                  country: entity?['COUNTRY']?.toString() ?? '',
+                ),
+              );
+            } else if (field['TABLE_NAME'] == 'PROJECT' &&
+                field['FIELD_NAME'] == 'SITE_COUNTY') {
+              print("thia");
+              widgets.add(
+                PsaCountyDropdownRow(
+                  isRequired: isRequired,
+                  tableName: field['TABLE_NAME'],
+                  fieldName: field['FIELD_NAME'],
+                  title: LangUtil.getString(
+                      field['TABLE_NAME'], field['FIELD_NAME']),
+                  value: entity?[field['FIELD_NAME']]?.toString() ?? '',
+                  readOnly: readonly ||
+                      (field['DISABLED'] != null && field['DISABLED']),
+                  onChange: (_, __) => onChange(_, __, isRequired),
+                  country: entity?['SITE_COUNTRY']?.toString() ?? '',
+                ),
+              );
+            } else {
+              print("no");
+              widgets.add(
+                PsaDropdownRow(
+                  type: type,
+                  isRequired: isRequired,
+                  tableName: field['TABLE_NAME'],
+                  fieldName: field['FIELD_NAME'],
+                  title: LangUtil.getString(
+                      field['TABLE_NAME'], field['FIELD_NAME']),
+                  value: entity?[field['FIELD_NAME']]?.toString() ?? '',
+                  readOnly: readonly ||
+                      (field['DISABLED'] != null && field['DISABLED']),
+                  onChange: (_, __) => onChange(_, __, isRequired),
+                ),
+              );
+            }
+            break;
+          case 'C':
+            if (field["FIELD_NAME"].contains("_ID")) {
+              print("field['Data${field['FIELD_NAME']}");
+              widgets.add(PsaRelatedValueRow(
+                title:
+                LangUtil.getString(field['TABLE_NAME'], field['FIELD_NAME']),
+                value: entity?[field['FIELD_NAME']]?.toString() ?? '',
+                type: field['FIELD_NAME'],
+                entity: _entity,
+                onChange: onRelatedValueSave,
+                onTap: () {},
+                isVisible: true,
+                isRequired: isRequired,
+              ));
+
+            }
+            else {
+              widgets.add(
+                PsaTextFieldRow(
+                  isRequired: isRequired,
+                  fieldKey: field['FIELD_NAME'],
+                  title: LangUtil.getString(
+                      field['TABLE_NAME'], field['FIELD_NAME']),
+                  value: entity?[field['FIELD_NAME']]?.toString(),
+                  keyboardType: TextInputType.text,
+                  readOnly: readonly ||
+                      (field['DISABLED'] != null && field['DISABLED']),
+                  onChange: (_, __) => onChange(_, __, isRequired),
+                  updatedFieldKey: updatedFieldKey,
+                ),
+              );
+            }
+            break;
+          case 'I':
+            if (field['FIELD_TYPE'] == "I") {
+              print("field name checking ${entity?[field['FIELD_NAME']]}");
+              print("field name checking ${[field['FIELD_NAME']]}");
+            }
+            widgets.add(
+              PsaNumberFieldRow(
+                isRequired: isRequired,
+                fieldKey: field['FIELD_NAME'],
+                title: LangUtil.getString(
+                    field['TABLE_NAME'], field['FIELD_NAME']),
+                value: entity?[field['FIELD_NAME']],
+                keyboardType: TextInputType.number,
+                readOnly: readonly ||
+                    (field['DISABLED'] != null && field['DISABLED']),
+                onChange: (_, __) => onChange(_, __, isRequired),
+              ),
+            );
+            break;
+          case 'F':
+            widgets.add(
+              PsaFloatFieldRow(
+                isRequired: isRequired,
+                fieldKey: field['FIELD_NAME'],
+                title: LangUtil.getString(
+                    field['TABLE_NAME'], field['FIELD_NAME']),
+                value: entity?[field['FIELD_NAME']],
+                keyboardType: TextInputType.numberWithOptions(decimal: true),
+                readOnly: readonly ||
+                    (field['DISABLED'] != null && field['DISABLED']),
+                onChange: (_, __) => onChange(_, __, isRequired),
+              ),
+            );
+            break;
+          case 'D':
+            widgets.add(
+              PsaDateFieldRow(
+                isRequired: isRequired,
+                fieldKey: field['FIELD_NAME'],
+                title: LangUtil.getString(
+                    field['TABLE_NAME'], field['FIELD_NAME']),
+                value: entity?[field['FIELD_NAME']]?.toString() ?? '',
+                readOnly: readonly ||
+                    (field['DISABLED'] != null && field['DISABLED']),
+                onChange: (_, __) => onChange(_, __, isRequired),
+              ),
+            );
+            break;
+          case 'B':
+            print(
+                "LangUtil.getString(field['TABLE_NAME'], field['FIELD_NAME'])${LangUtil
+                    .getString(
+                    field['TABLE_NAME'], field['FIELD_NAME'])}");
+            widgets.add(
+              PsaCheckBoxRow(
+                isRequired: isRequired,
+                fieldKey: field['FIELD_NAME'],
+                title: LangUtil.getString(
+                    field['TABLE_NAME'], field['FIELD_NAME']),
+                value: entity?[field['FIELD_NAME']],
+                readOnly: readonly ||
+                    (field['DISABLED'] != null && field['DISABLED']),
+                onChange: (_, __) => onChange(_, __, isRequired),
+              ),
+            );
+            break;
+          case 'T':
+            widgets.add(
+              PsaTimeFieldRow(
+                isRequired: isRequired,
+                fieldKey: field['FIELD_NAME'],
+                title: LangUtil.getString(
+                    field['TABLE_NAME'], field['FIELD_NAME']),
+                value: entity?[field['FIELD_NAME']]?.toString() ?? '',
+                readOnly: readonly ||
+                    (field['DISABLED'] != null && field['DISABLED']),
+                onChange: (_, __) => onChange(_, __, isRequired),
+              ),
+            );
+            break;
+          case 'M':
+            widgets.add(
+              PsaTextAreaFieldRow(
+                isRequired: isRequired,
+                fieldKey: field['FIELD_NAME'],
+                title: LangUtil.getString(
+                    field['TABLE_NAME'], field['FIELD_NAME']),
+                value: entity?[field['FIELD_NAME']]?.toString() ?? '',
+                readOnly: readonly ||
+                    (field['DISABLED'] != null && field['DISABLED']),
+                onChange: (_, __) => onChange(_, __, isRequired),
+              ),
+            );
+            break;
+          case 'U':
+            widgets.add(
+              DynamicPsaDropdownRow(
+                type: type,
+                isRequired: isRequired,
+                fieldKey: field['FIELD_NAME'],
+                tableName: field['LKTable'],
+                fieldName: field['LKField'],
+                returnField: field['LKReturn'],
+                lkApi: field['LKAPI'],
+                title: LangUtil.getString(
+                    field['TABLE_NAME'], field['FIELD_NAME']),
+                value: entity?[field['FIELD_NAME']]?.toString() ?? '',
+                readOnly: readonly ||
+                    (field['DISABLED'] != null && field['DISABLED']),
+                onChange: (_, __) => onChange(_, __, isRequired),
+              ),
+            );
+            break;
+          case 'V':
+            widgets.add(
+              PsaMultiSelectRow(
+                type: type,
+                isRequired: isRequired,
+                tableName: field['TABLE_NAME'],
+                fieldName: field['FIELD_NAME'],
+                selectedValue: field['Data_Value'],
+                title: LangUtil.getString(
+                    field['TABLE_NAME'], field['FIELD_NAME']),
+                value: entity?[field['Data_Value']]?.toString() ?? '',
+                readOnly: readonly ||
+                    (field['DISABLED'] != null && field['DISABLED']),
+                onChange: (_, __) => onChange(_, __, isRequired),
+              ),
+            );
+            break;
+          case 'Z':
+            widgets.add(PsaRelatedValueRow(
+              title:
+              LangUtil.getString(field['TABLE_NAME'], field['FIELD_NAME']),
+              value: field['Data_Value'],
+              type: field['FIELD_NAME'],
+              entity: field,
+              onChange: onRelatedValueSave,
+              onTap: () {},
+              isVisible: true,
+            ));
+        }
+      }
+    return CupertinoFormSection(
+      key: key,
+      children: widgets.length > 0 ? widgets : [Container()],
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
-    print("ActiveFields$activeFields");
-    print("isvalide$_isValid");
-    print("_readonly$_readonly");
     var visibleFields = activeFields.where((e) => e['COLVAL']).toList();
     return PsaScaffold(
-      action: Row(
+      action: widget.isNew?Row(
         children: [
-          _entity['ENTITY_ID']!=null
+          _entity['ENTITY_ID']!= null
               ? GestureDetector(
                   child: PsaEditButton(
                     text: 'Upload',
@@ -222,14 +470,11 @@ class _DynamicStaffZoneEditScreenState
               ? GestureDetector(
                   child: PsaEditButton(
                     text: 'Print',
-                    onTap: (){
-                      showDialog(
-                        context: context,
-                        builder: (BuildContext context) {
-                          return signaturePad();
-                        },
-                      );
-                    },
+                    onTap: () async {
+                      dynamic value = await DynamicProjectService().getStaffZoneSubScribedReports(widget.staffZoneType);
+                      dynamic encodedString = await DynamicProjectService().getStaffZoneGeneratedReports(value[0]["ID"],value[0]["Title"], _entity['ENTITY_ID']);
+                      saveBase64AsPdf(encodedString,context,widget.title,true,_entity['ENTITY_ID']);
+                      },
                   ),
                 )
               : SizedBox(),
@@ -238,97 +483,14 @@ class _DynamicStaffZoneEditScreenState
             onTap: onTap,
           ),
         ],
-      ),
-      title: "Add new ${widget.title}",
+      ):SizedBox(),
+      title:  _entity['ENTITY_ID']!= null? "${widget.title}" :"Add new ${widget.title}",
       body: Container(
         child: buildBody(visibleFields),
       ),
     );
   }
 
-  Widget signaturePad() {
-   return Dialog(
-     insetPadding: EdgeInsets.only(left: 5,right: 5),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(2.0),
-      ),
-      child: Container(
-        width: double.infinity,
-        padding: EdgeInsets.all(16.0),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(
-              'Sign Here',
-              style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
-            ),
-            SizedBox(height: 16.0),
-            Signature(
-              controller: _controller,
-              height: 250,
-            ),
-            SizedBox(height: 16.0),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                ElevatedButton(
-                  onPressed: () {
-                    // Clear the signature
-                    _controller.clear();
-                  },
-                  child: Text('Clear'),
-                ),
-                ElevatedButton(
-                  onPressed: () {
-                    // Save or process the signature
-                    convertSignatureToImage();
-                  },
-                  child: Text('Upload'),
-                ),
-              ],
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-  Future<void>convertSignatureToImage() async {
-    try {
-      ui.Image? image = await _controller.toImage();
-      ByteData? byteData = await image!.toByteData(format: ui.ImageByteFormat.png);
-      Uint8List byteList = byteData!.buffer.asUint8List();
-      img.Image imgImage = img.decodeImage(byteList)!;
-      final directory = await getApplicationDocumentsDirectory();
-      final filePath = '${directory.path}/signature_image.png';
-      final pdfFile = File(filePath);
-      await pdfFile.writeAsBytes(img.encodePng(imgImage));
-      print("File written to: $filePath");
-      Archive archive = Archive()
-        ..addFile(ArchiveFile('signature_image.png', pdfFile.lengthSync(), pdfFile.readAsBytesSync()));
-      final zipFilePath = '${directory.path}/signature_image.zip';
-      final zipFile = File(zipFilePath);
-      await zipFile.writeAsBytes(Uint8List.fromList(ZipEncoder().encode(archive)!));
-      print("Zip file written to: $zipFilePath");
-      var bytes = File(zipFilePath).readAsBytesSync();
-      print("Zip file read as bytes");
-      String base64Image = base64Encode(bytes);
-      print("Base64 encoded image: $base64Image");
-      var blob = {
-        'ENTITY_ID': widget.id,
-        "ENTITY_NAME": "AUTH_SIG",
-        "FILENAME": "Signature.png",
-        'BLOB_DATA': base64Image,
-      };
-
-      print("Blob data: ${blob.toString()}");
-      await SitePhotoService().uploadBlob(blob);
-      final String encodedString = await DynamicProjectService().getStaffZoneGeneratedReports(_entity["ENTITY_ID"],"",widget.id);
-      print("encode string $encodedString");
-      saveBase64AsPdf(encodedString,context,widget.title);
-    } catch (e) {
-      print("Error during conversion: $e");
-    }
-  }
 
 
 
@@ -338,14 +500,14 @@ class _DynamicStaffZoneEditScreenState
         PsaHeader(
           isVisible: true,
           icon: 'assets/images/create_record_icon.png',
-          title: "Add new ${widget.title}",
+          title: _entity['ENTITY_ID']!= null? "${widget.title}" :"Add new ${widget.title}",
         ),
         Expanded(
           child: SingleChildScrollView(
             child: Column(
               children: [
                 Container(
-                  child: DataFieldService().generateFields(
+                  child: generateFields(
                     key,
                     widget.tableName,
                     _entity,
@@ -354,12 +516,6 @@ class _DynamicStaffZoneEditScreenState
                     _readonly,
                     _onChange,
                   ),
-                ),
-                DynamicStaffZoneDataViewRelatedRecords(
-                  staffZone: _entity,
-                  readonly: _readonly,
-                  onChange: _onChange,
-                  staffZoneId: _entity["${widget.tableName}_ID"] ?? "",
                 ),
               ],
             ),
@@ -398,7 +554,7 @@ class _DynamicStaffZoneEditScreenState
               });
             },
           ),
-       /*   CupertinoActionSheetAction(
+          CupertinoActionSheetAction(
             child: const Text('Choose Image from Gallery'),
             onPressed: () async {
               Navigator.pop(context);
@@ -448,16 +604,15 @@ class _DynamicStaffZoneEditScreenState
                 }
               });
             },
-          )*/
+          )
         ],
       ),
     );
   }
 
   Future uploadImages() async {
-    context.loaderOverlay.show();
-
     try {
+      String fieldName="";
       _imageList.forEach((image) async {
         print(image["FILE"]);
           var uuid = Uuid().v1().toUpperCase();
@@ -467,12 +622,10 @@ class _DynamicStaffZoneEditScreenState
           encoder.addFile(image['FILE']);
           encoder.close();
           print(encoder);
-
           var bytes = File('$_dir/$uuid.zip').readAsBytesSync();
           print("bytes");
           String base64Image = base64Encode(bytes);
           print("base64iamge$base64Image");
-
           var blob = {
             'DESCRIPTION': image['DESCRIPTION'],
             'ENTITY_ID':  _entity['ENTITY_ID'],
@@ -480,13 +633,24 @@ class _DynamicStaffZoneEditScreenState
             'FILENAME': '${ _entity['ENTITY_ID']}' '$uuid' '',
             'BLOB_DATA': base64Image,
           };
-
         print("Blob data: ${blob.toString()}");
         await SitePhotoService().uploadBlob(blob);
-          File('$_dir/$uuid.zip').deleteSync();
-
+        File('$_dir/$uuid.zip').deleteSync();
       });
-
+      if (widget.relatedEntityType == "COMPANY") {
+        fieldName = "ACCT_ID";
+      } else if (widget.relatedEntityType == "PROJECT") {
+        fieldName = "PROJECT_ID";
+      } else if (widget.relatedEntityType == "CONTACT") {
+        fieldName = "CONT_ID";
+      }
+      var result = await DynamicProjectService().getStaffZoneEntity(
+          widget.tableName,
+          fieldName,
+          widget.staffZoneType,
+          widget.id);
+      _dynamicStaffZoneProvider.setStaffZoneEntity(result);
+      Navigator.pop(context);
     } on DioError catch (e) {
       ErrorUtil.showErrorMessage(context, e.message);
     } catch (e) {
@@ -494,8 +658,6 @@ class _DynamicStaffZoneEditScreenState
     } finally {
       context.loaderOverlay.hide();
    }
-
-
   }
 
   void validate() {
@@ -507,28 +669,23 @@ class _DynamicStaffZoneEditScreenState
   }
 
   void onTap() async {
-    if (_readonly) {
-      setState(() => _readonly = !_readonly);
-      return;
-    }
-
     await saveProject();
   }
 
   Future<void> saveProject() async {
     try {
       context.loaderOverlay.show();
-
       if (_entity['ENTITY_ID'] != null) {
         await DynamicProjectService().updateStaffZoneEntity(
             _entity!['ENTITY_ID'], _entity, widget.tableName);
       } else {
         var newEntity = await DynamicProjectService()
             .addNewStaffZoneEntity(_entity, widget.tableName);
-        _entity['ENTITY_ID'] = newEntity['ENTITY_ID'];
+        setState(() {
+          _entity['ENTITY_ID'] = newEntity['ENTITY_ID'];
+        });
       }
-
-      setState(() => _readonly = !_readonly);
+      print("_entity$_entity");
     } on DioError catch (e) {
       ErrorUtil.showErrorMessage(context, e.message);
     } catch (e) {

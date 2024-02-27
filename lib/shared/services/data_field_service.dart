@@ -24,7 +24,9 @@ class DataFieldService {
       [String? updatedFieldKey]) {
     List<Widget> widgets = [];
     print("filedList of the projecy$filedList");
-    print("filedList of the projecy$entity");
+    print("filedList of the projecy$mandatoryFields");
+    print("in this value check");
+    print(mandatoryFields.where((element) =>element['TABLE_NAME'] == "ACCIDENT_RECORD"));
     for (dynamic field in filedList) {
       var isRequired = mandatoryFields.any((e) =>
           e['TABLE_NAME'] == field['TABLE_NAME'] &&

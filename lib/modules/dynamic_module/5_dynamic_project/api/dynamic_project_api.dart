@@ -249,12 +249,22 @@ class DynamicProjectApi {
     return response.data;
   }
 
+  Future<dynamic> getStaffZoneSubscribedReports(String category) async {
+    print("area$category");
+    final response = await Api().getResult(
+        '$api/Report/Report.SubscribedReports?id=current_user&Category=RA&Type=Profile');
+    print("subscribed reports");
+    print(response);
+    return response.data;
+  }
+
+
   Future<dynamic> getGeneratedReports(
       String reportId, String reportTitle, String id) async {
     String localeId = StorageUtil.getString('localeId');
     print("localedID$localeId");
     final response = await Api().getResult(
-        '$api/Report/Report.GenerateReport?ReportId=$reportId&ReportTitle=$reportTitle&ACCT_ID=$id&PROJECT_ID=$id&CONTACT_ID=$id&DEAL_ID=$id&ACTION_ID$id&QUOTE_ID=$id&LOCALE_ID=$localeId');
+        '$api/Report/Report.GenerateReport?ReportId=$reportId&ReportTitle=$reportTitle&ACCT_ID=$id&PROJECT_ID=$id&CONTACT_ID=$id&DEAL_ID=$id&ACTION_ID$id&QUOTE_ID=$id&ENTITY_ID=$id&LOCALE_ID=$localeId');
     print("generated reports");
     print(response);
     return response.data;
