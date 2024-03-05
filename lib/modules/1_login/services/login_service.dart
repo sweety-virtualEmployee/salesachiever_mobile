@@ -126,7 +126,7 @@ class LoginService {
     await lookupService.getIpadFields('quotation', dynmaicUIEnabled);
     await lookupService.getIpadFields('rate_agreement', dynmaicUIEnabled);
     await lookupService.getIpadFields('job_order', dynmaicUIEnabled);
-    await lookupService.getIpadFields('initial_site_visit', dynmaicUIEnabled);
+    await lookupService.getIpadFields('isv', dynmaicUIEnabled);
     await lookupService.getIpadFields('accident_record', dynmaicUIEnabled);
     await lookupService.getIpadFields('initial_order', dynmaicUIEnabled);
   }
@@ -141,7 +141,7 @@ class LoginService {
     await lookupService.getUserFields('quotation');
     await lookupService.getUserFields('rate_agreement');
     await lookupService.getUserFields('job_order');
-    await lookupService.getUserFields('initial_site_visit');
+    await lookupService.getUserFields('isv');
     await lookupService.getUserFields('accident_record');
     await lookupService.getUserFields('initial_order');
   }

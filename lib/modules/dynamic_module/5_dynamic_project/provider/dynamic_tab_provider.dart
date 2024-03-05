@@ -24,7 +24,7 @@ class DynamicTabProvide extends ChangeNotifier {
   }
   setProjectEntity(Map<String, dynamic> newMap) async{
     _projectEntity = newMap;
-    notifyListeners();
+    //notifyListeners();
   }
   setContactEntity(Map<String, dynamic> newMap) async{
     _contactEntity = newMap;

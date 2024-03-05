@@ -37,7 +37,7 @@ void main() async {
   await Hive.openBox<dynamic>('activeFields_quotation');
   await Hive.openBox<dynamic>('activeFields_rate_agreement');
   await Hive.openBox<dynamic>('activeFields_job_order');
-  await Hive.openBox<dynamic>('activeFields_initial_site_visit');
+  await Hive.openBox<dynamic>('activeFields_isv');
   await Hive.openBox<dynamic>('activeFields_initial_order');
   await Hive.openBox<dynamic>('activeFields_accident_record');
   await Hive.openBox<dynamic>('activeFields_action');
@@ -52,7 +52,7 @@ void main() async {
   await Hive.openBox<dynamic>('userFields_deal_potential');
   await Hive.openBox<dynamic>('userFields_rate_agreement');
   await Hive.openBox<dynamic>('userFields_job_order');
-  await Hive.openBox<dynamic>('userFields_initial_site_visit');
+  await Hive.openBox<dynamic>('userFields_isv');
   await Hive.openBox<dynamic>('userFields_initial_order');
   await Hive.openBox<dynamic>('userFields_accident_record');
   await Hive.openBox<dynamic>('accessRights');

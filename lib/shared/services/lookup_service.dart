@@ -86,7 +86,7 @@ class LookupService {
         iPadFields = potentialFields;
       else if(entityType.toLowerCase() == 'job_order')
         iPadFields = potentialFields;
-      else if(entityType.toLowerCase() == 'initial_site_visit')
+      else if(entityType.toLowerCase() == 'isv')
         iPadFields = potentialFields;
       else if(entityType.toLowerCase() == 'accident_record')
         iPadFields = potentialFields;

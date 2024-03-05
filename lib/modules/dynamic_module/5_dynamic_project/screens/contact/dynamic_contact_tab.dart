@@ -4,14 +4,12 @@ import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:loader_overlay/loader_overlay.dart';
 import 'package:provider/provider.dart';
 import 'package:salesachiever_mobile/modules/dynamic_module/5_dynamic_project/provider/dynamic_tab_provider.dart';
-import 'package:salesachiever_mobile/modules/dynamic_module/5_dynamic_project/screens/company/dynamic_company_tab.dart';
 import 'package:salesachiever_mobile/modules/dynamic_module/5_dynamic_project/screens/contact/dynamic_contact_edit_screen.dart';
 import 'package:salesachiever_mobile/modules/dynamic_module/5_dynamic_project/screens/contact/dynamic_contact_info_screen.dart';
 import 'package:salesachiever_mobile/modules/dynamic_module/5_dynamic_project/screens/contact/dynamic_contact_related_entity.dart';
-import 'package:salesachiever_mobile/modules/dynamic_module/5_dynamic_project/screens/dynamic_project_notes.dart';
-import 'package:salesachiever_mobile/modules/dynamic_module/5_dynamic_project/screens/project/dynamic_project_tab.dart';
 import 'package:salesachiever_mobile/modules/dynamic_module/5_dynamic_project/services/dynamic_project_service.dart';
 import 'package:salesachiever_mobile/modules/dynamic_module/5_dynamic_project/widgets/common_header.dart';
+import 'package:salesachiever_mobile/modules/dynamic_module/dynamic_staffzone/dynamic_Staffzone_list_Screen.dart';
 import 'package:salesachiever_mobile/shared/widgets/layout/psa_scaffold.dart';
 import 'package:salesachiever_mobile/utils/error_util.dart';
 import 'package:salesachiever_mobile/utils/lang_util.dart';
@@ -118,6 +116,9 @@ class _DynamicContactTabScreen extends State<DynamicContactTabScreen> {
                                   } else if (tabContactData[index]['TAB_TYPE'] == "L") {
                                     _onLTap(provider, index);
                                   }
+                                  else if (tabContactData[index]['TAB_TYPE'] == "S") {
+                                    _onSTap(provider, index);
+                                  }
                                 },
                                 child: Container(
                                   color: Colors.white,
@@ -165,6 +166,28 @@ class _DynamicContactTabScreen extends State<DynamicContactTabScreen> {
       );
     });
   }
+
+
+  void _onSTap(DynamicTabProvide provider, int index)  {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) =>
+            DynamicStaffZoneListScreen(
+              relatedEntityType: widget.entityType,
+              staffZoneType: tabContactData[index]['TAB_LIST']
+                  .toString(),
+              title:  tabContactData[index]['TAB_DESC']
+                  .toString(),
+              tableName: tabContactData[index]['TAB_TABLE_NAME']
+                  .toString(),
+              id: provider.getContactEntity["CONT_ID"],
+            ),
+      ),
+    );
+  }
+
+
   void _onITap(DynamicTabProvide provider, int index)  {
      Navigator.push(
         context,

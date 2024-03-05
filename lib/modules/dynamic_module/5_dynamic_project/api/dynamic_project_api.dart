@@ -252,7 +252,7 @@ class DynamicProjectApi {
   Future<dynamic> getStaffZoneSubscribedReports(String category) async {
     print("area$category");
     final response = await Api().getResult(
-        '$api/Report/Report.SubscribedReports?id=current_user&Category=RA&Type=Profile');
+        '$api/Report/Report.SubscribedReports?id=current_user&Category=$category&Type=Profile');
     print("subscribed reports");
     print(response);
     return response.data;

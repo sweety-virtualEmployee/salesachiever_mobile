@@ -17,7 +17,6 @@ class _DynamicReportScreenState extends State<DynamicReportScreen> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     print("next page reports");
     print(widget.reports);

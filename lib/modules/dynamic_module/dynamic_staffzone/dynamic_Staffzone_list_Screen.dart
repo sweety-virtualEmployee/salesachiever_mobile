@@ -8,7 +8,6 @@ import 'package:loader_overlay/loader_overlay.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:salesachiever_mobile/modules/99_50021_site_photos/services/site_photo_service.dart';
-import 'package:salesachiever_mobile/modules/dynamic_module/dynamic_staffzone/dyanmic_Staffzone_document_view.dart';
 import 'package:salesachiever_mobile/modules/dynamic_module/dynamic_staffzone/dynamic_staffzone_edit_screen.dart';
 import 'package:salesachiever_mobile/modules/dynamic_module/5_dynamic_project/services/dynamic_project_service.dart';
 import 'package:salesachiever_mobile/modules/dynamic_module/dynamic_staffzone/provider/dynamic_staffzone_provider.dart';
@@ -181,11 +180,15 @@ class _DynamicStaffZoneListScreenState
                                                   item['LINK_DOCUMENT_BLOB_ID'])
                                               .then((blob) async {
                                             try {
+                                              print("blob chekcing$blob");
                                               var decodedBytes = base64.decode(
                                                   blob.replaceAll('\r\n', ''));
+                                              print("decode bytes$decodedBytes");
                                               final archive = ZipDecoder()
                                                   .decodeBytes(decodedBytes);
+                                              print("archive$archive");
                                               File? outFile;
+
 
                                               for (var file in archive) {
                                                 final directory =

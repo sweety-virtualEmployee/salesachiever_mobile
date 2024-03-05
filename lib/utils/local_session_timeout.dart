@@ -8,15 +8,11 @@ import 'navigation_Services.dart';
 checkTimeRemaining() async {
   final  prefs = await SharedPreferences.getInstance();
   int? timestamp = prefs.getInt('myTimestampKey');
-    print('check timestamp${timestamp}');
     if(timestamp!=null){
       DateTime dateTime = DateTime.fromMillisecondsSinceEpoch(timestamp);
-      print("timestamp date${dateTime}");
       var currentTime = DateTime.now();
       var diff = currentTime.difference(dateTime).inMinutes;
-      print("difference${diff}");
       if(diff>=30){
-        print("move to login screen");
         final prefs = await SharedPreferences.getInstance();
         prefs.remove('myTimestampKey');
         Navigator.push(
@@ -28,8 +24,6 @@ checkTimeRemaining() async {
         );
 
       }
-      print("difference${currentTime}");
-      print("difference${dateTime}");
     }
   }
 
