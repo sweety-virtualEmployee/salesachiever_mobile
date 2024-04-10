@@ -13,7 +13,8 @@ class DynamicSubTabListingScreen extends StatelessWidget {
 
 
 
-  DynamicSubTabListingScreen({Key? key, this.list, required this.title,required this.entityType,this.project
+  DynamicSubTabListingScreen({Key? key, this.list,
+    required this.title,required this.entityType,this.project
   })
       : super(key: key);
 
@@ -22,6 +23,7 @@ class DynamicSubTabListingScreen extends StatelessWidget {
     return PsaScaffold(
         title: title,
         body: Column(
+
           children: [
             Container(
                 height: 70,
@@ -59,7 +61,12 @@ class DynamicSubTabListingScreen extends StatelessWidget {
                                                   .fromLTRB(
                                                   0, 4, 0, 4),
                                               child: Text(
-                                                '${LangUtil.getString('${entry.key.contains("_") ? entry.key.substring(0, entry.key.indexOf('_')) : ""}', '${entry.key.split('_').length < 3 ? entry.key : entry.key.contains("_") ? entry.key.substring(entry.key.indexOf("_") + 1) : entry.key}')} :',
+                                                '${LangUtil.getString('${entry.key.contains("_") ?
+                                                entry.key.substring(0, entry.key.indexOf('_')) : ""}',
+                                                    '${entry.key.split('_').length < 3 ?
+                                                    entry.key : entry.key.contains("_") ?
+                                                    entry.key.substring(entry.key.indexOf("_") + 1) :
+                                                    entry.key}')} :',
                                                 style: TextStyle(
                                                     fontWeight:
                                                     FontWeight

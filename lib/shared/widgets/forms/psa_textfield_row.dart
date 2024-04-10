@@ -51,6 +51,7 @@ class _PsaTextFieldRowState extends State<PsaTextFieldRow> {
 
   @override
   Widget build(BuildContext context) {
+    print("widget.titile${widget.title}");
 
     _validNumber =  RegExp(r'^[789]\d{13}$').hasMatch(textController.text);
  //   bool _validURL = Uri.parse(textController.text).isAbsolute;
@@ -95,8 +96,6 @@ class _PsaTextFieldRowState extends State<PsaTextFieldRow> {
                   ),
                   style: TextStyle(
                       color:  widget.title == "Web Site"?Colors.blue:widget.title == "Telephone # (Cell)"?Colors.blue:widget.title == "Telephone # (Direct)"?Colors.blue: widget.title == "Telephone # (Home)"?Colors.blue:
-
-
                       widget.title == "Telephone number"?Colors.blue: _validEmail || _validNumber!
                           ? Colors.blue
                           : Colors.grey.shade700,

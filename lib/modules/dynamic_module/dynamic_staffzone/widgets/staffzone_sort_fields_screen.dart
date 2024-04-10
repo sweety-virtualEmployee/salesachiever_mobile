@@ -1,33 +1,36 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
-import 'package:salesachiever_mobile/modules/dynamic_module/dynamic_staffzone/selected_staffzone_sort_order_Screen.dart';
-import 'package:salesachiever_mobile/shared/screens/sorting/select_sort_order_screen.dart';
+import 'package:salesachiever_mobile/modules/dynamic_module/dynamic_staffzone/widgets/selected_staffzone_sort_order_Screen.dart';
 import 'package:salesachiever_mobile/shared/widgets/layout/psa_scaffold.dart';
 import 'package:salesachiever_mobile/shared/models/locale.dart';
 import 'package:salesachiever_mobile/utils/lang_util.dart';
 
 class StaffZoneSortFieldsScreen extends StatelessWidget {
   final String title;
-  final String type;
-  final String list;
+  final String relatedEntityType;
+  final String tableName;
+  final String staffZoneType;
   final String id;
+  final String staffZoneListTitle;
   final List<dynamic>? sortBy;
 
   const StaffZoneSortFieldsScreen(
       {Key? key,
-        required this.title,
-        required this.type,
-        required this.list,
+        required this.tableName,
+        required this.relatedEntityType,
+        required this.staffZoneType,
         required this.id,
+        required this.staffZoneListTitle,
+        required this.title,
         this.sortBy})
       : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    print("type value$type");
+    print("type value$tableName");
     List<Locale> dataList;
-      dataList = LangUtil.getLocaleList(type);
+      dataList = LangUtil.getLocaleList(tableName);
       dataList.sort((a, b) => a.displayValue.compareTo(b.displayValue));
       print("data list ${dataList.toString()}");
     return PsaScaffold(
@@ -49,10 +52,12 @@ class StaffZoneSortFieldsScreen extends StatelessWidget {
                   context: context,
                   builder: (BuildContext context) => SelectStaffZoneSortOrderScreen(
                     title: title,
-                    entity: type,
+                    staffZoneType: staffZoneType,
+                    tableName: tableName,
                     sortBy: sortBy,
                     field: dataList[index].itemId,
-                    list: list,
+                    relatedEntityType: relatedEntityType,
+                    staffZoneListTitle:staffZoneListTitle,
                     id: id,
                   ),
                 ),

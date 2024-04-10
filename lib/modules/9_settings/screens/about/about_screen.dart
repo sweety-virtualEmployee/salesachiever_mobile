@@ -52,7 +52,7 @@ class AboutScreen extends StatelessWidget {
             ),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-              child: Text('© ${DateTime.now().year} SalesAchiever.net Ltd'),
+              child: Text('© ${DateTime.now().year} SalesAchiever.net LEttd'),
             ),
           ],
         ),

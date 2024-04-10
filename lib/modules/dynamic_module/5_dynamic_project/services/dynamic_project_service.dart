@@ -326,10 +326,9 @@ class DynamicProjectService extends EntityService {
      return DynamicProjectApi().deleteSortApi(varname,type, listName);
 
   }
-  Future<List<dynamic>> getStaffZoneEntity(String entityType,String fieldName,String staffZoneType,String id, [List<dynamic>? sortBy]) async{
-    var data = await DynamicProjectApi().getStaffZoneEntityApi(entityType,fieldName,staffZoneType,id,sortBy);
-    List<dynamic> items = data['Items'];
-    return items;
+  Future<dynamic> getStaffZoneEntity(String entityType,String fieldName,String staffZoneType,String id,int page, [List<dynamic>? sortBy]) async{
+    var data = await DynamicProjectApi().getStaffZoneEntityApi(entityType,fieldName,staffZoneType,id,page,sortBy);
+    return data;
   }
 
 

@@ -1,4 +1,4 @@
-
+/**/
 import 'dart:async';
 import  'dart:io';
 import 'package:flutter/cupertino.dart';
@@ -81,8 +81,6 @@ class AppRootState extends State<AppRoot> {
   void initState() {
     super.initState();
   }
-
-  @override
   Widget build(BuildContext context) {
     const oneSec = Duration(seconds:120);
     Timer.periodic(oneSec, (Timer t) => checkTimeRemaining());

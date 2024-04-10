@@ -123,7 +123,8 @@ class _DynamicCompanyEditScreenState extends State<DynamicCompanyEditScreen> {
     List<Widget> widgets = [];
     if (fieldData != null) {
       for (dynamic field in filedList) {
-        print("field of entity${_dynamicTabProvider.getCompanyEntity}");
+        print("field of entity${field['FIELD_TYPE']}");
+        print("field of entity${field['FIELD_NAME']}");
         var isRequired = mandatoryFields.any((e) =>
         e['TABLE_NAME'] == field['TABLE_NAME'] &&
             e['FIELD_NAME'] == field['FIELD_NAME']);

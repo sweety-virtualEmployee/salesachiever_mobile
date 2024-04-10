@@ -674,7 +674,7 @@ class _DynamicStaffZoneEditScreenState
       }
 
       var result = await DynamicProjectService().getStaffZoneEntity(
-          widget.tableName, fieldName, widget.staffZoneType, widget.id
+          widget.tableName, fieldName, widget.staffZoneType, widget.id,1,
       );
 
       await _dynamicStaffZoneProvider.setStaffZoneEntity(result);

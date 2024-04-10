@@ -384,15 +384,16 @@ class DynamicProjectApi {
   }
 
 
-  Future<dynamic> getStaffZoneEntityApi(String tableName,String fieldName,String staffZoneType,String id,List<dynamic>? sortBy,) async {
+  Future<dynamic> getStaffZoneEntityApi(String tableName,String fieldName,String staffZoneType,String id,int page,List<dynamic>? sortBy,) async {
     List<dynamic> headers = [];
+    print("sort by odf sort by $sortBy");
     var filter = [{"TableName": tableName,"FieldName":fieldName,"Comparison":5,"ItemValue":id}];
     if (sortBy != null) {
       headers.add({'key': 'SortSet', 'headers': jsonEncode(sortBy)});
     }
     headers.add({'key': 'FilterSet', 'headers': jsonEncode(filter)});
     final response = await Api().get(
-        '$api$staffZoneType?PageSize=10&PageNumber=1',headers);
+        '$api$staffZoneType?PageSize=10&PageNumber=$page',headers);
     return response.data;
   }
 

@@ -6,10 +6,12 @@ import 'package:salesachiever_mobile/shared/widgets/layout/psa_scaffold.dart';
 
 class SelectStaffZoneSortOrderScreen extends StatelessWidget {
   final String title;
-  final String entity;
+  final String staffZoneType;
   final String field;
-  final String list;
+  final String relatedEntityType;
+  final String staffZoneListTitle;
   final String id;
+  final String tableName;
   final List<dynamic>? sortBy;
   final List<dynamic> items = [
     {'key': 1, 'value': 'Ascending'},
@@ -19,11 +21,13 @@ class SelectStaffZoneSortOrderScreen extends StatelessWidget {
   SelectStaffZoneSortOrderScreen({
     Key? key,
     required this.title,
-    required this.entity,
+    required this.tableName,
+    required this.staffZoneType,
     required this.field,
-    required this.list,
+    required this.relatedEntityType,
     this.sortBy,
     required this.id,
+    required this.staffZoneListTitle,
   }) : super(key: key);
 
   @override
@@ -45,36 +49,29 @@ class SelectStaffZoneSortOrderScreen extends StatelessWidget {
                   items[index]['value'],
                 ),
               ),
-              onTap: () => Navigator.push(
+              onTap: () => Navigator.pushReplacement(
                 context,
                 platformPageRoute(
                   context: context,
                   builder: (BuildContext context) {
-                    List<dynamic> sort =
-                    new List<dynamic>.empty(growable: true);
-
-                    if (sortBy != null) sort.addAll(sortBy!);
+                    List<dynamic> sort = List<dynamic>.from(sortBy ?? []);
 
                     sort.add({
-                      'TableName': entity,
+                      'TableName': tableName,
                       'FieldName': field,
                       'SortOrder': items[index]['key'],
                       'SortIndex': 0
                     });
 
-                    print("sortbyb dta$sort");
-                    print("sortby$list");
-                    print("sortby$id");
-                    print("sortby$entity");
-
-                      return DynamicStaffZoneListScreen(tableName: "",
-                        sortBy: sort,
-                        staffZoneType:entity,
-                        id: id,
-                        relatedEntityType: list,
-                        title:"",
-                      );
-                      },
+                    return DynamicStaffZoneListScreen(
+                      tableName: tableName,
+                      sortBy: sort,
+                      staffZoneType: staffZoneType,
+                      id: id,
+                      relatedEntityType: relatedEntityType,
+                      title: staffZoneListTitle,
+                    );
+                  },
                 ),
               ),
             );

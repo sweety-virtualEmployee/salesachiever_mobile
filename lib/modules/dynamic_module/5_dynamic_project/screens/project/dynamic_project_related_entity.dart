@@ -109,7 +109,7 @@ class _DynamicProjectRelatedEntityScreenState
     context.loaderOverlay.hide();
   }
 
-  void _loadNextPage() async {
+  void _loadNextPage() async {   
     if (isLastPage == false) {
       pageNumber = pageNumber + 1;
       var listData = await service.getTabListEntityApi(
