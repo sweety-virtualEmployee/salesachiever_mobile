@@ -96,7 +96,9 @@ class _PsaTextFieldRowState extends State<PsaTextFieldRow> {
                   ),
                   style: TextStyle(
                       color:  widget.title == "Web Site"?Colors.blue:widget.title == "Telephone # (Cell)"?Colors.blue:widget.title == "Telephone # (Direct)"?Colors.blue: widget.title == "Telephone # (Home)"?Colors.blue:
-                      widget.title == "Telephone number"?Colors.blue: _validEmail || _validNumber!
+                      widget.title == "Telephone number"?Colors.blue:
+                      widget.title == "Office Phone"?Colors.blue:
+                      widget.title == "Phone Number"?Colors.blue: _validEmail || _validNumber!
                           ? Colors.blue
                           : Colors.grey.shade700,
                       fontSize: 15),
@@ -109,7 +111,7 @@ class _PsaTextFieldRowState extends State<PsaTextFieldRow> {
                       _launchURL(textController.text);
                     else if ( _validEmail)
                       _launchURL('mailto:${textController.text}');
-                    else if ( widget.title=="Telephone number"|| widget.title=="Telephone # (Cell)"|| widget.title=="Telephone # (Direct)"|| widget.title=="Telephone # (Home)")
+                    else if ( widget.title=="Telephone number"|| widget.title=="Telephone # (Cell)"|| widget.title=="Telephone # (Direct)"|| widget.title=="Telephone # (Home)"||widget.title=="Phone Number"||widget.title=="Office Phone")
                      CustomUrlLauncher.launchPhoneURL(textController.text);
                   },
                   onChanged: (value) {

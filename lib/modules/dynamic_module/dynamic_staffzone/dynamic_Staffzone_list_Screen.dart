@@ -17,6 +17,8 @@ import 'package:salesachiever_mobile/modules/dynamic_module/dynamic_staffzone/wi
 import 'package:salesachiever_mobile/modules/dynamic_module/dynamic_staffzone/widgets/dynamic_photo_preview_screen.dart';
 import 'package:salesachiever_mobile/shared/widgets/buttons/psa_add_button.dart';
 import 'package:salesachiever_mobile/shared/widgets/layout/psa_scaffold.dart';
+import 'package:salesachiever_mobile/utils/copy_util.dart';
+import 'package:salesachiever_mobile/utils/date_util.dart';
 import 'package:salesachiever_mobile/utils/error_util.dart';
 import 'package:salesachiever_mobile/utils/lang_util.dart';
 import 'package:salesachiever_mobile/utils/message_util.dart';
@@ -209,6 +211,10 @@ class _DynamicStaffZoneListScreenState
                                 var item = provider.getStaffZoneEntity[index];
                                 return GestureDetector(
                                   onTap: () async {
+                                    if(item['HAS_LINK_DOCUMENT'] == "Y"){
+                                      CopyUtil.showCopyMessage(context, () => onCopy(item["ENTITY_ID"]));
+                                    }
+                                    else{
                                     var result = await DynamicProjectService()
                                         .getStaffZoneEntity(
                                             widget.tableName,
@@ -233,7 +239,7 @@ class _DynamicStaffZoneListScreenState
                                         ),
                                       ),
                                     );
-                                  },
+                                  }},
                                   child: Column(
                                     children: [
                                       Row(
@@ -263,7 +269,7 @@ class _DynamicStaffZoneListScreenState
                                                 ),
                                                 SizedBox(height: 5),
                                                 PlatformText(
-                                                  "Submitted On: ${item['SUBMITTED_ON'] ?? ''}",
+                                                  "Submitted On: ${DateUtil.getFormattedDate(item['SUBMITTED_ON'] ?? '')}",
                                                   style: TextStyle(
                                                     fontWeight: FontWeight.w300,
                                                     color: Colors.black87,
@@ -403,4 +409,12 @@ class _DynamicStaffZoneListScreenState
       }
     );
   }
+
+  Future<void> onCopy(String entityId) async {
+     var newEntity = await DynamicProjectService()
+         .copyNewStaffZoneEntity(widget.tableName, entityId);
+     print("newEntity$newEntity");
+     _dynamicStaffZoneProvider.clearData();
+     fetchData();
+   }
 }

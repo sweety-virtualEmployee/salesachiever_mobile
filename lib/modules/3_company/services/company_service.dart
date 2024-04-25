@@ -59,7 +59,7 @@ class CompanyService extends EntityService {
   Future<dynamic> getCompanyNote(String companyId) async {
     var data = await _companyApi.getCompanyNotes(companyId);
     List<dynamic> notes = data['Items'];
-
+    print("notes$notes");
     return notes;
   }
 

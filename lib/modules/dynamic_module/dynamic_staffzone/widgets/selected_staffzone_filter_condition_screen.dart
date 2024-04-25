@@ -27,7 +27,8 @@ class SelectStaffZoneFilterConditionScreen extends StatelessWidget {
     required this.staffZoneListTitle,
     required this.id,
     this.sortBy,
-    this.filterBy, required this.relatedEntityType,
+    this.filterBy,
+    required this.relatedEntityType,
   }) : super(key: key);
 
   @override
@@ -62,16 +63,20 @@ class SelectStaffZoneFilterConditionScreen extends StatelessWidget {
                 context,
                 platformPageRoute(
                   context: context,
-                  builder: (BuildContext context) => SelectStaffZoneFilterValueScreen(
+                  builder: (BuildContext context) =>
+                      SelectStaffZoneFilterValueScreen(
                     title: title,
                     tableName: tableName,
                     sortBy: sortBy,
                     filterBy: filterBy,
                     field: fieldName,
                     contextId:
-                    HiveUtil.getContextId(tableName, tableName, fieldName),
+                        HiveUtil.getContextId(tableName, tableName, fieldName),
                     condition: conditions[index]['Id'],
-              staffZoneType: staffZoneType, relatedEntityType: relatedEntityType, id: id,staffZoneListTitle: staffZoneListTitle,
+                    staffZoneType: staffZoneType,
+                    relatedEntityType: relatedEntityType,
+                    id: id,
+                    staffZoneListTitle: staffZoneListTitle,
                   ),
                 ),
               ),

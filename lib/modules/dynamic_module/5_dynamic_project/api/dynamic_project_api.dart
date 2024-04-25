@@ -414,4 +414,25 @@ class DynamicProjectApi {
     return response.data;
   }
 
+  Future<dynamic> copyStaffZoneEntity(String staffZoneType,String entityId) async {
+    Response response = await _api.post('/Entity/Entity.CopyRecord?EntityName=$staffZoneType&sourceUniqueId=$entityId',{});
+    return response.data;
+  }
+
+  Future<dynamic> addEntityNote(String entityType,String entityId, String note) async {
+    Response response =
+    await _api.post('/' + entityType + 'Note' + '/' + entityId, {'NOTES': note});
+    return response.data;
+  }
+
+  Future<dynamic> getEntityNotes(String entityType,String entityId) async {
+    Response response = await _api.get('/$entityType/$entityId/notes');
+    return response.data;
+  }
+
+  Future<void> updateEntityNote(String entityType,String noteId, String note) async {
+    Response response =
+    await _api.put('/' + entityType + 'Note' + '/' + noteId, {'NOTES': note});
+    return response.data;
+  }
 }

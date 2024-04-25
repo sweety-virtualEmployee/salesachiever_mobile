@@ -82,6 +82,7 @@ class _DynamicStaffZoneEditScreenState
   @override
   void initState() {
     super.initState();
+    print("staffzone type check ${widget.tableName}");
     _dynamicStaffZoneProvider =
         Provider.of<DynamicStaffZoneProvider>(context, listen: false);
     _readonly = widget.readonly;
@@ -213,9 +214,14 @@ class _DynamicStaffZoneEditScreenState
       bool readonly,
       Function onChange,
       [String? updatedFieldKey]) {
+    print("fieldList$filedList");
+    filedList.sort((a, b) => (a["ORDER_NUM"] as int).compareTo(b["ORDER_NUM"] as int));
+    print("fieldList$filedList");
     List<Widget> widgets = [];
     for (dynamic field in filedList) {
       print("field of entity${field}");
+      print("field of entity${field['FIELD_TYPE']}");
+      print("field of name${field['FIELD_NAME']}");
       var isRequired = mandatoryFields.any((e) =>
           e['TABLE_NAME'] == field['TABLE_NAME'] &&
           e['FIELD_NAME'] == field['FIELD_NAME']);
@@ -454,19 +460,23 @@ class _DynamicStaffZoneEditScreenState
   Widget build(BuildContext context) {
     var visibleFields = activeFields.where((e) => e['COLVAL']).toList();
     return PsaScaffold(
-      action: widget.isNew
-          ? Row(
+      action: Row(
               children: [
-                _entity['ENTITY_ID'] != null
-                    ? GestureDetector(
+                if (_entity['ENTITY_ID'] != null && widget.tableName == "RATE_AGREEMENT") GestureDetector(
                         child: PsaEditButton(
                           text: 'Upload',
                           onTap: addImage,
                         ),
-                      )
-                    : SizedBox(),
-                _entity['ENTITY_ID'] != null
-                    ? GestureDetector(
+                      ) else SizedBox(),
+                if (_entity['ENTITY_ID'] != null && widget.tableName == "JOB_ORDER") GestureDetector(
+                  child: PsaEditButton(
+                    text: 'Copy',
+                    onTap: () async {
+                      await onCopy(_entity['ENTITY_ID']);
+                    },
+                  ),
+                ) else SizedBox(),
+                if (_entity['ENTITY_ID'] != null) GestureDetector(
                         child: PsaEditButton(
                           text: 'Print',
                           onTap: () async {
@@ -501,15 +511,13 @@ class _DynamicStaffZoneEditScreenState
                             }
                           },
                         ),
-                      )
-                    : SizedBox(),
+                      ) else SizedBox(),
                 PsaEditButton(
                   text: _readonly ? 'Edit' : 'Save',
                   onTap: onTap,
                 ),
               ],
-            )
-          : SizedBox(),
+            ),
       title: _entity['ENTITY_ID'] != null
           ? "${widget.title}"
           : "Add new ${widget.title}",
@@ -697,6 +705,14 @@ class _DynamicStaffZoneEditScreenState
   }
 
   void onTap() async {
+    print("entity $_entity");
+    String strPrefix = widget.staffZoneType.split('/List/')[1].substring(0, 2);
+    String projectTitle = _entity["PROJECT_TITLE"]!=null?_entity["PROJECT_TITLE"]:"";
+    String companyName = _entity["ACCTNAME"]!=null?_entity["ACCTNAME"]!:"";
+    int number = DateTime.now().millisecond;
+    setState(() {
+      _entity["DESCRIPTION"] = "$strPrefix-$projectTitle-$companyName-$number";
+    });
     await saveProject();
   }
 
@@ -721,5 +737,13 @@ class _DynamicStaffZoneEditScreenState
     } finally {
       context.loaderOverlay.hide();
     }
+  }
+
+  Future onCopy(String entityId) async {
+    print("entityId${entityId}");
+    var newEntity = await DynamicProjectService()
+        .copyNewStaffZoneEntity(widget.tableName, entityId);
+    print("newEntity$newEntity");
+    Navigator.pop(context);
   }
 }

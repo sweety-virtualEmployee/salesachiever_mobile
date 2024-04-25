@@ -115,13 +115,16 @@ class InfoFieldService {
           );
           break;
         case 'B':
+          print("entity?[field['FIELD_NAME']]?.toString() ?? ''${entity?[field['FIELD_NAME']]?.toString() ?? ''}");
+          bool isChecked = entity?[field['FIELD_NAME']].toString() == 'true';
+          print("ischecked$isChecked");
           widgets.add(
             PsaCheckBoxRow(
               isRequired: isRequired,
               fieldKey: field['FIELD_NAME'],
               title:
                   LangUtil.getString(field['FIELD_TABLE'], field['FIELD_NAME']),
-              value: false,
+              value: isChecked,
               readOnly: readonly,
               onChange: (_, __) => onChange(_, __, isRequired),
             ),

@@ -46,7 +46,7 @@ class OpportunityApi {
     if (filterBy != null)
       headers.add({'key': 'FilterSet', 'headers': jsonEncode(filterBy)});
     dynamic response =  await _api.get(
-        '/list/$listName?searchText=$searchText&pageSize=$pageSize&pageNumber=$pageNumber&systemLayout=false',
+        '/list/$listName?searchText=$searchText&pageSize=$pageSize&pageNumber=$pageNumber&systemLayout=true',
         headers);
     print("response of the api$response");
     return response;

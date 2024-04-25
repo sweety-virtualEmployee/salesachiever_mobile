@@ -7,6 +7,7 @@ import 'package:salesachiever_mobile/modules/4_contact/services/contact_service.
 import 'package:salesachiever_mobile/shared/widgets/forms/psa_button_row.dart';
 import 'package:salesachiever_mobile/shared/widgets/forms/psa_dropdown_row.dart';
 import 'package:salesachiever_mobile/shared/widgets/forms/psa_textareafield_row.dart';
+import 'package:salesachiever_mobile/utils/common_list_notes.dart';
 import 'package:salesachiever_mobile/utils/lang_util.dart';
 
 class ContactInfoSection extends StatefulWidget {
@@ -66,7 +67,25 @@ class _ContactInfoSectionState extends State<ContactInfoSection> {
           isRequired: true,
           onChange: (_, __) => widget._onChange(_, __, true),
         ),
-        FutureBuilder<dynamic>(
+        PsaButtonRow(
+          isVisible: false,
+          title: LangUtil.getString(
+              'AccountEditWindow', 'NotesTab.Header'),
+          icon: Icon(context.platformIcons.rightChevron),
+          onTap: () {
+            Navigator.push(
+              context,
+              platformPageRoute(
+                context: context,
+                builder: (BuildContext context) => CommonListNotes(
+                  entityId: widget._contact['CONT_ID'],
+                  entityType: "Contact",
+                ),
+              ),
+            );
+          },
+        ),
+       /* FutureBuilder<dynamic>(
             future: futureNote,
             builder: (context, AsyncSnapshot<dynamic> snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting)
@@ -90,7 +109,7 @@ class _ContactInfoSectionState extends State<ContactInfoSection> {
                     widget._onNoteChange(_, __, snapshot.data?.length),
                 readOnly: widget._readonly,
               );
-            }),
+            }),*/
         PsaButtonRow(
           isVisible: false,
           title: LangUtil.getString(

@@ -43,7 +43,7 @@ class _OpportunityListItemWidgetState
 
   @override
   Widget build(BuildContext context) {
-    String dealDesc = widget.entity['DEAL_DESCRIPTION'] ?? '';
+    String dealDesc = widget.entity['DESCRIPTION'] ?? '';
 
     return ListTile(
       dense: true,

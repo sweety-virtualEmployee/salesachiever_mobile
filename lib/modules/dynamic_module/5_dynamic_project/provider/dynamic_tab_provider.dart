@@ -20,7 +20,6 @@ class DynamicTabProvide extends ChangeNotifier {
 
    setCompanyEntity(Map<String, dynamic> newMap) async{
     _companyEntity = newMap;
-     notifyListeners();
   }
   setProjectEntity(Map<String, dynamic> newMap) async{
     _projectEntity = newMap;
@@ -28,15 +27,12 @@ class DynamicTabProvide extends ChangeNotifier {
   }
   setContactEntity(Map<String, dynamic> newMap) async{
     _contactEntity = newMap;
-    notifyListeners();
   }
   setActionEntity(Map<String, dynamic> newMap) async{
     _actionEntity = newMap;
-    notifyListeners();
   }
   setOpportunityEntity(Map<String, dynamic> newMap) async{
     _opportunityEntity = newMap;
-    notifyListeners();
   }
   setQuotationEntity(Map<String, dynamic> newMap) async{
     _quotationEntity = newMap;
@@ -48,6 +44,5 @@ class DynamicTabProvide extends ChangeNotifier {
   setReadOnly(bool newRead) {
      print("new REad$newRead");
     _readonly = newRead;
-    notifyListeners();
   }
 }

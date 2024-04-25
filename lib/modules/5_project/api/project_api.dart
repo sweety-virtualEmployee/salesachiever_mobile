@@ -49,7 +49,7 @@ class ProjectApi {
       headers.add({'key': 'FilterSet', 'headers': jsonEncode(filterBy)});
 
     return await Api().get(
-        '/list/$listName?searchText=$searchText&pageSize=$pageSize&pageNumber=$pageNumber&systemLayout=false',
+        '/list/$listName?searchText=$searchText&pageSize=$pageSize&pageNumber=$pageNumber&systemLayout=true',
         headers);
   }
 

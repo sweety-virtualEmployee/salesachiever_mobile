@@ -103,6 +103,10 @@ class DynamicProjectService extends EntityService {
     await DynamicProjectApi().updateStaffZoneEntity(id, entity,staffZoneType);
   }
 
+  Future<dynamic> copyNewStaffZoneEntity(String staffZoneType,String entityId) async {
+    return await DynamicProjectApi().copyStaffZoneEntity(staffZoneType,entityId);
+  }
+
   @override
   Future<dynamic> searchEntity({
     required String searchText,
@@ -343,6 +347,22 @@ class DynamicProjectService extends EntityService {
   bool validateStaffZoneEntity(dynamic entity) {
     return validateActiveFields(entity) && validateUserFields(entity);
   }
+  Future<dynamic> getEntityNote(String entityType,String entityId) async {
+    var data = await DynamicProjectApi().getEntityNotes(entityType,entityId);
+    List<dynamic> notes = data['Items'];
+    print("notes$notes");
+    return notes;
+  }
+  Future<dynamic> addEntityNote(String entityType,String entityId, dynamic companyNote) async {
+    if (companyNote == null || companyNote == '') companyNote = ' ';
 
+    return DynamicProjectApi().addEntityNote(entityType,entityId, companyNote);
+  }
 
+  Future<dynamic> updateEntityNote(
+      String entityType,String noteId, dynamic companyNote) async {
+    if (companyNote == null || companyNote == '') companyNote = ' ';
+
+    return DynamicProjectApi().updateEntityNote(entityType,noteId, companyNote);
+  }
 }

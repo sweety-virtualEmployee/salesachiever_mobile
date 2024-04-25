@@ -8,6 +8,7 @@ import 'package:salesachiever_mobile/modules/3_company/services/company_service.
 import 'package:salesachiever_mobile/shared/widgets/forms/psa_button_row.dart';
 import 'package:salesachiever_mobile/shared/widgets/forms/psa_dropdown_row.dart';
 import 'package:salesachiever_mobile/shared/widgets/forms/psa_textareafield_row.dart';
+import 'package:salesachiever_mobile/utils/common_list_notes.dart';
 import 'package:salesachiever_mobile/utils/lang_util.dart';
 
 class CompanyInfoSection extends StatefulWidget {
@@ -69,7 +70,25 @@ class _CompanyInfoSectionState extends State<CompanyInfoSection> {
           isRequired: true,
           onChange: (_, __) => widget._onChange(_, __, true),
         ),
-        FutureBuilder<List<dynamic>>(
+        PsaButtonRow(
+          isVisible: false,
+          title: LangUtil.getString(
+              'AccountEditWindow', 'NotesTab.Header'),
+          icon: Icon(context.platformIcons.rightChevron),
+          onTap: () {
+            Navigator.push(
+              context,
+              platformPageRoute(
+                context: context,
+                builder: (BuildContext context) => CommonListNotes(
+                 entityId: widget._company['ACCT_ID'],
+                  entityType: "Company",
+                ),
+              ),
+            );
+          },
+        ),
+   /*     FutureBuilder<List<dynamic>>(
             future: futureNote,
             builder: (context, AsyncSnapshot<List<dynamic>> snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting)
@@ -93,7 +112,7 @@ class _CompanyInfoSectionState extends State<CompanyInfoSection> {
                     widget._onNoteChange(_, __, snapshot.data?.length),
                 readOnly: widget._readonly,
               );
-            }),
+            }),*/
         PsaButtonRow(
           isVisible: false,
           title: LangUtil.getString(

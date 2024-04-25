@@ -7,6 +7,7 @@ import 'package:salesachiever_mobile/modules/5_project/services/project_service.
 import 'package:salesachiever_mobile/shared/widgets/forms/psa_button_row.dart';
 import 'package:salesachiever_mobile/shared/widgets/forms/psa_dropdown_row.dart';
 import 'package:salesachiever_mobile/shared/widgets/forms/psa_textareafield_row.dart';
+import 'package:salesachiever_mobile/utils/common_list_notes.dart';
 import 'package:salesachiever_mobile/utils/lang_util.dart';
 
 class ProjectInfoSection extends StatefulWidget {
@@ -66,7 +67,25 @@ class _ProjectInfoSectionState extends State<ProjectInfoSection> {
           readOnly: widget._readonly,
           onChange: (_, __) => widget._onChange(_, __, true),
         ),
-        FutureBuilder<dynamic>(
+        PsaButtonRow(
+          isVisible: false,
+          title: LangUtil.getString(
+              'AccountEditWindow', 'NotesTab.Header'),
+          icon: Icon(context.platformIcons.rightChevron),
+          onTap: () {
+            Navigator.push(
+              context,
+              platformPageRoute(
+                context: context,
+                builder: (BuildContext context) => CommonListNotes(
+                  entityId: widget._project['PROJECT_ID'],
+                  entityType: "Project",
+                ),
+              ),
+            );
+          },
+        ),
+       /* FutureBuilder<dynamic>(
             future: futureNote,
             builder: (context, AsyncSnapshot<dynamic> snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting)
@@ -90,7 +109,7 @@ class _ProjectInfoSectionState extends State<ProjectInfoSection> {
                     widget._onNoteChange(_, __, snapshot.data?.length),
                 readOnly: widget._readonly,
               );
-            }),
+            }),*/
         PsaButtonRow(
           isVisible: false,
           title: LangUtil.getString(

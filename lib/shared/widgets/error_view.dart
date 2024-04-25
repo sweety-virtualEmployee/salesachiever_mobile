@@ -13,7 +13,7 @@ class ErrorView extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Icon(context.platformIcons.info),
-            Text('Unexpected error occured!'),
+            Text('Unexpected error occurred!'),
           ],
         ),
       ),

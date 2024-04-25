@@ -11,11 +11,12 @@ class DynamicSubTabListingScreen extends StatelessWidget {
   final dynamic project;
   final String entityType;
 
-
-
-  DynamicSubTabListingScreen({Key? key, this.list,
-    required this.title,required this.entityType,this.project
-  })
+  DynamicSubTabListingScreen(
+      {Key? key,
+      this.list,
+      required this.title,
+      required this.entityType,
+      this.project})
       : super(key: key);
 
   @override
@@ -23,12 +24,10 @@ class DynamicSubTabListingScreen extends StatelessWidget {
     return PsaScaffold(
         title: title,
         body: Column(
-
           children: [
             Container(
                 height: 70,
-                child: CommonHeader(
-                    entityType:entityType, entity: project)),
+                child: CommonHeader(entityType: entityType, entity: project)),
             Expanded(
               child: ListView.builder(
                 shrinkWrap: true,
@@ -47,138 +46,125 @@ class DynamicSubTabListingScreen extends StatelessWidget {
                                 for (final entry in item.entries)
                                   entry.key == "SAUSER_ID"
                                       ? Padding(
-                                    padding:
-                                    const EdgeInsets.only(
-                                        left: 20.0,
-                                        right: 20,
-                                        top: 10),
-                                    child: Row(
-                                      children: [
-                                        Expanded(
-                                          child: Padding(
-                                              padding:
-                                              const EdgeInsets
-                                                  .fromLTRB(
-                                                  0, 4, 0, 4),
-                                              child: Text(
-                                                '${LangUtil.getString('${entry.key.contains("_") ?
-                                                entry.key.substring(0, entry.key.indexOf('_')) : ""}',
-                                                    '${entry.key.split('_').length < 3 ?
-                                                    entry.key : entry.key.contains("_") ?
-                                                    entry.key.substring(entry.key.indexOf("_") + 1) :
-                                                    entry.key}')} :',
-                                                style: TextStyle(
-                                                    fontWeight:
-                                                    FontWeight
-                                                        .w700,
-                                                    color:Color(0xffE67E6B)),
-                                                overflow:
-                                                TextOverflow
-                                                    .ellipsis,
-                                                softWrap: false,
-                                                maxLines: 2,
-                                              )),
-                                        ),
-
-                                        Expanded(
-                                          child: Padding(
-                                            padding:
-                                            const EdgeInsets
-                                                .fromLTRB(
-                                                0, 4, 0, 4),
-                                            child: Text(
-                                              entry.value != null
-                                                  ? entry.key.contains(
-                                                  "DATE")
-                                                  ? DateUtil
-                                                  .getFormattedDate(entry
-                                                  .value)
-                                                  : entry.key.contains(
-                                                  "TIME")
-                                                  ? DateUtil.getFormattedTime(
-                                                  entry.value)
-                                                  : '${entry.value.toString()}'
-                                                  : "",
-                                              style: TextStyle(
-                                                  color: Colors
-                                                      .black),
-                                              overflow:
-                                              TextOverflow
-                                                  .ellipsis,
-                                              softWrap: false,
-                                              maxLines: 2,
-                                            ),
+                                          padding: const EdgeInsets.only(
+                                              left: 20.0, right: 20, top: 10),
+                                          child: Row(
+                                            children: [
+                                              Expanded(
+                                                child: Padding(
+                                                    padding: const EdgeInsets
+                                                        .fromLTRB(0, 4, 0, 4),
+                                                    child: Text(
+                                                      '${LangUtil.getString('${entry.key.contains("_") ? entry.key.substring(0, entry.key.indexOf('_')) : ""}', '${entry.key.split('_').length < 3 ? entry.key : entry.key.contains("_") ? entry.key.substring(entry.key.indexOf("_") + 1) : entry.key}')} :',
+                                                      style: TextStyle(
+                                                          fontWeight:
+                                                              FontWeight.w700,
+                                                          color: Color(
+                                                              0xffE67E6B)),
+                                                      overflow:
+                                                          TextOverflow.ellipsis,
+                                                      softWrap: false,
+                                                      maxLines: 2,
+                                                    )),
+                                              ),
+                                              Expanded(
+                                                child: Padding(
+                                                  padding:
+                                                      const EdgeInsets.fromLTRB(
+                                                          0, 4, 0, 4),
+                                                  child: Text(
+                                                    entry.value != null
+                                                        ? entry.key.contains(
+                                                                "DATE")
+                                                            ? DateUtil
+                                                                .getFormattedDate(
+                                                                    entry.value)
+                                                            : entry.key
+                                                                    .contains(
+                                                                        "TIME")
+                                                                ? DateUtil
+                                                                    .getFormattedTime(
+                                                                        entry
+                                                                            .value)
+                                                                : '${entry.value.toString()}'
+                                                        : "",
+                                                    style: TextStyle(
+                                                        color: Colors.black),
+                                                    overflow:
+                                                        TextOverflow.ellipsis,
+                                                    softWrap: false,
+                                                    maxLines: 2,
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
                                           ),
-                                        ),
-                                      ],
-                                    ),
-                                  )
-                                      :  entry.key.contains("_ID") ||
-                                      entry.key.contains("__") ||
-                                      entry.key.contains("_DORMANT") ||
-                                      entry.key.contains("DORMANT")
-                                      ? SizedBox()
-                                      : Padding(
-                                    padding:
-                                    const EdgeInsets.only(
-                                        left: 20.0,
-                                        right: 20,
-                                        top: 10),
-                                    child: Row(
-                                      children: [
-                                        Expanded(
-                                          child: Padding(
-                                              padding:
-                                              const EdgeInsets
-                                                  .fromLTRB(
-                                                  0, 4, 0, 4),
-                                              child: Text(
-                                                '${LangUtil.getString('${entry.key.contains("_") ? entry.key.substring(0, entry.key.indexOf('_')) : ""}', '${entry.key.split('_').length < 3 ? entry.key : entry.key.contains("_") ? entry.key.substring(entry.key.indexOf("_") + 1) : entry.key}')} :',
-                                                style: TextStyle(
-                                                    fontWeight:
-                                                    FontWeight
-                                                        .w700,
-                                                    color:Color(0xffE67E6B)),
-                                                overflow:
-                                                TextOverflow
-                                                    .ellipsis,
-                                                softWrap: false,
-                                                maxLines: 2,
-                                              )),
-                                        ),
-                                        Expanded(
-                                          child: Padding(
-                                            padding:
-                                            const EdgeInsets
-                                                .fromLTRB(
-                                                0, 4, 0, 4),
-                                            child: Text(
-                                              entry.value != null
-                                                  ? entry.key.contains(
-                                                  "DATE")
-                                                  ? DateUtil
-                                                  .getFormattedDate(entry
-                                                  .value)
-                                                  : entry.key.contains(
-                                                  "TIME")
-                                                  ? DateUtil.getFormattedTime(
-                                                  entry.value)
-                                                  : '${entry.value.toString()}'
-                                                  : "",
-                                              style: TextStyle(
-                                                  color: Colors
-                                                      .black),
-                                              overflow:
-                                              TextOverflow
-                                                  .ellipsis,
-                                              softWrap: false,
-                                              maxLines: 2,
-                                            ),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  )
+                                        )
+                                      : entry.key.contains("_ID") ||
+                                              entry.key.contains("__") ||
+                                              entry.key.contains("_DORMANT") ||
+                                              entry.key.contains("DORMANT")
+                                          ? SizedBox()
+                                          : Padding(
+                                              padding: const EdgeInsets.only(
+                                                  left: 20.0,
+                                                  right: 20,
+                                                  top: 10),
+                                              child: Row(
+                                                children: [
+                                                  Expanded(
+                                                    child: Padding(
+                                                        padding:
+                                                            const EdgeInsets
+                                                                .fromLTRB(
+                                                                0, 4, 0, 4),
+                                                        child: Text(
+                                                          '${LangUtil.getString('${entry.key.contains("_") ? entry.key.substring(0, entry.key.indexOf('_')) : ""}', '${entry.key.split('_').length < 3 ? entry.key : entry.key.contains("_") ? entry.key.substring(entry.key.indexOf("_") + 1) : entry.key}')} :',
+                                                          style: TextStyle(
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .w700,
+                                                              color: Color(
+                                                                  0xffE67E6B)),
+                                                          overflow: TextOverflow
+                                                              .ellipsis,
+                                                          softWrap: false,
+                                                          maxLines: 2,
+                                                        )),
+                                                  ),
+                                                  Expanded(
+                                                    child: Padding(
+                                                      padding: const EdgeInsets
+                                                          .fromLTRB(0, 4, 0, 4),
+                                                      child: Text(
+                                                        entry.value != null
+                                                            ? entry.key
+                                                                    .contains(
+                                                                        "DATE")
+                                                                ? DateUtil
+                                                                    .getFormattedDate(
+                                                                        entry
+                                                                            .value)
+                                                                : entry.key.contains(
+                                                                        "TIME")
+                                                                    ? DateUtil
+                                                                        .getFormattedTime(
+                                                                            entry.value)
+                                                                    : '${entry.value.toString()}'
+                                                            : "",
+                                                        style: TextStyle(
+                                                            color:
+                                                                Colors.black),
+                                                        overflow: TextOverflow
+                                                            .ellipsis,
+                                                        softWrap: false,
+                                                        maxLines: 2,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            )
                               ],
                             ),
                           ),
