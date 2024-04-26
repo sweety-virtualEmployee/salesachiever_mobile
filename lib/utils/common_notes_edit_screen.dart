@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
+import 'package:get/utils.dart';
 import 'package:loader_overlay/loader_overlay.dart';
 import 'package:salesachiever_mobile/modules/dynamic_module/5_dynamic_project/services/dynamic_project_service.dart';
 import 'package:salesachiever_mobile/shared/widgets/buttons/psa_edit_button.dart';
@@ -32,6 +33,7 @@ class CommonNoteEditScreen extends StatefulWidget {
 class _CommonNoteEditScreenState extends State<CommonNoteEditScreen> {
   bool _readonly = true;
   dynamic _notes;
+  dynamic _result;
 
   static final key = GlobalKey<FormState>();
 
@@ -61,16 +63,26 @@ class _CommonNoteEditScreenState extends State<CommonNoteEditScreen> {
   Future<void> saveNotes() async {
     try {
       context.loaderOverlay.show();
-
       if (_notes['NOTE_ID'] != null) {
-        await DynamicProjectService().updateEntityNote(widget.entityType,_notes['NOTE_ID'], _notes["NOTES"]);
+        await DynamicProjectService().updateEntityNote(
+          widget.entityType,
+          _notes['NOTE_ID'],
+          _notes["NOTES"],
+          _notes["DESCRIPTION"],
+        );
       } else {
-        var newEntity = await DynamicProjectService().addEntityNote(widget.entityType,widget.entityId, _notes["NOTES"]);
-        _notes['NOTE_ID'] = newEntity['NOTE_ID'];
+        var newEntity = await DynamicProjectService().addEntityNote(
+          widget.entityType,
+          widget.entityId,
+          _notes["NOTES"],
+          _notes["DESCRIPTION"],
+        );
+        _notes = newEntity;
+        print("entity check $newEntity");
+        print("entity check $_notes");
       }
-
-
-      setState(() => _readonly = !_readonly);
+      setState(() => _readonly = true);
+      Navigator.pop(context, _notes); // Pass the updated or newly added note back to the list screen
     } on DioError catch (e) {
       ErrorUtil.showErrorMessage(context, e.message);
     } catch (e) {
@@ -91,10 +103,10 @@ class _CommonNoteEditScreenState extends State<CommonNoteEditScreen> {
         body: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Padding(
+            widget.readonly?Padding(
               padding: const EdgeInsets.all(8.0),
               child: PlatformText(
-                "Created On: ${DateUtil.getFormattedDate(_notes['CREATED_ON'] ?? '')}",
+                "Created On: ${DateUtil.getFormattedDate(_notes['CREATED_ON'] ?? '')} ${DateUtil.getFormattedTime(_notes['CREATED_ON'] ?? '')}",
                 style: TextStyle(
                   fontWeight: FontWeight.w300,
                   color: Colors.black,
@@ -102,8 +114,8 @@ class _CommonNoteEditScreenState extends State<CommonNoteEditScreen> {
                 ),
                 overflow: TextOverflow.ellipsis,
               ),
-            ),
-            Padding(
+            ):SizedBox(),
+            widget.readonly?Padding(
               padding: const EdgeInsets.all(8.0),
               child: PlatformText(
                 "Created By: ${_notes['SAUSER_ID']}",
@@ -114,11 +126,11 @@ class _CommonNoteEditScreenState extends State<CommonNoteEditScreen> {
                 ),
                 overflow: TextOverflow.ellipsis,
               ),
-            ),
-            Padding(
+            ):SizedBox(),
+            widget.readonly?Padding(
               padding: const EdgeInsets.all(8.0),
               child: PlatformText(
-                "Last Edited: ${DateUtil.getFormattedDate(_notes['LAST_EDITED'] ?? '')}",
+                "Last Edited: ${DateUtil.getFormattedDate(_notes['LAST_EDITED'] ?? '')} ${DateUtil.getFormattedTime(_notes['LAST_EDITED'] ?? '')}",
                 style: TextStyle(
                   fontWeight: FontWeight.w300,
                   color: Colors.black,
@@ -126,9 +138,20 @@ class _CommonNoteEditScreenState extends State<CommonNoteEditScreen> {
                 ),
                 overflow: TextOverflow.ellipsis,
               ),
-            ),
+            ):SizedBox(),
             PsaTextAreaFieldRow(
-              key: Key('placehoder'),
+              readOnly: _readonly,
+              key: Key('DESCRIPTION'), // Unique key for the first widget
+              fieldKey: 'DESCRIPTION',
+              title:  'Description',
+              value: _notes['DESCRIPTION'],
+              onChange: (_,__) => _onNoteChange(_,__),
+            ),
+            SizedBox(height: 20,),
+            PsaTextAreaFieldRow(
+              readOnly:_readonly,
+              maxLines: 30,
+              key: Key('NOTES'), // Unique key for the second widget
               fieldKey: 'NOTES',
               title: LangUtil.getString('AccountEditWindow', 'NotesTab.Header'),
               value: _notes['NOTES'],

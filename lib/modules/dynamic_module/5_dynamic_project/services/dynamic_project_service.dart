@@ -9,9 +9,9 @@ import 'package:salesachiever_mobile/modules/dynamic_module/5_dynamic_project/ap
 import 'package:salesachiever_mobile/shared/services/lookup_service.dart';
 
 class DynamicProjectService extends EntityService {
-  final ProjectApi _projectApi;
+  final DynamicProjectApi _projectApi;
 
-  DynamicProjectService({listName}) : _projectApi = new ProjectApi(listName: listName);
+  DynamicProjectService({listName}) : _projectApi = new DynamicProjectApi(listName: listName);
 
 
    Future<List> getProjectTabs(String moduleId) async {
@@ -107,16 +107,16 @@ class DynamicProjectService extends EntityService {
     return await DynamicProjectApi().copyStaffZoneEntity(staffZoneType,entityId);
   }
 
-  @override
+   @override
   Future<dynamic> searchEntity({
-    required String searchText,
-    required int pageNumber,
-    required int pageSize,
-    required List<dynamic>? sortBy,
-    required List<dynamic>? filterBy,
+  required String searchText,
+  required int pageNumber,
+  required int pageSize,
+  required List<dynamic>? sortBy,
+  required List<dynamic>? filterBy,
   }) async {
-    return _projectApi.search(
-        searchText, pageNumber, pageSize, sortBy, filterBy);
+  return _projectApi.search(
+  searchText, pageNumber, pageSize, sortBy, filterBy);
   }
 
   Future<dynamic> addProjectNote(String typeNote,String projectId, dynamic projectNote,dynamic projectDescription) async {
@@ -353,16 +353,16 @@ class DynamicProjectService extends EntityService {
     print("notes$notes");
     return notes;
   }
-  Future<dynamic> addEntityNote(String entityType,String entityId, dynamic companyNote) async {
+  Future<dynamic> addEntityNote(String entityType,String entityId, dynamic companyNote,dynamic description) async {
     if (companyNote == null || companyNote == '') companyNote = ' ';
 
-    return DynamicProjectApi().addEntityNote(entityType,entityId, companyNote);
+    return DynamicProjectApi().addEntityNote(entityType,entityId, companyNote,description);
   }
 
   Future<dynamic> updateEntityNote(
-      String entityType,String noteId, dynamic companyNote) async {
+      String entityType,String noteId, dynamic companyNote, dynamic description) async {
     if (companyNote == null || companyNote == '') companyNote = ' ';
 
-    return DynamicProjectApi().updateEntityNote(entityType,noteId, companyNote);
+    return DynamicProjectApi().updateEntityNote(entityType,noteId, companyNote,description);
   }
 }

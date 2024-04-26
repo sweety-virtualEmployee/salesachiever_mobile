@@ -179,6 +179,7 @@ class DynamicProjectApi {
 
   Future<dynamic> search(String searchText, int pageNumber, int pageSize,
       List<dynamic>? sortBy, List<dynamic>? filterBy) async {
+    print("let see if this api getting called$sortBy");
     List<dynamic> headers = [];
 
     bool classicSearch = StorageUtil.getBool('classicSearch', defValue: true);
@@ -410,7 +411,6 @@ class DynamicProjectApi {
   Future<dynamic> getSubTabsValue(String listName,String fieldName,String fieldValue) async {
     final response = await Api().getResult(
         '$api/List/$listName?Fieldname=$fieldName&FieldValue=$fieldValue');
-    print("get respose tab${response.data}");
     return response.data;
   }
 
@@ -419,9 +419,9 @@ class DynamicProjectApi {
     return response.data;
   }
 
-  Future<dynamic> addEntityNote(String entityType,String entityId, String note) async {
+  Future<dynamic> addEntityNote(String entityType,String entityId, String note,String description) async {
     Response response =
-    await _api.post('/' + entityType + 'Note' + '/' + entityId, {'NOTES': note});
+    await _api.post('/' + entityType + 'Note' + '/' + entityId, {'NOTES': note,'DESCRIPTION':description});
     return response.data;
   }
 
@@ -430,9 +430,9 @@ class DynamicProjectApi {
     return response.data;
   }
 
-  Future<void> updateEntityNote(String entityType,String noteId, String note) async {
+  Future<void> updateEntityNote(String entityType,String noteId, String note, String description) async {
     Response response =
-    await _api.put('/' + entityType + 'Note' + '/' + noteId, {'NOTES': note});
+    await _api.put('/' + entityType + 'Note' + '/' + noteId, {'NOTES': note,'DESCRIPTION':description});
     return response.data;
   }
 }

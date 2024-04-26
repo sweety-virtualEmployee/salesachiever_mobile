@@ -11,6 +11,7 @@ class PsaTextAreaFieldRow extends StatefulWidget {
   final TextInputType? keyboardType;
   final Function? onChange;
   final bool? isRequired;
+  final int? maxLines;
 
   const PsaTextAreaFieldRow({
     Key? key,
@@ -20,6 +21,7 @@ class PsaTextAreaFieldRow extends StatefulWidget {
     this.value,
     this.keyboardType,
     this.onChange,
+    this.maxLines = 5,
     this.isRequired = false,
   }) : super(key: key);
 
@@ -72,7 +74,7 @@ class _PsaTextAreaFieldRowState extends State<PsaTextAreaFieldRow> {
                   textCapitalization: TextCapitalization.sentences,
                   readOnly: widget.readOnly,
                   minLines: 3,
-                  maxLines: 5,
+                  maxLines: widget.maxLines,
                   onChanged: (value) {
                     if (widget.onChange != null)
                       widget.onChange!(widget.fieldKey, value);
