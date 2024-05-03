@@ -240,13 +240,17 @@ class _DynamicSignatureViewerPageState
           widget.tableName, fieldName, widget.staffZoneType, widget.id,1,
       );
 
-      await _dynamicStaffZoneProvider.setStaffZoneEntity(result);
+      print("result$result");
+
+      await _dynamicStaffZoneProvider.setStaffZoneEntity(result["Items"]);
 
       Navigator.pop(context);
       Navigator.pop(context);
     } on DioError catch (e) {
+      print("e,tv${e.toString()}");
       ErrorUtil.showErrorMessage(context, e.message);
     } catch (e) {
+      print("catch${e.toString()}");
       ErrorUtil.showErrorMessage(
         context,
         MessageUtil.getMessage('500'),
