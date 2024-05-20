@@ -19,6 +19,7 @@ import 'package:salesachiever_mobile/modules/dynamic_module/dynamic_staffzone/pr
 import 'package:salesachiever_mobile/modules/dynamic_module/dynamic_staffzone/widgets/dynamic_staffzone_pdf_signature.dart';
 import 'package:salesachiever_mobile/shared/services/lookup_service.dart';
 import 'package:salesachiever_mobile/shared/widgets/buttons/psa_edit_button.dart';
+import 'package:salesachiever_mobile/shared/widgets/forms/PsaStaffZoneRelatedValueRow.dart';
 import 'package:salesachiever_mobile/shared/widgets/forms/psa_checkbox_row.dart';
 import 'package:salesachiever_mobile/shared/widgets/forms/psa_county_dropdown_row.dart';
 import 'package:salesachiever_mobile/shared/widgets/forms/psa_datefield_row.dart';
@@ -32,7 +33,6 @@ import 'package:salesachiever_mobile/shared/widgets/forms/psa_textfield_row.dart
 import 'package:salesachiever_mobile/shared/widgets/forms/psa_timefield_row.dart';
 import 'package:salesachiever_mobile/shared/widgets/layout/psa_scaffold.dart';
 import 'package:salesachiever_mobile/shared/widgets/psa_header.dart';
-import 'package:salesachiever_mobile/utils/decode_base64_util.dart';
 import 'package:salesachiever_mobile/utils/error_util.dart';
 import 'package:salesachiever_mobile/utils/lang_util.dart';
 import 'package:salesachiever_mobile/utils/message_util.dart';
@@ -47,6 +47,8 @@ class DynamicStaffZoneEditScreen extends StatefulWidget {
   final String tableName;
   final String title;
   final String staffZoneType;
+  final List<dynamic>? sortBy;
+  final List<dynamic>? filterBy;
 
   const DynamicStaffZoneEditScreen({
     Key? key,
@@ -58,6 +60,8 @@ class DynamicStaffZoneEditScreen extends StatefulWidget {
     required this.tableName,
     required this.title,
     required this.staffZoneType,
+    this.sortBy,
+    this.filterBy,
   }) : super(key: key);
 
   @override
@@ -82,7 +86,6 @@ class _DynamicStaffZoneEditScreenState
   @override
   void initState() {
     super.initState();
-    print("staffzone type check ${widget.tableName}");
     _dynamicStaffZoneProvider =
         Provider.of<DynamicStaffZoneProvider>(context, listen: false);
     _readonly = widget.readonly;
@@ -202,7 +205,6 @@ class _DynamicStaffZoneEditScreenState
         _entity[prop['KEY']] = prop['VALUE'];
       });
     });
-    print("Efgerugvjrwi${_entity}");
   }
 
   Widget generateFields(
@@ -214,9 +216,7 @@ class _DynamicStaffZoneEditScreenState
       bool readonly,
       Function onChange,
       [String? updatedFieldKey]) {
-    print("fieldList$filedList");
     filedList.sort((a, b) => (a["ORDER_NUM"] as int).compareTo(b["ORDER_NUM"] as int));
-    print("fieldList$filedList");
     List<Widget> widgets = [];
     for (dynamic field in filedList) {
       print("field of entity${field}");
@@ -245,7 +245,6 @@ class _DynamicStaffZoneEditScreenState
             );
           } else if (field['TABLE_NAME'] == 'PROJECT' &&
               field['FIELD_NAME'] == 'SITE_COUNTY') {
-            print("thia");
             widgets.add(
               PsaCountyDropdownRow(
                 isRequired: isRequired,
@@ -261,7 +260,6 @@ class _DynamicStaffZoneEditScreenState
               ),
             );
           } else {
-            print("no");
             widgets.add(
               PsaDropdownRow(
                 type: type,
@@ -281,17 +279,32 @@ class _DynamicStaffZoneEditScreenState
         case 'C':
           if (field["FIELD_NAME"].contains("_ID")) {
             print("field['Data${field['FIELD_NAME']}");
-            widgets.add(PsaRelatedValueRow(
-              title:
-                  LangUtil.getString(field['TABLE_NAME'], field['FIELD_NAME']),
-              value: entity?[field['FIELD_NAME']]?.toString() ?? '',
-              type: field['FIELD_NAME'],
-              entity: _entity,
-              onChange: onRelatedValueSave,
-              onTap: () {},
-              isVisible: true,
-              isRequired: isRequired,
-            ));
+            if(field["FIELD_NAME"]=="RATE_AGREEMENT_ID"){
+              widgets.add(PsaStaffZoneRelatedValue(
+                isRequired: isRequired,
+                title: LangUtil.getString(field['TABLE_NAME'], field['FIELD_NAME']),
+                staffZoneEntity: "List/RA_API",
+                relatedEntityType: widget.relatedEntityType,
+                tableName: "RATE_AGREEMENT",
+                tabTitle: field["FieldDescription"],
+                id: widget.id,
+                onChange: onRelatedValueSave,
+                entity: _entity,
+              ));
+            }
+            else {
+              widgets.add(PsaRelatedValueRow(
+                title:
+                LangUtil.getString(field['TABLE_NAME'], field['FIELD_NAME']),
+                value: entity?[field['FIELD_NAME']]?.toString() ?? '',
+                type: field['FIELD_NAME'],
+                entity: _entity,
+                onChange: onRelatedValueSave,
+                onTap: () {},
+                isVisible: true,
+                isRequired: isRequired,
+              ));
+            }
           } else {
             widgets.add(
               PsaTextFieldRow(
@@ -358,9 +371,9 @@ class _DynamicStaffZoneEditScreenState
           );
           break;
         case 'B':
-          bool isChecked = entity?[field['FIELD_NAME']] == 'Y';
+          bool isChecked = entity?[field['FIELD_NAME']] == 'Y' || entity?[field['FIELD_NAME']] == true;
           print(
-              "LangUtil.getString(field['TABLE_NAME'], field['FIELD_NAME'])${LangUtil.getString(field['TABLE_NAME'], field['FIELD_NAME'])}");
+              "LangUtil.getString(field['TABLE_NAME'], field['FIELD_NAME'])${entity?[field['FIELD_NAME']]}");
           widgets.add(
             PsaCheckBoxRow(
               isRequired: isRequired,
@@ -534,7 +547,7 @@ class _DynamicStaffZoneEditScreenState
           isVisible: true,
           icon: 'assets/images/create_record_icon.png',
           title: _entity['ENTITY_ID'] != null
-              ? "${widget.title}"
+              ? "${ _entity['DESCRIPTION']}"
               : "Add new ${widget.title}",
         ),
         Expanded(
@@ -622,7 +635,6 @@ class _DynamicStaffZoneEditScreenState
 
               final pickedFile =
                   await picker.pickImage(source: ImageSource.camera);
-
               setState(() {
                 if (pickedFile != null) {
                   setState(() {
@@ -649,18 +661,14 @@ class _DynamicStaffZoneEditScreenState
     try {
       String fieldName = "";
       await Future.forEach(_imageList, (dynamic image) async {
-        print(image?["FILE"]);
         var uuid = Uuid().v1().toUpperCase();
-        print("dir$_dir");
         var encoder = ZipFileEncoder();
         encoder.create('$_dir/$uuid.zip');
         encoder.addFile((image as Map<String, dynamic>)['FILE']!);
         encoder.close();
         print(encoder);
         var bytes = File('$_dir/$uuid.zip').readAsBytesSync();
-        print("bytes");
         String base64Image = base64Encode(bytes);
-        print("base64image$base64Image");
         var blob = {
           'DESCRIPTION': (image as Map<String, dynamic>)['DESCRIPTION'],
           'ENTITY_ID': _entity['ENTITY_ID'],
@@ -668,7 +676,6 @@ class _DynamicStaffZoneEditScreenState
           'FILENAME': '${_entity['ENTITY_ID']}' '$uuid' '',
           'BLOB_DATA': base64Image,
         };
-        print("Blob data: ${blob.toString()}");
         await SitePhotoService().uploadBlob(blob);
         File('$_dir/$uuid.zip').deleteSync();
       });
@@ -705,20 +712,24 @@ class _DynamicStaffZoneEditScreenState
   }
 
   void onTap() async {
-    print("entity $_entity");
     String strPrefix = widget.staffZoneType.split('/List/')[1].substring(0, 2);
     String projectTitle = _entity["PROJECT_TITLE"]!=null?_entity["PROJECT_TITLE"]:"";
     String companyName = _entity["ACCTNAME"]!=null?_entity["ACCTNAME"]!:"";
     int number = DateTime.now().millisecond;
-    setState(() {
-      _entity["DESCRIPTION"] = "$strPrefix-$projectTitle-$companyName-$number";
-    });
+    if (_readonly) {
+      setState(() {
+        _entity["DESCRIPTION"] = "$strPrefix-$projectTitle-$companyName-$number";
+        _readonly = !_readonly;
+      });
+      return;
+    }
     await saveProject();
   }
 
   Future<void> saveProject() async {
     try {
       context.loaderOverlay.show();
+      print("entity check $_entity");
       if (_entity['ENTITY_ID'] != null) {
         await DynamicProjectService().updateStaffZoneEntity(
             _entity!['ENTITY_ID'], _entity, widget.tableName);
@@ -729,7 +740,8 @@ class _DynamicStaffZoneEditScreenState
           _entity['ENTITY_ID'] = newEntity['ENTITY_ID'];
         });
       }
-      print("_entity$_entity");
+      Navigator.pop(context);
+      fetchData();
     } on DioError catch (e) {
       ErrorUtil.showErrorMessage(context, e.message);
     } catch (e) {
@@ -740,10 +752,39 @@ class _DynamicStaffZoneEditScreenState
   }
 
   Future onCopy(String entityId) async {
-    print("entityId${entityId}");
     var newEntity = await DynamicProjectService()
         .copyNewStaffZoneEntity(widget.tableName, entityId);
-    print("newEntity$newEntity");
     Navigator.pop(context);
+  }
+
+  fetchData() async {
+    _dynamicStaffZoneProvider.clearData();
+    _dynamicStaffZoneProvider.setIsLoading(true);
+    try {
+      String fieldName = "";
+      if (widget.relatedEntityType == "COMPANY") {
+        fieldName = "ACCT_ID";
+      } else if (widget.relatedEntityType == "PROJECT") {
+        fieldName = "PROJECT_ID";
+      } else if (widget.relatedEntityType == "CONTACT") {
+        fieldName = "CONT_ID";
+      }
+      var result = await DynamicProjectService().getStaffZoneEntity(
+          widget.tableName,
+          fieldName,
+          widget.staffZoneType,
+          widget.id,
+          1,
+          widget.sortBy);
+      _dynamicStaffZoneProvider.setIsLoading(false);
+      _dynamicStaffZoneProvider.setStaffZoneEntity(result["Items"]);
+      _dynamicStaffZoneProvider.setIsLastPage(result["IsLastPage"]);
+      _dynamicStaffZoneProvider.setPageNumber(result["PageNumber"]);
+    } catch (e) {
+      setState(() {
+        _dynamicStaffZoneProvider.setIsLoading(false);
+      });
+      print("Error fetching data: $e");
+    }
   }
 }

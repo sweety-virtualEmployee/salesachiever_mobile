@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
+import 'package:salesachiever_mobile/modules/dynamic_module/5_dynamic_project/services/dynamic_project_service.dart';
+import 'package:salesachiever_mobile/modules/dynamic_module/dynamic_staffzone/dynamic_Staffzone_list_Screen.dart';
 import 'package:salesachiever_mobile/modules/dynamic_module/dynamic_staffzone/widgets/staffzone_sort_fields_screen.dart';
 import 'package:salesachiever_mobile/shared/widgets/buttons/psa_add_button.dart';
 import 'package:salesachiever_mobile/shared/widgets/layout/psa_scaffold.dart';
@@ -17,13 +19,13 @@ class SelectedStaffZoneSortFieldsScreen extends StatelessWidget {
 
   const SelectedStaffZoneSortFieldsScreen(
       {Key? key,
-        required this.tableName,
-        required this.relatedEntityType,
-        required this.staffZoneType,
-        required this.id,
-        required this.staffZoneListTitle,
-        required this.title,
-        this.sortBy})
+      required this.tableName,
+      required this.relatedEntityType,
+      required this.staffZoneType,
+      required this.id,
+      required this.staffZoneListTitle,
+      required this.title,
+      this.sortBy})
       : super(key: key);
 
   @override
@@ -32,15 +34,34 @@ class SelectedStaffZoneSortFieldsScreen extends StatelessWidget {
       title: title,
       body: ListView.separated(
         itemBuilder: (BuildContext _context, int index) {
-          return InkWell(
-            child: Padding(
-              padding:
-              const EdgeInsets.symmetric(horizontal: 8.0, vertical: 2.0),
-              child: PlatformText(
-                '${LangUtil.getString(staffZoneType, sortBy?[index]['FieldName'])} (${sortBy?[index]['SortOrder'] == 1 ? 'Ascendig' : 'Decending'})',
+          return Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              InkWell(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 8.0, vertical: 2.0),
+                  child: PlatformText(
+                    '${LangUtil.getString(staffZoneType, sortBy?[index]['FieldName'])} (${sortBy?[index]['SortOrder'] == 1 ? 'Ascendig' : 'Decending'})',
+                  ),
+                ),
+                onTap: () => print('lll'),
               ),
-            ),
-            onTap: () => print('lll'),
+              sortBy?.length != 0
+                  ? IconButton(
+                      onPressed: () async {
+                        sortBy!.removeWhere((item) =>
+                            item['FieldName'] == sortBy?[index]['FieldName']);
+                        Navigator.pop(
+                            context, sortBy); // Pass updated sortBy back
+                      },
+                      icon: Icon(
+                        context.platformIcons.clear,
+                        color: Colors.red,
+                      ),
+                    )
+                  : SizedBox()
+            ],
           );
         },
         itemCount: sortBy?.length ?? 0,
@@ -56,10 +77,10 @@ class SelectedStaffZoneSortFieldsScreen extends StatelessWidget {
             builder: (BuildContext context) => StaffZoneSortFieldsScreen(
               title: title,
               tableName: tableName,
-              relatedEntityType:relatedEntityType,
+              relatedEntityType: relatedEntityType,
               sortBy: sortBy,
               staffZoneType: staffZoneType,
-              staffZoneListTitle:staffZoneListTitle,
+              staffZoneListTitle: staffZoneListTitle,
               id: id,
             ),
           ),

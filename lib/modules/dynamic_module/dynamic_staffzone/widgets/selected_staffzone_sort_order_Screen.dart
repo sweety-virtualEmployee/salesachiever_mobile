@@ -15,7 +15,7 @@ class SelectStaffZoneSortOrderScreen extends StatelessWidget {
   final List<dynamic>? sortBy;
   final List<dynamic> items = [
     {'key': 1, 'value': 'Ascending'},
-    {'key': 2, 'value': 'Desending'},
+    {'key': 2, 'value': 'Descending'},
   ];
 
   SelectStaffZoneSortOrderScreen({

@@ -235,7 +235,7 @@ class _DynamicSignatureViewerPageState
       } else if (widget.relatedEntityType == "CONTACT") {
         fieldName = "CONT_ID";
       }
-
+      _dynamicStaffZoneProvider.clearData();
       var result = await DynamicProjectService().getStaffZoneEntity(
           widget.tableName, fieldName, widget.staffZoneType, widget.id,1,
       );

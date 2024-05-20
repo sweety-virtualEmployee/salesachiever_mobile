@@ -10,6 +10,7 @@ import 'package:salesachiever_mobile/modules/4_contact/screens/contact_list_scre
 import 'package:salesachiever_mobile/modules/5_project/screens/project_edit_screen.dart';
 import 'package:salesachiever_mobile/modules/5_project/screens/project_list_screen.dart';
 import 'package:salesachiever_mobile/modules/5_project/services/project_service.dart';
+import 'package:salesachiever_mobile/modules/dynamic_module/dynamic_staffzone/dynamic_Staffzone_list_Screen.dart';
 import 'package:salesachiever_mobile/shared/screens/related_entity_screen.dart';
 
 import '../../../modules/10_opportunities/services/opportunity_service.dart';
@@ -49,6 +50,7 @@ class _PsaRelatedValueRowState extends State<PsaRelatedValueRow> {
   String selectedContact = "";
   String selectedProject = "";
   String selectedOpportunity = "";
+  String selectedRateAgreement = "";
   var companyData;
   var contactData;
   var projectData;
@@ -61,15 +63,13 @@ class _PsaRelatedValueRowState extends State<PsaRelatedValueRow> {
   }
 
   callApi(String type) async {
-    print("type check");
-    print(type);
-    print(widget.entity);
     print(widget.entity?["Data_Value"]);
     print(widget.entity?["ACCT_ID"]);
     context.loaderOverlay.show();
     if (type == "ACCT_ID") {
-      if (widget.entity?["ACCT_ID"]!=null) {
-        var company = await CompanyService().getEntity(widget.entity?["ACCT_ID"]);
+      if (widget.entity?["ACCT_ID"] != null) {
+        var company =
+            await CompanyService().getEntity(widget.entity?["ACCT_ID"]);
         print("comapny${company.data}");
         setState(() {
           companyData = company.data;
@@ -80,9 +80,9 @@ class _PsaRelatedValueRowState extends State<PsaRelatedValueRow> {
           ]);
           print(companyData["ACCTNAME"]);
         });
-      }
-      else if (widget.entity?["Data_Value"]!=null) {
-        var company = await CompanyService().getEntity(widget.entity?["Data_Value"]);
+      } else if (widget.entity?["Data_Value"] != null) {
+        var company =
+            await CompanyService().getEntity(widget.entity?["Data_Value"]);
         print("comapny${company.data}");
         setState(() {
           companyData = company.data;
@@ -96,8 +96,9 @@ class _PsaRelatedValueRowState extends State<PsaRelatedValueRow> {
       }
     }
     if (type == "CONT_ID") {
-      if (widget.entity?["CONT_ID"]!=null) {
-        var contact = await ContactService().getEntity(widget.entity?["CONT_ID"]);
+      if (widget.entity?["CONT_ID"] != null) {
+        var contact =
+            await ContactService().getEntity(widget.entity?["CONT_ID"]);
         print("Contfdjkvbg$contact");
         setState(() {
           contactData = contact.data;
@@ -107,9 +108,9 @@ class _PsaRelatedValueRowState extends State<PsaRelatedValueRow> {
             {'KEY': 'FIRSTNAME', 'VALUE': contactData['FIRSTNAME']},
           ]);
         });
-      }
-      else if (widget.entity?["Data_Value"]!=null) {
-        var contact = await ContactService().getEntity(widget.entity?["Data_Value"]);
+      } else if (widget.entity?["Data_Value"] != null) {
+        var contact =
+            await ContactService().getEntity(widget.entity?["Data_Value"]);
         print("Contfdjkvbg$contact");
         setState(() {
           contactData = contact.data;
@@ -122,8 +123,9 @@ class _PsaRelatedValueRowState extends State<PsaRelatedValueRow> {
       }
     }
     if (type == "PROJECT_ID") {
-      if (widget.entity?["PROJECT_ID"]!=null) {
-        var project = await ProjectService().getEntity(widget.entity?["PROJECT_ID"]);
+      if (widget.entity?["PROJECT_ID"] != null) {
+        var project =
+            await ProjectService().getEntity(widget.entity?["PROJECT_ID"]);
         setState(() {
           projectData = project.data;
           selectedProject = projectData["PROJECT_TITLE"];
@@ -132,9 +134,9 @@ class _PsaRelatedValueRowState extends State<PsaRelatedValueRow> {
             {'KEY': 'PROJECT_TITLE', 'VALUE': projectData['PROJECT_TITLE']},
           ]);
         });
-      }
-      else if (widget.entity?["Data_Value"]!=null) {
-        var project = await ProjectService().getEntity(widget.entity?["Data_Value"]);
+      } else if (widget.entity?["Data_Value"] != null) {
+        var project =
+            await ProjectService().getEntity(widget.entity?["Data_Value"]);
         setState(() {
           projectData = project.data;
           selectedProject = projectData["PROJECT_TITLE"];
@@ -145,30 +147,31 @@ class _PsaRelatedValueRowState extends State<PsaRelatedValueRow> {
         });
       }
     }
-      if(type=="DEAL_ID"){
-        if (widget.entity?["DEAL_ID"]!=null) {
-          var deal = await OpportunityService().getEntity(widget.entity?["DEAL_ID"]);
-          setState(() {
-            opportunityData = deal.data;
-            selectedOpportunity = opportunityData["DESCRIPTION"];
-            widget.onChange([
-              {'KEY': 'DEAL_ID', 'VALUE': opportunityData['DEAL_ID']},
-              {'KEY': 'DESCRIPTION', 'VALUE': opportunityData['DESCRIPTION']},
-            ]);
-          });
-        }
-        else if (widget.entity?["Data_Value"]!=null) {
-          var deal = await OpportunityService().getEntity(widget.entity?["Data_Value"]);
-          setState(() {
-            opportunityData = deal.data;
-            selectedOpportunity = opportunityData["DESCRIPTION"];
-            widget.onChange([
-              {'KEY': 'DEAL_ID', 'VALUE': opportunityData['DEAL_ID']},
-              {'KEY': 'DESCRIPTION', 'VALUE': opportunityData['DESCRIPTION']},
-            ]);
-          });
-        }
+    if (type == "DEAL_ID") {
+      if (widget.entity?["DEAL_ID"] != null) {
+        var deal =
+            await OpportunityService().getEntity(widget.entity?["DEAL_ID"]);
+        setState(() {
+          opportunityData = deal.data;
+          selectedOpportunity = opportunityData["DESCRIPTION"];
+          widget.onChange([
+            {'KEY': 'DEAL_ID', 'VALUE': opportunityData['DEAL_ID']},
+            {'KEY': 'DESCRIPTION', 'VALUE': opportunityData['DESCRIPTION']},
+          ]);
+        });
+      } else if (widget.entity?["Data_Value"] != null) {
+        var deal =
+            await OpportunityService().getEntity(widget.entity?["Data_Value"]);
+        setState(() {
+          opportunityData = deal.data;
+          selectedOpportunity = opportunityData["DESCRIPTION"];
+          widget.onChange([
+            {'KEY': 'DEAL_ID', 'VALUE': opportunityData['DEAL_ID']},
+            {'KEY': 'DESCRIPTION', 'VALUE': opportunityData['DESCRIPTION']},
+          ]);
+        });
       }
+    }
     context.loaderOverlay.hide();
   }
 
@@ -183,13 +186,11 @@ class _PsaRelatedValueRowState extends State<PsaRelatedValueRow> {
                     context,
                     platformPageRoute(
                       context: context,
-                      builder: (BuildContext context) =>
-                          CompanyEditScreen(
-                              company: companyData, readonly: false),
+                      builder: (BuildContext context) => CompanyEditScreen(
+                          company: companyData, readonly: false),
                     ),
                   );
-                }
-                else if (widget.entity['DEAL_ID'] != null) {
+                } else if (widget.entity['DEAL_ID'] != null) {
                   context.loaderOverlay.show();
 
                   var result = await CompanyService().getRelatedEntity(
@@ -204,7 +205,7 @@ class _PsaRelatedValueRowState extends State<PsaRelatedValueRow> {
                     platformPageRoute(
                       context: context,
                       builder: (BuildContext context) => RelatedEntityScreen(
-                        entity:  widget.entity,
+                        entity: widget.entity,
                         type: 'companies',
                         title: '',
                         list: result,
@@ -315,17 +316,18 @@ class _PsaRelatedValueRowState extends State<PsaRelatedValueRow> {
                                     context: context,
                                     builder: (BuildContext context) =>
                                         CompanyEditScreen(
-                                            company: companyData, readonly: false),
+                                            company: companyData,
+                                            readonly: false),
                                   ),
                                 );
-                              }
-                              else if (widget.entity['DEAL_ID'] != null) {
+                              } else if (widget.entity['DEAL_ID'] != null) {
                                 context.loaderOverlay.show();
 
-                                var result = await CompanyService().getRelatedEntity(
-                                    'Opportunity',
-                                    widget.entity['DEAL_ID'],
-                                    'companies?pageSize=1000&pageNumber=1');
+                                var result = await CompanyService()
+                                    .getRelatedEntity(
+                                        'Opportunity',
+                                        widget.entity['DEAL_ID'],
+                                        'companies?pageSize=1000&pageNumber=1');
 
                                 context.loaderOverlay.hide();
 
@@ -333,8 +335,9 @@ class _PsaRelatedValueRowState extends State<PsaRelatedValueRow> {
                                   context,
                                   platformPageRoute(
                                     context: context,
-                                    builder: (BuildContext context) => RelatedEntityScreen(
-                                      entity:  widget.entity,
+                                    builder: (BuildContext context) =>
+                                        RelatedEntityScreen(
+                                      entity: widget.entity,
                                       type: 'companies',
                                       title: '',
                                       list: result,
@@ -347,7 +350,10 @@ class _PsaRelatedValueRowState extends State<PsaRelatedValueRow> {
                                 if (company != null) {
                                   widget.onChange([
                                     {'KEY': 'ACCT_ID', 'VALUE': company['ID']},
-                                    {'KEY': 'ACCTNAME', 'VALUE': company['TEXT']},
+                                    {
+                                      'KEY': 'ACCTNAME',
+                                      'VALUE': company['TEXT']
+                                    },
                                   ]);
                                   setState(() {
                                     selectedCompany = company['TEXT'];
@@ -361,18 +367,25 @@ class _PsaRelatedValueRowState extends State<PsaRelatedValueRow> {
                                     context,
                                     platformPageRoute(
                                       context: context,
-                                      builder: (BuildContext context) => CompanyListScreen(
+                                      builder: (BuildContext context) =>
+                                          CompanyListScreen(
                                         listName: 'acsrch_api',
                                         isSelectable: true,
                                       ),
                                     ),
                                   );
-                                   print("conatct data$contactData");
+                                  print("conatct data$contactData");
                                   if (company != null) {
                                     widget.onChange([
-                                      {'KEY': 'ACCT_ID', 'VALUE': company['ID']},
-                                      {'KEY': 'ACCTNAME', 'VALUE': company['TEXT']},
-                                       {'KEY': 'PROJECT_ID', 'VALUE': null},
+                                      {
+                                        'KEY': 'ACCT_ID',
+                                        'VALUE': company['ID']
+                                      },
+                                      {
+                                        'KEY': 'ACCTNAME',
+                                        'VALUE': company['TEXT']
+                                      },
+                                      {'KEY': 'PROJECT_ID', 'VALUE': null},
                                       {'KEY': 'PROJECT_TITLE', 'VALUE': null},
                                       // {'KEY': 'DESCRIPTION', 'VALUE': company['TEXT']},
                                     ]);
@@ -383,8 +396,11 @@ class _PsaRelatedValueRowState extends State<PsaRelatedValueRow> {
                                 } else {
                                   context.loaderOverlay.show();
 
-                                  var result = await CompanyService().getRelatedEntity(
-                                      'project', widget.entity['PROJECT_ID'], 'companies');
+                                  var result = await CompanyService()
+                                      .getRelatedEntity(
+                                          'project',
+                                          widget.entity['PROJECT_ID'],
+                                          'companies');
 
                                   context.loaderOverlay.hide();
 
@@ -392,7 +408,8 @@ class _PsaRelatedValueRowState extends State<PsaRelatedValueRow> {
                                     context,
                                     platformPageRoute(
                                       context: context,
-                                      builder: (BuildContext context) => RelatedEntityScreen(
+                                      builder: (BuildContext context) =>
+                                          RelatedEntityScreen(
                                         entity: widget.entity,
                                         type: 'companies',
                                         title: '',
@@ -405,8 +422,14 @@ class _PsaRelatedValueRowState extends State<PsaRelatedValueRow> {
 
                                   if (company != null) {
                                     widget.onChange([
-                                      {'KEY': 'ACCT_ID', 'VALUE': company['ID']},
-                                      {'KEY': 'ACCTNAME', 'VALUE': company['TEXT']},
+                                      {
+                                        'KEY': 'ACCT_ID',
+                                        'VALUE': company['ID']
+                                      },
+                                      {
+                                        'KEY': 'ACCTNAME',
+                                        'VALUE': company['TEXT']
+                                      },
                                     ]);
                                     setState(() {
                                       selectedCompany = company['TEXT'];
@@ -424,7 +447,10 @@ class _PsaRelatedValueRowState extends State<PsaRelatedValueRow> {
                           ),
                           style: TextStyle(
                               color: Colors.grey.shade700, fontSize: 15),
-                          suffix: Icon(context.platformIcons.rightChevron,color: Colors.grey,),
+                          suffix: Icon(
+                            context.platformIcons.rightChevron,
+                            color: Colors.grey,
+                          ),
                         ),
                       ),
                     ),
@@ -437,24 +463,23 @@ class _PsaRelatedValueRowState extends State<PsaRelatedValueRow> {
             ? InkWell(
                 onTap: () async {
                   if (widget.type == "CONT_ID") {
-                    if(contactData!=null) {
+                    if (contactData != null) {
                       await Navigator.push(
                         context,
                         platformPageRoute(
                           context: context,
-                          builder: (BuildContext context) =>
-                              ContactEditScreen(
-                                  contact: contactData, readonly: false),
+                          builder: (BuildContext context) => ContactEditScreen(
+                              contact: contactData, readonly: false),
                         ),
                       );
-                    }
-                    else {
+                    } else {
                       if (widget.entity['ACCT_ID'] == null) {
                         var contact = await Navigator.push(
                           context,
                           platformPageRoute(
                             context: context,
-                            builder: (BuildContext context) => ContactListScreen(
+                            builder: (BuildContext context) =>
+                                ContactListScreen(
                               listName: 'cont_api',
                               isSelectable: true,
                             ),
@@ -492,13 +517,13 @@ class _PsaRelatedValueRowState extends State<PsaRelatedValueRow> {
                             context: context,
                             builder: (BuildContext context) =>
                                 RelatedEntityScreen(
-                                  entity: widget.entity,
-                                  type: 'contacts',
-                                  title: '',
-                                  list: result,
-                                  isSelectable: true,
-                                  isEditable: false,
-                                ),
+                              entity: widget.entity,
+                              type: 'contacts',
+                              title: '',
+                              list: result,
+                              isSelectable: true,
+                              isEditable: false,
+                            ),
                           ),
                         );
 
@@ -547,24 +572,25 @@ class _PsaRelatedValueRowState extends State<PsaRelatedValueRow> {
                             child: CupertinoTextField(
                               onTap: () async {
                                 if (widget.type == "CONT_ID") {
-                                  if(contactData!=null) {
+                                  if (contactData != null) {
                                     await Navigator.push(
                                       context,
                                       platformPageRoute(
                                         context: context,
                                         builder: (BuildContext context) =>
                                             ContactEditScreen(
-                                                contact: contactData, readonly: false),
+                                                contact: contactData,
+                                                readonly: false),
                                       ),
                                     );
-                                  }
-                                  else {
+                                  } else {
                                     if (widget.entity['ACCT_ID'] == null) {
                                       var contact = await Navigator.push(
                                         context,
                                         platformPageRoute(
                                           context: context,
-                                          builder: (BuildContext context) => ContactListScreen(
+                                          builder: (BuildContext context) =>
+                                              ContactListScreen(
                                             listName: 'cont_api',
                                             isSelectable: true,
                                           ),
@@ -581,8 +607,14 @@ class _PsaRelatedValueRowState extends State<PsaRelatedValueRow> {
                                             'KEY': 'ACCTNAME',
                                             'VALUE': contact['DATA']['ACCTNAME']
                                           },
-                                          {'KEY': 'CONT_ID', 'VALUE': contact['ID']},
-                                          {'KEY': 'CONTACT_NAME', 'VALUE': contact['TEXT']},
+                                          {
+                                            'KEY': 'CONT_ID',
+                                            'VALUE': contact['ID']
+                                          },
+                                          {
+                                            'KEY': 'CONTACT_NAME',
+                                            'VALUE': contact['TEXT']
+                                          },
                                         ]);
                                         setState(() {
                                           selectedContact = contact['TEXT'];
@@ -591,8 +623,11 @@ class _PsaRelatedValueRowState extends State<PsaRelatedValueRow> {
                                     } else {
                                       context.loaderOverlay.show();
 
-                                      var result = await CompanyService().getRelatedEntity(
-                                          'company', widget.entity['ACCT_ID'], 'contacts');
+                                      var result = await CompanyService()
+                                          .getRelatedEntity(
+                                              'company',
+                                              widget.entity['ACCT_ID'],
+                                              'contacts');
 
                                       context.loaderOverlay.hide();
 
@@ -602,13 +637,13 @@ class _PsaRelatedValueRowState extends State<PsaRelatedValueRow> {
                                           context: context,
                                           builder: (BuildContext context) =>
                                               RelatedEntityScreen(
-                                                entity: widget.entity,
-                                                type: 'contacts',
-                                                title: '',
-                                                list: result,
-                                                isSelectable: true,
-                                                isEditable: false,
-                                              ),
+                                            entity: widget.entity,
+                                            type: 'contacts',
+                                            title: '',
+                                            list: result,
+                                            isSelectable: true,
+                                            isEditable: false,
+                                          ),
                                         ),
                                       );
 
@@ -622,8 +657,14 @@ class _PsaRelatedValueRowState extends State<PsaRelatedValueRow> {
                                             'KEY': 'ACCTNAME',
                                             'VALUE': contact['DATA']['ACCTNAME']
                                           },
-                                          {'KEY': 'CONT_ID', 'VALUE': contact['ID']},
-                                          {'KEY': 'CONTACT_NAME', 'VALUE': contact['TEXT']},
+                                          {
+                                            'KEY': 'CONT_ID',
+                                            'VALUE': contact['ID']
+                                          },
+                                          {
+                                            'KEY': 'CONTACT_NAME',
+                                            'VALUE': contact['TEXT']
+                                          },
                                         ]);
                                         setState(() {
                                           selectedContact = contact['TEXT'];
@@ -641,7 +682,10 @@ class _PsaRelatedValueRowState extends State<PsaRelatedValueRow> {
                               ),
                               style: TextStyle(
                                   color: Colors.grey.shade700, fontSize: 15),
-                              suffix: Icon(context.platformIcons.rightChevron,color: Colors.grey,),
+                              suffix: Icon(
+                                context.platformIcons.rightChevron,
+                                color: Colors.grey,
+                              ),
                             ),
                           ),
                         ),
@@ -661,7 +705,9 @@ class _PsaRelatedValueRowState extends State<PsaRelatedValueRow> {
                               context: context,
                               builder: (BuildContext context) =>
                                   ProjectEditScreen(
-                                      project: projectData, readonly: false,),
+                                project: projectData,
+                                readonly: false,
+                              ),
                             ),
                           );
                         } else {
@@ -762,7 +808,9 @@ class _PsaRelatedValueRowState extends State<PsaRelatedValueRow> {
                                             context: context,
                                             builder: (BuildContext context) =>
                                                 ProjectEditScreen(
-                                                  project: projectData, readonly: false,),
+                                              project: projectData,
+                                              readonly: false,
+                                            ),
                                           ),
                                         );
                                       } else {
@@ -773,15 +821,18 @@ class _PsaRelatedValueRowState extends State<PsaRelatedValueRow> {
                                               context: context,
                                               builder: (BuildContext context) =>
                                                   ProjectListScreen(
-                                                    listName: 'pjfilt_api',
-                                                    isSelectable: true,
-                                                  ),
+                                                listName: 'pjfilt_api',
+                                                isSelectable: true,
+                                              ),
                                             ),
                                           );
 
                                           if (project != null) {
                                             widget.onChange([
-                                              {'KEY': 'PROJECT_ID', 'VALUE': project['ID']},
+                                              {
+                                                'KEY': 'PROJECT_ID',
+                                                'VALUE': project['ID']
+                                              },
                                               {
                                                 'KEY': 'PROJECT_TITLE',
                                                 'VALUE': project['TEXT']
@@ -795,8 +846,10 @@ class _PsaRelatedValueRowState extends State<PsaRelatedValueRow> {
                                           context.loaderOverlay.show();
 
                                           var result = await CompanyService()
-                                              .getRelatedEntity('company',
-                                              widget.entity['ACCT_ID'], 'projects');
+                                              .getRelatedEntity(
+                                                  'company',
+                                                  widget.entity['ACCT_ID'],
+                                                  'projects');
 
                                           context.loaderOverlay.hide();
 
@@ -806,19 +859,22 @@ class _PsaRelatedValueRowState extends State<PsaRelatedValueRow> {
                                               context: context,
                                               builder: (BuildContext context) =>
                                                   RelatedEntityScreen(
-                                                    entity: widget.entity,
-                                                    type: 'projects',
-                                                    title: '',
-                                                    list: result,
-                                                    isSelectable: true,
-                                                    isEditable: false,
-                                                  ),
+                                                entity: widget.entity,
+                                                type: 'projects',
+                                                title: '',
+                                                list: result,
+                                                isSelectable: true,
+                                                isEditable: false,
+                                              ),
                                             ),
                                           );
 
                                           if (project != null) {
                                             widget.onChange([
-                                              {'KEY': 'PROJECT_ID', 'VALUE': project['ID']},
+                                              {
+                                                'KEY': 'PROJECT_ID',
+                                                'VALUE': project['ID']
+                                              },
                                               {
                                                 'KEY': 'PROJECT_TITLE',
                                                 'VALUE': project['TEXT']
@@ -831,7 +887,8 @@ class _PsaRelatedValueRowState extends State<PsaRelatedValueRow> {
                                         }
                                       }
                                     }
-                                  },                                  controller: TextEditingController()
+                                  },
+                                  controller: TextEditingController()
                                     ..text = selectedProject,
                                   readOnly: true,
                                   decoration: new BoxDecoration(
@@ -840,8 +897,10 @@ class _PsaRelatedValueRowState extends State<PsaRelatedValueRow> {
                                   style: TextStyle(
                                       color: Colors.grey.shade700,
                                       fontSize: 15),
-                                  suffix:
-                                      Icon(context.platformIcons.rightChevron,color: Colors.grey,),
+                                  suffix: Icon(
+                                    context.platformIcons.rightChevron,
+                                    color: Colors.grey,
+                                  ),
                                 ),
                               ),
                             ),
@@ -865,8 +924,7 @@ class _PsaRelatedValueRowState extends State<PsaRelatedValueRow> {
                                           readonly: false),
                                 ),
                               );
-                            }
-                            else {
+                            } else {
                               if (widget.entity['ACCT_ID'] == null) {
                                 var deal = await Navigator.push(
                                   context,
@@ -874,9 +932,9 @@ class _PsaRelatedValueRowState extends State<PsaRelatedValueRow> {
                                     context: context,
                                     builder: (BuildContext context) =>
                                         OpportunityListScreen(
-                                          listName: 'ALLDE',
-                                          isSelectable: true,
-                                        ),
+                                      listName: 'ALLDE',
+                                      isSelectable: true,
+                                    ),
                                   ),
                                 );
 
@@ -900,9 +958,9 @@ class _PsaRelatedValueRowState extends State<PsaRelatedValueRow> {
 
                                 var result = await CompanyService()
                                     .getRelatedEntity(
-                                    'company',
-                                    widget.entity['ACCT_ID'],
-                                    'OpportunityLinks?pageSize=1000&pageNumber=1');
+                                        'company',
+                                        widget.entity['ACCT_ID'],
+                                        'OpportunityLinks?pageSize=1000&pageNumber=1');
 
                                 context.loaderOverlay.hide();
 
@@ -912,13 +970,14 @@ class _PsaRelatedValueRowState extends State<PsaRelatedValueRow> {
                                     context: context,
                                     builder: (BuildContext context) =>
                                         RelatedEntityScreen(
-                                          entity: widget.entity,
-                                          type: 'OpportunityLinks?pageSize=1000&pageNumber=1',
-                                          title: '',
-                                          list: result,
-                                          isSelectable: true,
-                                          isEditable: false,
-                                        ),
+                                      entity: widget.entity,
+                                      type:
+                                          'OpportunityLinks?pageSize=1000&pageNumber=1',
+                                      title: '',
+                                      list: result,
+                                      isSelectable: true,
+                                      isEditable: false,
+                                    ),
                                   ),
                                 );
 
@@ -968,24 +1027,27 @@ class _PsaRelatedValueRowState extends State<PsaRelatedValueRow> {
                                               context,
                                               platformPageRoute(
                                                 context: context,
-                                                builder: (BuildContext context) =>
-                                                    OpportunityEditScreen(
-                                                        deal: opportunityData,
-                                                        readonly: false),
+                                                builder:
+                                                    (BuildContext context) =>
+                                                        OpportunityEditScreen(
+                                                            deal:
+                                                                opportunityData,
+                                                            readonly: false),
                                               ),
                                             );
-                                          }
-                                          else {
-                                            if (widget.entity['ACCT_ID'] == null) {
+                                          } else {
+                                            if (widget.entity['ACCT_ID'] ==
+                                                null) {
                                               var deal = await Navigator.push(
                                                 context,
                                                 platformPageRoute(
                                                   context: context,
-                                                  builder: (BuildContext context) =>
-                                                      OpportunityListScreen(
-                                                        listName: 'ALLDE',
-                                                        isSelectable: true,
-                                                      ),
+                                                  builder:
+                                                      (BuildContext context) =>
+                                                          OpportunityListScreen(
+                                                    listName: 'ALLDE',
+                                                    isSelectable: true,
+                                                  ),
                                                 ),
                                               );
 
@@ -994,14 +1056,18 @@ class _PsaRelatedValueRowState extends State<PsaRelatedValueRow> {
                                                 print(deal);
                                                 print(deal['TEXT']);
                                                 widget.onChange([
-                                                  {'KEY': 'DEAL_ID', 'VALUE': deal['ID']},
+                                                  {
+                                                    'KEY': 'DEAL_ID',
+                                                    'VALUE': deal['ID']
+                                                  },
                                                   {
                                                     'KEY': 'DEAL_DESCRIPTION',
                                                     'VALUE': deal['TEXT']
                                                   },
                                                 ]);
                                                 setState(() {
-                                                  selectedOpportunity = deal['TEXT'];
+                                                  selectedOpportunity =
+                                                      deal['TEXT'];
                                                 });
                                               }
                                             } else {
@@ -1009,9 +1075,9 @@ class _PsaRelatedValueRowState extends State<PsaRelatedValueRow> {
 
                                               var result = await CompanyService()
                                                   .getRelatedEntity(
-                                                  'company',
-                                                  widget.entity['ACCT_ID'],
-                                                  'OpportunityLinks?pageSize=1000&pageNumber=1');
+                                                      'company',
+                                                      widget.entity['ACCT_ID'],
+                                                      'OpportunityLinks?pageSize=1000&pageNumber=1');
 
                                               context.loaderOverlay.hide();
 
@@ -1019,34 +1085,41 @@ class _PsaRelatedValueRowState extends State<PsaRelatedValueRow> {
                                                 context,
                                                 platformPageRoute(
                                                   context: context,
-                                                  builder: (BuildContext context) =>
-                                                      RelatedEntityScreen(
-                                                        entity: widget.entity,
-                                                        type: 'OpportunityLinks?pageSize=1000&pageNumber=1',
-                                                        title: '',
-                                                        list: result,
-                                                        isSelectable: true,
-                                                        isEditable: false,
-                                                      ),
+                                                  builder:
+                                                      (BuildContext context) =>
+                                                          RelatedEntityScreen(
+                                                    entity: widget.entity,
+                                                    type:
+                                                        'OpportunityLinks?pageSize=1000&pageNumber=1',
+                                                    title: '',
+                                                    list: result,
+                                                    isSelectable: true,
+                                                    isEditable: false,
+                                                  ),
                                                 ),
                                               );
 
                                               if (deal != null) {
                                                 widget.onChange([
-                                                  {'KEY': 'DEAL_ID', 'VALUE': deal['ID']},
+                                                  {
+                                                    'KEY': 'DEAL_ID',
+                                                    'VALUE': deal['ID']
+                                                  },
                                                   {
                                                     'KEY': 'DEAL_DESCRIPTION',
                                                     'VALUE': deal['TEXT']
                                                   },
                                                 ]);
                                                 setState(() {
-                                                  selectedOpportunity = deal['TEXT'];
+                                                  selectedOpportunity =
+                                                      deal['TEXT'];
                                                 });
                                               }
                                             }
                                           }
                                         }
-                                      },                                      controller: TextEditingController()
+                                      },
+                                      controller: TextEditingController()
                                         ..text = selectedOpportunity,
                                       readOnly: true,
                                       decoration: new BoxDecoration(
@@ -1056,7 +1129,9 @@ class _PsaRelatedValueRowState extends State<PsaRelatedValueRow> {
                                           color: Colors.grey.shade700,
                                           fontSize: 15),
                                       suffix: Icon(
-                                          context.platformIcons.rightChevron,color: Colors.grey,),
+                                        context.platformIcons.rightChevron,
+                                        color: Colors.grey,
+                                      ),
                                     ),
                                   ),
                                 ),
@@ -1065,6 +1140,6 @@ class _PsaRelatedValueRowState extends State<PsaRelatedValueRow> {
                           ),
                         ),
                       )
-                    : SizedBox();
+                        : SizedBox();
   }
 }

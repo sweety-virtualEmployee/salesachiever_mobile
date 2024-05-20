@@ -67,30 +67,20 @@ class _SelectedStaffZoneFilterFieldsScreenState
                 ),
                 onTap: () => print('lll'),
               ),
-             /* AuthUtil.hasAccess(int.parse(
-                  ACCESS_CODES['Saving sort and filters']
-                      .toString()))? IconButton(
+              filterBy?.length != 0
+                  ? IconButton(
                 onPressed: () async {
-                  await DynamicProjectService().deleteSortFilter(
-                      widget.filterBy?[index]['FieldName'],
-                      "FILTER",
-                      widget.list);
-                  Navigator.push(
-                      context,
-                      platformPageRoute(
-                          context: context,
-                          builder: (BuildContext context) {
-                            return DynamicProjectListScreen(
-                              listType: widget.type,
-                              listName: widget.list,
-                            );
-                          }));
+                  filterBy!.removeWhere((item) =>
+                  item['FieldName'] == filterBy?[index]['FieldName']);
+                  Navigator.pop(
+                      context, filterBy); // Pass updated sortBy back
                 },
                 icon: Icon(
                   context.platformIcons.clear,
                   color: Colors.red,
                 ),
-              ):SizedBox()*/
+              )
+                  : SizedBox()
             ],
           );
         },

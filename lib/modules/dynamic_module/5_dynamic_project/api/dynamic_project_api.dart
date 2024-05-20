@@ -385,13 +385,19 @@ class DynamicProjectApi {
   }
 
 
-  Future<dynamic> getStaffZoneEntityApi(String tableName,String fieldName,String staffZoneType,String id,int page,List<dynamic>? sortBy,) async {
+  Future<dynamic> getStaffZoneEntityApi(String tableName,String fieldName,String staffZoneType,String id,int page,List<dynamic>? sortBy,List<dynamic>? filterBy) async {
     List<dynamic> headers = [];
     print("sort by odf sort by $sortBy");
     var filter = [{"TableName": tableName,"FieldName":fieldName,"Comparison":5,"ItemValue":id}];
     if (sortBy != null) {
       headers.add({'key': 'SortSet', 'headers': jsonEncode(sortBy)});
     }
+    if (filterBy != null)
+      filterBy.add(filter);
+    else
+      filterBy = filter;
+    print("sort by odf sort by $filterBy");
+
     headers.add({'key': 'FilterSet', 'headers': jsonEncode(filter)});
     final response = await Api().get(
         '$api$staffZoneType?PageSize=10&PageNumber=$page',headers);
@@ -404,6 +410,7 @@ class DynamicProjectApi {
   }
 
   Future<dynamic> updateStaffZoneEntity(String id, dynamic entity,String staffZoneType) async {
+    print("update apju");
     Response response = await _api.put('/Entity/Entity.$staffZoneType', entity);
     return response.data;
   }

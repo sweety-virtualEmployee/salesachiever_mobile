@@ -32,6 +32,8 @@ class DynamicStaffZoneListScreen extends StatefulWidget {
   final String relatedEntityType;
   final String title;
   final String tableName;
+  final bool isSelectable;
+
 
   const DynamicStaffZoneListScreen({
     Key? key,
@@ -42,6 +44,7 @@ class DynamicStaffZoneListScreen extends StatefulWidget {
     required this.relatedEntityType,
     required this.title,
     required this.tableName,
+    this.isSelectable = false,
   }) : super(key: key);
 
   @override
@@ -55,12 +58,16 @@ class _DynamicStaffZoneListScreenState
   late DynamicStaffZoneProvider _dynamicStaffZoneProvider;
   final ScrollController _scrollController = ScrollController();
   List<dynamic> list = [];
+  List<dynamic> _sortBy = [];
+  List<dynamic> _filterBy = [];
 
   @override
   void initState() {
     super.initState();
-    _dynamicStaffZoneProvider = Provider.of<DynamicStaffZoneProvider>(context, listen: false);
-    _dynamicStaffZoneProvider.clearData();
+    _sortBy = widget.sortBy ?? [];
+    _filterBy = widget.filterBy ?? [];
+    _dynamicStaffZoneProvider =
+        Provider.of<DynamicStaffZoneProvider>(context, listen: false);
     fetchData();
     _scrollController.addListener(() {
       if (_scrollController.position.pixels ==
@@ -79,7 +86,8 @@ class _DynamicStaffZoneListScreenState
 
   void _loadNextPage() async {
     if (_dynamicStaffZoneProvider.getIsLastPage == false) {
-      _dynamicStaffZoneProvider.setPageNumber(_dynamicStaffZoneProvider.getPageNumber + 1);
+      _dynamicStaffZoneProvider
+          .setPageNumber(_dynamicStaffZoneProvider.getPageNumber + 1);
       String fieldName = "";
       if (widget.relatedEntityType == "COMPANY") {
         fieldName = "ACCT_ID";
@@ -92,18 +100,17 @@ class _DynamicStaffZoneListScreenState
           widget.tableName,
           fieldName,
           widget.staffZoneType,
-          widget.id,_dynamicStaffZoneProvider.getPageNumber,
-          widget.sortBy);
-      print("result$result");
-      print("_dynamic${_dynamicStaffZoneProvider.getStaffZoneEntity!.length}");
+          widget.id,
+          _dynamicStaffZoneProvider.getPageNumber,
+         _sortBy,_filterBy);
       _dynamicStaffZoneProvider.setStaffZoneEntity(result["Items"]);
       _dynamicStaffZoneProvider.setIsLastPage(result["IsLastPage"]);
       _dynamicStaffZoneProvider.setPageNumber(result["PageNumber"]);
-      print("_dynamic${_dynamicStaffZoneProvider.getStaffZoneEntity!.length}");
     }
   }
 
   fetchData() async {
+    _dynamicStaffZoneProvider.clearData();
     _dynamicStaffZoneProvider.setIsLoading(true);
     try {
       String fieldName = "";
@@ -118,15 +125,13 @@ class _DynamicStaffZoneListScreenState
           widget.tableName,
           fieldName,
           widget.staffZoneType,
-          widget.id,1,
-          widget.sortBy);
-      print("result$result");
-      print("_dynamic${_dynamicStaffZoneProvider.getStaffZoneEntity!.length}");
+          widget.id,
+          1,
+          _sortBy,_filterBy);
       _dynamicStaffZoneProvider.setIsLoading(false);
       _dynamicStaffZoneProvider.setStaffZoneEntity(result["Items"]);
       _dynamicStaffZoneProvider.setIsLastPage(result["IsLastPage"]);
       _dynamicStaffZoneProvider.setPageNumber(result["PageNumber"]);
-      print("_dynamic${_dynamicStaffZoneProvider.getStaffZoneEntity!.length}");
     } catch (e) {
       setState(() {
         _dynamicStaffZoneProvider.setIsLoading(false);
@@ -137,284 +142,366 @@ class _DynamicStaffZoneListScreenState
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<DynamicStaffZoneProvider>(builder: (context, provider, child) {
-        return PsaScaffold(
-            title: "${capitalizeFirstLetter(widget.title)} - List",
-            body: provider.getIsLoading
-                ? Center(child: CircularProgressIndicator())
-                : provider.getStaffZoneEntity.isEmpty
-                    ? Center(child: Text("No data available"))
-                    : Column(
+    return Consumer<DynamicStaffZoneProvider>(
+        builder: (context, provider, child) {
+      return PsaScaffold(
+          title: "${capitalizeFirstLetter(widget.title)} - List",
+          body: provider.getIsLoading
+              ? Center(child: CircularProgressIndicator())
+              : provider.getStaffZoneEntity.isEmpty
+                  ? Center(child: Text("No data available"))
+                  : Column(
                       children: [
                         Container(
                           color: Colors.white,
                           child: Column(
                             children: [
                               ListAction(
-                                title:
-                                LangUtil.getString('List', 'ListFilter.SortBy.Label'),
+                                title: LangUtil.getString(
+                                    'List', 'ListFilter.SortBy.Label'),
                                 selectedCount: widget.sortBy?.length ?? 0,
-                                onTap: () => Navigator.push(
+                                onTap: () async {
+                                  final updatedSortBy = await Navigator.push(
                                   context,
                                   platformPageRoute(
                                     context: context,
                                     builder: (BuildContext context) =>
                                         SelectedStaffZoneSortFieldsScreen(
-                                          title: LangUtil.getString(
-                                              'List', 'ListFilter.SortBy.Label'),
-                                          tableName: widget.tableName,
-                                          relatedEntityType:widget.relatedEntityType,
-                                          sortBy: widget.sortBy,
-                                          staffZoneType: widget.staffZoneType,
-                                          staffZoneListTitle:widget.title,
-                                          id: widget.id,
-                                        ),
+                                      title: LangUtil.getString(
+                                          'List', 'ListFilter.SortBy.Label'),
+                                      tableName: widget.tableName,
+                                      relatedEntityType:
+                                          widget.relatedEntityType,
+                                      sortBy: _sortBy,
+                                      staffZoneType: widget.staffZoneType,
+                                      staffZoneListTitle: widget.title,
+                                      id: widget.id,
+                                    ),
                                   ),
-                                ),
+                                );
+                                  setState(() {
+                                    _sortBy = updatedSortBy ?? _sortBy;
+                                  });
+                                  fetchData();
+                                  },
                               ),
                               Divider(
                                 color: Colors.white,
                                 height: 2,
                               ),
                               ListAction(
-                                title:
-                                LangUtil.getString('List', 'ListFilter.FilterBy.Label'),
+                                title: LangUtil.getString(
+                                    'List', 'ListFilter.FilterBy.Label'),
                                 selectedCount: widget.filterBy?.length ?? 0,
-                                onTap: () => Navigator.push(
-                                  context,
-                                  platformPageRoute(
-                                    context: context,
-                                    builder: (BuildContext context) =>
-                                        SelectedStaffZoneFilterFieldsScreen(
-                                          title: LangUtil.getString(
-                                              'List', 'ListFilter.FilterBy.Label'),
-                                          tableName: widget.tableName,
-                                          relatedEntityType:widget.relatedEntityType,
-                                          sortBy: widget.sortBy,
-                                          staffZoneType: widget.staffZoneType,
-                                          staffZoneListTitle:widget.title,
-                                          id: widget.id,
-                                        ),
-                                  ),
-                                ),
+                               onTap: () async {
+                                final updatedFilterKey = await Navigator.push(
+                                   context,
+                                   platformPageRoute(
+                                     context: context,
+                                     builder: (BuildContext context) =>
+                                         SelectedStaffZoneFilterFieldsScreen(
+                                           title: LangUtil.getString(
+                                               'List', 'ListFilter.FilterBy.Label'),
+                                           tableName: widget.tableName,
+                                           relatedEntityType:
+                                           widget.relatedEntityType,
+                                           sortBy:_sortBy,
+                                           staffZoneType: widget.staffZoneType,
+                                           staffZoneListTitle: widget.title,
+                                           id: widget.id,
+                                         ),
+                                   ),
+                                 );
+                                setState(() {
+                                  _filterBy = updatedFilterKey ?? _filterBy;
+                                });
+                                fetchData();
+                               },
                               ),
                             ],
                           ),
                         ),
                         Expanded(
                           child: ListView.builder(
-                              shrinkWrap: true,
-                              controller: _scrollController,
-                              itemCount: provider.getStaffZoneEntity.length,
-                              padding: EdgeInsets.symmetric(horizontal: 10, vertical: 15),
-                              itemBuilder: (context, index) {
-                                var item = provider.getStaffZoneEntity[index];
-                                return GestureDetector(
-                                  onTap: () async {
-                                    if(item['HAS_LINK_DOCUMENT'] == "Y"){
-                                      CopyUtil.showCopyMessage(context, () => onCopy(item["ENTITY_ID"]));
-                                    }
-                                    else{
-                                    var result = await DynamicProjectService()
-                                        .getStaffZoneEntity(
-                                            widget.tableName,
-                                            "ENTITY_ID",
-                                            widget.staffZoneType,
-                                            provider.getStaffZoneEntity[index]["ENTITY_ID"],_dynamicStaffZoneProvider.getPageNumber,
-                                            widget.sortBy);
-                                    Navigator.push(
-                                      context,
-                                      platformPageRoute(
-                                        context: context,
-                                        builder: (BuildContext context) =>
-                                            DynamicStaffZoneEditScreen(
-                                          entity: result["Items"][0],
-                                          isNew: false,
-                                          readonly: true,
-                                          id: widget.id,
-                                          relatedEntityType: widget.relatedEntityType,
-                                          tableName: widget.tableName,
-                                          title: widget.title,
-                                              staffZoneType:widget.staffZoneType,
-                                        ),
-                                      ),
-                                    );
-                                  }},
-                                  child: Column(
+                            shrinkWrap: true,
+                            controller: _scrollController,
+                            itemCount: provider.getStaffZoneEntity.length,
+                            padding: EdgeInsets.symmetric(
+                                horizontal: 10, vertical: 15),
+                            itemBuilder: (context, index) {
+                              var item = provider.getStaffZoneEntity[index];
+                              print("item$item");
+                              return Column(
+                                children: [
+                                  Row(
                                     children: [
-                                      Row(
-                                        children: [
-                                          Expanded(
-                                            child: Column(
-                                              crossAxisAlignment: CrossAxisAlignment.start,
-                                              children: [
-                                                SizedBox(height: 10),
-                                                PlatformText(
-                                                  '${item['DESCRIPTION'] ?? ''}',
-                                                  style: TextStyle(
-                                                    fontWeight: FontWeight.w500,
-                                                    color: Colors.black87,
+                                      Expanded(
+                                        child: GestureDetector(
+                                          onTap: () async {
+                                            if (widget.isSelectable) {
+                                              Navigator.pop(context, {
+                                                'ID': item['ENTITY_ID'],
+                                                'TEXT':item['DESCRIPTION'],
+                                                'DATA': item,
+                                              });
+                                              return;
+                                            }
+                                            if (item['HAS_LINK_DOCUMENT'] ==
+                                                "Y") {
+                                              CopyUtil.showCopyMessage(
+                                                  context,
+                                                  () => onCopy(
+                                                      item["ENTITY_ID"]));
+                                            } else {
+                                              var result =
+                                                  await DynamicProjectService()
+                                                      .getStaffZoneEntity(
+                                                          widget.tableName,
+                                                          "ENTITY_ID",
+                                                          widget
+                                                              .staffZoneType,
+                                                          provider.getStaffZoneEntity[
+                                                                  index]
+                                                              ["ENTITY_ID"],
+                                                          1,
+                                                          _sortBy,_filterBy);
+                                              print("result$result");
+                                              Navigator.push(
+                                                context,
+                                                platformPageRoute(
+                                                  context: context,
+                                                  builder: (BuildContext
+                                                          context) =>
+                                                      DynamicStaffZoneEditScreen(
+                                                    entity: result["Items"]
+                                                        [0],
+                                                    isNew: false,
+                                                    readonly: true,
+                                                    id: widget.id,
+                                                    relatedEntityType: widget
+                                                        .relatedEntityType,
+                                                    tableName:
+                                                        widget.tableName,
+                                                    title: widget.title,
+                                                    staffZoneType:
+                                                        widget.staffZoneType,
+                                                        sortBy: _sortBy,
+                                                        filterBy: _filterBy,
                                                   ),
-                                                  overflow: TextOverflow.ellipsis,
                                                 ),
-                                                SizedBox(height: 5),
-                                                PlatformText(
-                                                  "Submitted By: ${item['SUBMITTED_BY'] ?? ''}",
-                                                  style: TextStyle(
-                                                    fontWeight: FontWeight.w300,
-                                                    color: Colors.black87,
-                                                    fontSize: 14,
-                                                  ),
-                                                  overflow: TextOverflow.ellipsis,
-                                                ),
-                                                SizedBox(height: 5),
-                                                PlatformText(
-                                                  "Submitted On: ${DateUtil.getFormattedDate(item['SUBMITTED_ON'] ?? '')}",
-                                                  style: TextStyle(
-                                                    fontWeight: FontWeight.w300,
-                                                    color: Colors.black87,
-                                                    fontSize: 14,
-                                                  ),
-                                                  overflow: TextOverflow.ellipsis,
-                                                ),
-                                                SizedBox(height: 5),
-                                              ],
-                                            ),
-                                          ),
-                                          SizedBox(width: 2),
-                                          if (item['HAS_LINK_DOCUMENT'] == "Y")
-                                            InkWell(
-                                              onTap: () async {
-                                                context.loaderOverlay.show();
-                          
-                                                SitePhotoService()
-                                                    .getBlobById(
-                                                        item['LINK_DOCUMENT_BLOB_ID'])
-                                                    .then((blob) async {
-                                                  try {
-                                                    print("blob chekcing$blob");
-                                                    var decodedBytes = base64.decode(
-                                                        blob.replaceAll('\r\n', ''));
-                                                    print("decode bytes$decodedBytes");
-                                                    final archive = ZipDecoder()
-                                                        .decodeBytes(decodedBytes);
-                                                    print("archive$archive");
-                                                    File? outFile;
-                          
-                          
-                                                    for (var file in archive) {
-                                                      final directory =
-                                                          await getApplicationDocumentsDirectory();
-                                                      final filePath =
-                                                          '${directory.path}/file.pdf';
-                                                      var fileName =
-                                                          '${directory.path}/${item['LINK_DOCUMENT_BLOB_ID']}';
-                          
-                                                      final pdfFile = File(filePath);
-                                                      await pdfFile
-                                                          .writeAsBytes(file.content);
-                                                      if (_imageList.length == 0) {
-                                                        _imageList.add({});
-                                                      }
-                                                      print("filepath$filePath");
-                                                      setState(() {
-                                                        _imageList[0]['FILEPATH'] =
-                                                            filePath;
-                                                        _imageList[0]['FILENAME'] =
-                                                            archive.toString();
-                                                      });
-                                                      if (file.isFile) {
-                                                        outFile = File(fileName);
-                                                        outFile = await outFile.create(
-                                                            recursive: true);
-                                                        await outFile
-                                                            .writeAsBytes(file.content);
-                                                      }
-                                                    }
-                                                    print("check the output file");
-                                                    print(outFile);
-                          
-                                                    if (outFile != null) {
-                                                      setState(() {
-                                                        _imageList[0]['FILE'] = outFile;
-                                                        _imageList[0]['FILENAME'] =
-                                                            archive.toString();
-                                                      });
-                          
-                                                      print("ImageList$_imageList");
-                          
-                                                      Navigator.push(
-                                                        context,
-                                                        MaterialPageRoute(
-                                                          builder: (context) =>
-                                                              DynamicPhotoPreview(
-                                                                  photo: _imageList[0]),
-                                                        ),
-                                                      );
-                                                    }
-                                                  } catch (error) {
-                                                    ErrorUtil.showErrorMessage(context,
-                                                        MessageUtil.getMessage('500'));
-                                                  } finally {
-                                                    context.loaderOverlay.hide();
-                                                  }
-                                                });
-                                              },
-                                              child: SizedBox(
-                                                width: 40,
-                                                height: 40,
-                                                child: Image.asset(
-                                                  "assets/images/pdf_icon.png",
+                                              );
+                                            }
+                                          },
+                                          child: Row(
+                                            children: [
+                                              Expanded(
+                                                child: Column(
+                                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                                  children: [
+                                                    SizedBox(height: 10),
+                                                    // Account Name
+                                                    Text(
+                                                      '${item['ACCTNAME'] ?? ''}',
+                                                      style: TextStyle(
+                                                        fontWeight: FontWeight.w500,
+                                                        color: Colors.black87,
+                                                      ),
+                                                      overflow: TextOverflow.ellipsis,
+                                                    ),
+                                                    SizedBox(height: 5),
+                                                    Text(
+                                                      '${item['PROJECT_TITLE'] ?? ''}',
+                                                      style: TextStyle(
+                                                        fontWeight: FontWeight.w500,
+                                                        color: Colors.black87,
+                                                      ),
+                                                      overflow: TextOverflow.ellipsis,
+                                                    ),
+                                                  ],
                                                 ),
                                               ),
-                                            )
-                                          else
-                                            SizedBox(width: 40,),
-                                          SizedBox(width: 5)
-                                        ],
+                                              SizedBox(width: 10), // Adjust as needed
+                                              Expanded(
+                                                child: Column(
+                                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                                  children: [
+                                                    SizedBox(height: 10),
+                                                    Text(
+                                                      "Submitted By: ${item['SUBMITTED_BY'] ?? ''}",
+                                                      style: TextStyle(
+                                                        fontWeight: FontWeight.w300,
+                                                        color: Colors.black87,
+                                                        fontSize: 14,
+                                                      ),
+                                                      overflow: TextOverflow.ellipsis,
+                                                    ),
+                                                    SizedBox(height: 5),
+                                                    Text(
+                                                      "Submitted On: ${DateUtil.getFormattedDate(item['SUBMITTED_ON'] ?? '')}",
+                                                      style: TextStyle(
+                                                        fontWeight: FontWeight.w300,
+                                                        color: Colors.black87,
+                                                        fontSize: 14,
+                                                      ),
+                                                      overflow: TextOverflow.ellipsis,
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
                                       ),
-                                      SizedBox(
-                                        height: 5,
-                                      ),
-                                      Divider(
-                                        color: Colors.black26,
-                                      ),
-                                      SizedBox(height: 15),
+                                      SizedBox(width: 10), // Adjust as needed
+                                      // PDF Icon
+                                      item['HAS_LINK_DOCUMENT'] ==
+                                          "Y"?SizedBox(
+                                        width: 40,
+                                        height: 40,
+                                        child: InkWell(
+                                          onTap: () async {
+                                            // Your PDF handling logic
+                                            context.loaderOverlay.show();
+
+                                            SitePhotoService()
+                                                .getBlobById(item[
+                                                    'LINK_DOCUMENT_BLOB_ID'])
+                                                .then((blob) async {
+                                              try {
+                                                print("blob checking $blob");
+                                                var decodedBytes = base64
+                                                    .decode(blob.replaceAll(
+                                                        '\r\n', ''));
+                                                print(
+                                                    "decoded bytes $decodedBytes");
+                                                final archive = ZipDecoder()
+                                                    .decodeBytes(
+                                                        decodedBytes);
+                                                print("archive $archive");
+                                                File? outFile;
+
+                                                for (var file in archive) {
+                                                  final directory =
+                                                      await getApplicationDocumentsDirectory();
+                                                  final filePath =
+                                                      '${directory.path}/file.pdf';
+                                                  var fileName =
+                                                      '${directory.path}/${item['LINK_DOCUMENT_BLOB_ID']}';
+
+                                                  final pdfFile =
+                                                      File(filePath);
+                                                  await pdfFile.writeAsBytes(
+                                                      file.content);
+                                                  if (_imageList.length ==
+                                                      0) {
+                                                    _imageList.add({});
+                                                  }
+                                                  print(
+                                                      "file path $filePath");
+                                                  setState(() {
+                                                    _imageList[0]
+                                                            ['FILEPATH'] =
+                                                        filePath;
+                                                    _imageList[0]
+                                                            ['FILENAME'] =
+                                                        archive.toString();
+                                                  });
+                                                  if (file.isFile) {
+                                                    outFile = File(fileName);
+                                                    outFile =
+                                                        await outFile.create(
+                                                            recursive: true);
+                                                    await outFile
+                                                        .writeAsBytes(
+                                                            file.content);
+                                                  }
+                                                }
+                                                print(
+                                                    "check the output file");
+                                                print(outFile);
+
+                                                if (outFile != null) {
+                                                  setState(() {
+                                                    _imageList[0]['FILE'] =
+                                                        outFile;
+                                                    _imageList[0]
+                                                            ['FILENAME'] =
+                                                        archive.toString();
+                                                  });
+
+                                                  print(
+                                                      "ImageList$_imageList");
+
+                                                  Navigator.push(
+                                                    context,
+                                                    MaterialPageRoute(
+                                                      builder: (context) =>
+                                                          DynamicPhotoPreview(
+                                                              photo:
+                                                                  _imageList[
+                                                                      0]),
+                                                    ),
+                                                  );
+                                                }
+                                              } catch (error) {
+                                                ErrorUtil.showErrorMessage(
+                                                    context,
+                                                    MessageUtil.getMessage(
+                                                        '500'));
+                                              } finally {
+                                                context.loaderOverlay.hide();
+                                              }
+                                            });
+                                          },
+                                          child: Image.asset(
+                                            "assets/images/pdf_icon.png",
+                                          ),
+                                        ),
+                                      ):
+                                      SizedBox(width: 5), // Adjust as needed
                                     ],
                                   ),
-                                );
-                              },
-                            ),
+                                  SizedBox(
+                                    height: 5,
+                                  ),
+                                  Divider(
+                                    color: Colors.black26,
+                                  ),
+                                  SizedBox(height: 15),
+                                ],
+                              );
+                            },
+                          ),
                         ),
                       ],
                     ),
-            action: PsaAddButton(onTap: () async {
-              Navigator.push(
-                context,
-                platformPageRoute(
-                  context: context,
-                  builder: (BuildContext context) => DynamicStaffZoneEditScreen(
-                    entity: {},
-                    readonly: false,
-                    id: widget.id,
-                    isNew: true,
-                    relatedEntityType: widget.relatedEntityType,
-                    tableName: widget.tableName,
-                    title: widget.title,
-                    staffZoneType: widget.staffZoneType,
-                  ),
+          action: widget.isSelectable?SizedBox():
+          PsaAddButton(onTap: () async {
+            Navigator.push(
+              context,
+              platformPageRoute(
+                context: context,
+                builder: (BuildContext context) => DynamicStaffZoneEditScreen(
+                  entity: {},
+                  readonly: false,
+                  id: widget.id,
+                  isNew: true,
+                  relatedEntityType: widget.relatedEntityType,
+                  tableName: widget.tableName,
+                  title: widget.title,
+                  staffZoneType: widget.staffZoneType,
+                  sortBy: _sortBy,
+                  filterBy: _filterBy,
                 ),
-              );
-            }));
-      }
-    );
+              ),
+            );
+          }));
+    });
   }
 
   Future<void> onCopy(String entityId) async {
-     var newEntity = await DynamicProjectService()
-         .copyNewStaffZoneEntity(widget.tableName, entityId);
-     print("newEntity$newEntity");
-     _dynamicStaffZoneProvider.clearData();
-     fetchData();
-   }
+    var newEntity = await DynamicProjectService()
+        .copyNewStaffZoneEntity(widget.tableName, entityId);
+    fetchData();
+  }
 }

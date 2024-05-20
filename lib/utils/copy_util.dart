@@ -30,7 +30,8 @@ class CopyUtil {
                       ),
                       child: Text('Yes'),
                       onPressed: () {
-                       onCopy();
+                        Navigator.pop(context); // Dismiss the dialog
+                        onCopy();
                       },
                     ),
                   ),
