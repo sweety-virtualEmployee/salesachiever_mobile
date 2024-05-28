@@ -47,9 +47,9 @@ class SelectStaffZoneFilterValueScreen extends StatelessWidget {
         padding: const EdgeInsets.all(8.0),
         child: ListView.separated(
           itemBuilder: (
-              BuildContext _context,
-              int index,
-              ) {
+            BuildContext _context,
+            int index,
+          ) {
             return InkWell(
                 child: Padding(
                   padding: const EdgeInsets.symmetric(
@@ -58,12 +58,9 @@ class SelectStaffZoneFilterValueScreen extends StatelessWidget {
                     items[index].displayValue,
                   ),
                 ),
-                onTap: () =>Navigator.pushReplacement(
-            context,
-            platformPageRoute(
-            context: context,
-            builder: (BuildContext context) {
-                  List<dynamic> filter = List<dynamic>.from(filterBy ?? []);
+                onTap: () {
+                  List<dynamic> filter =
+                  List<dynamic>.from(filterBy ?? []);
 
                   filter.add({
                     'TableName': tableName,
@@ -72,19 +69,11 @@ class SelectStaffZoneFilterValueScreen extends StatelessWidget {
                     'ItemValue': items[index].itemId,
                   });
 
-                          return DynamicStaffZoneListScreen(
-                            tableName: tableName,
-                            sortBy: sortBy,
-                            filterBy: filter,
-                            staffZoneType: staffZoneType,
-                            id: id,
-                            relatedEntityType: relatedEntityType,
-                            title: staffZoneListTitle,
-                          );
-            },
-            ),
-                ),
-            );
+                  Navigator.pop(context);
+                  Navigator.pop(context);
+                  Navigator.pop(context);
+                  Navigator.pop(context,filter);
+                });
           },
           itemCount: items.length,
           separatorBuilder: (context, index) => Divider(

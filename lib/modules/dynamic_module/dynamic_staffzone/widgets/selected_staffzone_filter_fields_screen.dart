@@ -11,7 +11,7 @@ import 'package:salesachiever_mobile/shared/widgets/layout/psa_scaffold.dart';
 import 'package:salesachiever_mobile/utils/auth_util.dart';
 import 'package:salesachiever_mobile/utils/lang_util.dart';
 
-class SelectedStaffZoneFilterFieldsScreen extends StatefulWidget {
+class SelectedStaffZoneFilterFieldsScreen extends StatelessWidget {
   final String title;
   final String relatedEntityType;
   final String tableName;
@@ -23,34 +23,21 @@ class SelectedStaffZoneFilterFieldsScreen extends StatefulWidget {
 
   const SelectedStaffZoneFilterFieldsScreen(
       {Key? key,
-        required this.tableName,
-        required this.relatedEntityType,
-        required this.staffZoneType,
-        required this.id,
-        required this.staffZoneListTitle,
-        required this.title,
-        this.sortBy,this.filterBy})
+      required this.tableName,
+      required this.relatedEntityType,
+      required this.staffZoneType,
+      required this.id,
+      required this.staffZoneListTitle,
+      required this.title,
+      this.sortBy,
+      this.filterBy})
       : super(key: key);
 
   @override
-  _SelectedStaffZoneFilterFieldsScreenState createState() =>
-      _SelectedStaffZoneFilterFieldsScreenState();
-}
-
-class _SelectedStaffZoneFilterFieldsScreenState
-    extends State<SelectedStaffZoneFilterFieldsScreen> {
-  dynamic filterBy;
-
-  @override
-  void initState() {
-    filterBy = widget.filterBy;
-    super.initState();
-  }
-
-  @override
   Widget build(BuildContext context) {
+    print("filter scree$filterBy");
     return PsaScaffold(
-      title: widget.title,
+      title: title,
       body: ListView.separated(
         itemBuilder: (BuildContext _context, int index) {
           return Row(
@@ -62,29 +49,29 @@ class _SelectedStaffZoneFilterFieldsScreenState
                       horizontal: 8.0, vertical: 2.0),
                   child: PlatformText(
                     LangUtil.getString(
-                        widget.tableName, widget.filterBy?[index]['FieldName']),
+                        tableName, filterBy?[index]['FieldName']),
                   ),
                 ),
                 onTap: () => print('lll'),
               ),
               filterBy?.length != 0
                   ? IconButton(
-                onPressed: () async {
-                  filterBy!.removeWhere((item) =>
-                  item['FieldName'] == filterBy?[index]['FieldName']);
-                  Navigator.pop(
-                      context, filterBy); // Pass updated sortBy back
-                },
-                icon: Icon(
-                  context.platformIcons.clear,
-                  color: Colors.red,
-                ),
-              )
+                      onPressed: () async {
+                        filterBy!.removeWhere((item) =>
+                            item['FieldName'] == filterBy?[index]['FieldName']);
+                        Navigator.pop(
+                            context, filterBy); // Pass updated sortBy back
+                      },
+                      icon: Icon(
+                        context.platformIcons.clear,
+                        color: Colors.red,
+                      ),
+                    )
                   : SizedBox()
             ],
           );
         },
-        itemCount: widget.filterBy?.length ?? 0,
+        itemCount: filterBy?.length ?? 0,
         separatorBuilder: (context, index) => Divider(
           color: Colors.black26,
         ),
@@ -95,13 +82,14 @@ class _SelectedStaffZoneFilterFieldsScreenState
           platformPageRoute(
             context: context,
             builder: (BuildContext context) => SelectStaffZoneFilterFieldScreen(
-              title: widget.title,
-              relatedEntityType: widget.relatedEntityType,
-              sortBy: widget.sortBy,
+              title: title,
+              relatedEntityType: relatedEntityType,
+              sortBy: sortBy,
               filterBy: filterBy,
-              staffZoneListTitle: widget.staffZoneListTitle,
-              id: widget.id,
-              staffZoneType: widget.staffZoneType, tableName: widget.tableName,
+              staffZoneListTitle: staffZoneListTitle,
+              id: id,
+              staffZoneType: staffZoneType,
+              tableName: tableName,
             ),
           ),
         ),

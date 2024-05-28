@@ -49,31 +49,37 @@ class SelectStaffZoneSortOrderScreen extends StatelessWidget {
                   items[index]['value'],
                 ),
               ),
-              onTap: () => Navigator.pushReplacement(
-                context,
-                platformPageRoute(
-                  context: context,
-                  builder: (BuildContext context) {
-                    List<dynamic> sort = List<dynamic>.from(sortBy ?? []);
+              onTap: () {
+                List<dynamic> sort = List<dynamic>.from(sortBy ?? []);
 
-                    sort.add({
-                      'TableName': tableName,
-                      'FieldName': field,
-                      'SortOrder': items[index]['key'],
-                      'SortIndex': 0
-                    });
+                sort.add({
+                  'TableName': tableName,
+                  'FieldName': field,
+                  'SortOrder': items[index]['key'],
+                  'SortIndex': 0
+                });
 
-                    return DynamicStaffZoneListScreen(
-                      tableName: tableName,
-                      sortBy: sort,
-                      staffZoneType: staffZoneType,
-                      id: id,
-                      relatedEntityType: relatedEntityType,
-                      title: staffZoneListTitle,
-                    );
-                  },
-                ),
-              ),
+                Navigator.pop(context);
+                Navigator.pop(context);
+                Navigator.pop(context,sort);
+               /* Navigator.pushReplacement(
+                  context,
+                  platformPageRoute(
+                    context: context,
+                    builder: (BuildContext context) {
+
+                      return DynamicStaffZoneListScreen(
+                        tableName: tableName,
+                        sortBy: sort,
+                        staffZoneType: staffZoneType,
+                        id: id,
+                        relatedEntityType: relatedEntityType,
+                        title: staffZoneListTitle,
+                      );
+                    },
+                  ),
+                );*/
+              }
             );
           },
           itemCount: 2,

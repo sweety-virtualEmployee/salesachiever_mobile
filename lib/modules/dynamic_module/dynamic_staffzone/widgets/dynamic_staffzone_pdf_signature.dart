@@ -4,6 +4,7 @@ import 'package:dio/dio.dart';
 import 'package:image/image.dart' as img;
 import 'package:flutter/material.dart';
 import 'package:flutter_pdfview/flutter_pdfview.dart';
+import 'package:intl/intl.dart';
 import 'package:loader_overlay/loader_overlay.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
@@ -26,6 +27,7 @@ class DynamicSignatureViewerPage extends StatefulWidget {
   final String staffZoneType;
   final String id;
   final String relatedEntityType;
+  final  Map<String, dynamic> entity;
 
   DynamicSignatureViewerPage({
     required this.base64String,
@@ -34,6 +36,7 @@ class DynamicSignatureViewerPage extends StatefulWidget {
     required this.staffZoneType,
     required this.id,
     required this.relatedEntityType,
+    required this.entity
   });
 
   @override
@@ -46,14 +49,14 @@ class _DynamicSignatureViewerPageState
   String filePath = "";
   String base64EncodedString = "";
   Key _pdfViewKey = UniqueKey(); // Add a unique key for the PDFView
-
+  late dynamic _entity;
   late DynamicStaffZoneProvider _dynamicStaffZoneProvider;
 
   @override
   void initState() {
     super.initState();
-    _dynamicStaffZoneProvider =
-        Provider.of<DynamicStaffZoneProvider>(context, listen: false);
+    _entity = widget.entity;
+    _dynamicStaffZoneProvider = Provider.of<DynamicStaffZoneProvider>(context, listen: false);
     fetchPdfFilePath(widget.base64String);
   }
 
@@ -168,6 +171,15 @@ class _DynamicSignatureViewerPageState
       };
 
       await SitePhotoService().uploadBlob(blob);
+      print("entity before date pass $_entity");
+      setState(() {
+        _entity["DATE_SIGNED"] = DateFormat("yyyy-MM-dd'T'HH:mm:ss").format(DateTime.now());
+      });
+      print("entity after date pass $_entity");
+
+
+      await DynamicProjectService().updateStaffZoneEntity(
+          widget.entityId, _entity, widget.tableName);
 
       dynamic value =
           await DynamicProjectService().getStaffZoneSubScribedReports(widget.staffZoneType.split('/List/')[1].substring(0, 2));
@@ -237,7 +249,7 @@ class _DynamicSignatureViewerPageState
       }
       _dynamicStaffZoneProvider.clearData();
       var result = await DynamicProjectService().getStaffZoneEntity(
-          widget.tableName, fieldName, widget.staffZoneType, widget.id,1,
+          widget.tableName, fieldName, widget.staffZoneType, widget.id,1,""
       );
 
       print("result$result");

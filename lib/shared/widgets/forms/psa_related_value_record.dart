@@ -28,6 +28,8 @@ class PsaRelatedValueRow extends StatefulWidget {
   final bool isRequired;
   final bool isVisible;
   final Function onChange;
+  final bool readOnly;
+
 
   PsaRelatedValueRow({
     Key? key,
@@ -37,6 +39,7 @@ class PsaRelatedValueRow extends StatefulWidget {
     required this.type,
     required this.onChange,
     this.isRequired = false,
+    this.readOnly = true,
     this.entity,
     required this.isVisible,
   }) : super(key: key);

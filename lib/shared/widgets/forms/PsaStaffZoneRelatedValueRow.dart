@@ -38,8 +38,13 @@ class _PsaStaffZoneRelatedValueState extends State<PsaStaffZoneRelatedValue> {
   String selectedRateAgreement = "";
 
   @override
+  void initState() {
+    selectedRateAgreement = widget.entity["RATE_AGREEMENT_DESC"] ?? "";
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    print("entity data ${widget.entity}");
     return Container(
       color: Colors.white,
       child: CupertinoFormRow(

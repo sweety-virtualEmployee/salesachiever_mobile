@@ -457,6 +457,8 @@ class _DynamicStaffZoneEditScreenState
             value: field['Data_Value'],
             type: field['FIELD_NAME'],
             entity: field,
+            readOnly:
+            readonly || (field['DISABLED'] != null && field['DISABLED']),
             onChange: onRelatedValueSave,
             onTap: () {},
             isVisible: true,
@@ -494,7 +496,6 @@ class _DynamicStaffZoneEditScreenState
                           text: 'Print',
                           onTap: () async {
                             try {
-                              print("staffzonetype${widget.staffZoneType.split('/List/')[1].substring(0, 2)}");
                               context.loaderOverlay.show();
                               dynamic value = await DynamicProjectService()
                                   .getStaffZoneSubScribedReports(
@@ -511,7 +512,11 @@ class _DynamicStaffZoneEditScreenState
                                   builder: (context) => DynamicSignatureViewerPage(
                                     base64String: encodedString,
                                     entityId:  _entity['ENTITY_ID'],
-                                  tableName: widget.tableName,relatedEntityType: widget.relatedEntityType,id: widget.id,staffZoneType: widget.staffZoneType,),
+                                  entity:_entity,
+                                  tableName: widget.tableName,
+                                    relatedEntityType: widget.relatedEntityType,
+                                    id: widget.id,
+                                    staffZoneType: widget.staffZoneType),
                                 ),
                               );
                             } on DioError catch (e) {
@@ -548,7 +553,7 @@ class _DynamicStaffZoneEditScreenState
           icon: 'assets/images/create_record_icon.png',
           title: _entity['ENTITY_ID'] != null
               ? "${ _entity['DESCRIPTION']}"
-              : "Add new ${widget.title}",
+               : "Add new ${widget.title}",
         ),
         Expanded(
           child: SingleChildScrollView(
@@ -689,7 +694,7 @@ class _DynamicStaffZoneEditScreenState
       }
 
       var result = await DynamicProjectService().getStaffZoneEntity(
-          widget.tableName, fieldName, widget.staffZoneType, widget.id,1,
+          widget.tableName, fieldName, widget.staffZoneType, widget.id,1,""
       );
 
       await _dynamicStaffZoneProvider.setStaffZoneEntity(result);
@@ -774,7 +779,7 @@ class _DynamicStaffZoneEditScreenState
           fieldName,
           widget.staffZoneType,
           widget.id,
-          1,
+          1,"",
           widget.sortBy);
       _dynamicStaffZoneProvider.setIsLoading(false);
       _dynamicStaffZoneProvider.setStaffZoneEntity(result["Items"]);

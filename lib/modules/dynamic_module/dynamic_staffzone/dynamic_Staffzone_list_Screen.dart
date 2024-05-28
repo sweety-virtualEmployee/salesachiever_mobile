@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:archive/archive_io.dart';
+import 'package:flutter/cupertino.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
@@ -34,7 +35,6 @@ class DynamicStaffZoneListScreen extends StatefulWidget {
   final String tableName;
   final bool isSelectable;
 
-
   const DynamicStaffZoneListScreen({
     Key? key,
     this.sortBy,
@@ -60,6 +60,8 @@ class _DynamicStaffZoneListScreenState
   List<dynamic> list = [];
   List<dynamic> _sortBy = [];
   List<dynamic> _filterBy = [];
+  String _searchText = '';
+  TextEditingController _textEditingController = TextEditingController();
 
   @override
   void initState() {
@@ -68,6 +70,7 @@ class _DynamicStaffZoneListScreenState
     _filterBy = widget.filterBy ?? [];
     _dynamicStaffZoneProvider =
         Provider.of<DynamicStaffZoneProvider>(context, listen: false);
+    _dynamicStaffZoneProvider.clearData();
     fetchData();
     _scrollController.addListener(() {
       if (_scrollController.position.pixels ==
@@ -80,7 +83,8 @@ class _DynamicStaffZoneListScreenState
 
   @override
   void dispose() {
-    _dynamicStaffZoneProvider.clearData(); // Implement this method in your provider
+    _dynamicStaffZoneProvider
+        .clearData(); // Implement this method in your provider
     super.dispose();
   }
 
@@ -102,7 +106,9 @@ class _DynamicStaffZoneListScreenState
           widget.staffZoneType,
           widget.id,
           _dynamicStaffZoneProvider.getPageNumber,
-         _sortBy,_filterBy);
+          _searchText,
+          _sortBy,
+          _filterBy);
       _dynamicStaffZoneProvider.setStaffZoneEntity(result["Items"]);
       _dynamicStaffZoneProvider.setIsLastPage(result["IsLastPage"]);
       _dynamicStaffZoneProvider.setPageNumber(result["PageNumber"]);
@@ -127,7 +133,10 @@ class _DynamicStaffZoneListScreenState
           widget.staffZoneType,
           widget.id,
           1,
-          _sortBy,_filterBy);
+          _searchText,
+          _sortBy,
+          _filterBy);
+      print(result["Items"]);
       _dynamicStaffZoneProvider.setIsLoading(false);
       _dynamicStaffZoneProvider.setStaffZoneEntity(result["Items"]);
       _dynamicStaffZoneProvider.setIsLastPage(result["IsLastPage"]);
@@ -142,220 +151,245 @@ class _DynamicStaffZoneListScreenState
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<DynamicStaffZoneProvider>(
-        builder: (context, provider, child) {
-      return PsaScaffold(
-          title: "${capitalizeFirstLetter(widget.title)} - List",
-          body: provider.getIsLoading
-              ? Center(child: CircularProgressIndicator())
-              : provider.getStaffZoneEntity.isEmpty
-                  ? Center(child: Text("No data available"))
-                  : Column(
-                      children: [
-                        Container(
-                          color: Colors.white,
-                          child: Column(
-                            children: [
-                              ListAction(
-                                title: LangUtil.getString(
-                                    'List', 'ListFilter.SortBy.Label'),
-                                selectedCount: widget.sortBy?.length ?? 0,
-                                onTap: () async {
-                                  final updatedSortBy = await Navigator.push(
-                                  context,
-                                  platformPageRoute(
-                                    context: context,
-                                    builder: (BuildContext context) =>
-                                        SelectedStaffZoneSortFieldsScreen(
-                                      title: LangUtil.getString(
-                                          'List', 'ListFilter.SortBy.Label'),
-                                      tableName: widget.tableName,
-                                      relatedEntityType:
-                                          widget.relatedEntityType,
-                                      sortBy: _sortBy,
-                                      staffZoneType: widget.staffZoneType,
-                                      staffZoneListTitle: widget.title,
-                                      id: widget.id,
-                                    ),
-                                  ),
-                                );
-                                  setState(() {
-                                    _sortBy = updatedSortBy ?? _sortBy;
-                                  });
-                                  fetchData();
-                                  },
-                              ),
-                              Divider(
-                                color: Colors.white,
-                                height: 2,
-                              ),
-                              ListAction(
-                                title: LangUtil.getString(
-                                    'List', 'ListFilter.FilterBy.Label'),
-                                selectedCount: widget.filterBy?.length ?? 0,
-                               onTap: () async {
-                                final updatedFilterKey = await Navigator.push(
-                                   context,
-                                   platformPageRoute(
-                                     context: context,
-                                     builder: (BuildContext context) =>
-                                         SelectedStaffZoneFilterFieldsScreen(
-                                           title: LangUtil.getString(
-                                               'List', 'ListFilter.FilterBy.Label'),
-                                           tableName: widget.tableName,
-                                           relatedEntityType:
-                                           widget.relatedEntityType,
-                                           sortBy:_sortBy,
-                                           staffZoneType: widget.staffZoneType,
-                                           staffZoneListTitle: widget.title,
-                                           id: widget.id,
-                                         ),
-                                   ),
-                                 );
-                                setState(() {
-                                  _filterBy = updatedFilterKey ?? _filterBy;
-                                });
-                                fetchData();
-                               },
-                              ),
-                            ],
+    return PsaScaffold(
+        title: "${capitalizeFirstLetter(widget.title)} - List",
+        body: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: CupertinoTextField(
+                controller: _textEditingController,
+                autocorrect: false,
+                placeholder: LangUtil.getString('Entities', 'List.Search'),
+                onSubmitted: (value) {
+                  print("submitted");
+                  setState(() {
+                    _searchText = value;
+                  });
+                  fetchData();
+                },
+                prefix: Icon(context.platformIcons.search),
+                onChanged: (value) {
+                  print("yes $value");
+                  if (value.isEmpty) {
+                    setState(() {
+                      _searchText = value;
+                    });
+                    fetchData();
+                  }
+                  },
+                textInputAction: TextInputAction.search,
+                clearButtonMode: OverlayVisibilityMode.editing,
+              ),
+            ),
+            Container(
+              color: Colors.white,
+              child: Column(
+                children: [
+                  ListAction(
+                    title:
+                        LangUtil.getString('List', 'ListFilter.SortBy.Label'),
+                    selectedCount: _sortBy?.length ?? 0,
+                    onTap: () async {
+                      final updatedSortBy = await Navigator.push(
+                        context,
+                        platformPageRoute(
+                          context: context,
+                          builder: (BuildContext context) =>
+                              SelectedStaffZoneSortFieldsScreen(
+                            title: LangUtil.getString(
+                                'List', 'ListFilter.SortBy.Label'),
+                            tableName: widget.tableName,
+                            relatedEntityType: widget.relatedEntityType,
+                            sortBy: _sortBy,
+                            staffZoneType: widget.staffZoneType,
+                            staffZoneListTitle: widget.title,
+                            id: widget.id,
                           ),
                         ),
-                        Expanded(
-                          child: ListView.builder(
-                            shrinkWrap: true,
-                            controller: _scrollController,
-                            itemCount: provider.getStaffZoneEntity.length,
-                            padding: EdgeInsets.symmetric(
-                                horizontal: 10, vertical: 15),
-                            itemBuilder: (context, index) {
-                              var item = provider.getStaffZoneEntity[index];
-                              print("item$item");
-                              return Column(
-                                children: [
-                                  Row(
-                                    children: [
-                                      Expanded(
-                                        child: GestureDetector(
-                                          onTap: () async {
-                                            if (widget.isSelectable) {
-                                              Navigator.pop(context, {
-                                                'ID': item['ENTITY_ID'],
-                                                'TEXT':item['DESCRIPTION'],
-                                                'DATA': item,
-                                              });
-                                              return;
-                                            }
-                                            if (item['HAS_LINK_DOCUMENT'] ==
-                                                "Y") {
-                                              CopyUtil.showCopyMessage(
-                                                  context,
-                                                  () => onCopy(
-                                                      item["ENTITY_ID"]));
-                                            } else {
-                                              var result =
-                                                  await DynamicProjectService()
-                                                      .getStaffZoneEntity(
-                                                          widget.tableName,
-                                                          "ENTITY_ID",
-                                                          widget
-                                                              .staffZoneType,
-                                                          provider.getStaffZoneEntity[
-                                                                  index]
-                                                              ["ENTITY_ID"],
-                                                          1,
-                                                          _sortBy,_filterBy);
-                                              print("result$result");
-                                              Navigator.push(
-                                                context,
-                                                platformPageRoute(
-                                                  context: context,
-                                                  builder: (BuildContext
-                                                          context) =>
-                                                      DynamicStaffZoneEditScreen(
-                                                    entity: result["Items"]
-                                                        [0],
-                                                    isNew: false,
-                                                    readonly: true,
-                                                    id: widget.id,
-                                                    relatedEntityType: widget
-                                                        .relatedEntityType,
-                                                    tableName:
-                                                        widget.tableName,
-                                                    title: widget.title,
-                                                    staffZoneType:
-                                                        widget.staffZoneType,
-                                                        sortBy: _sortBy,
-                                                        filterBy: _filterBy,
-                                                  ),
-                                                ),
-                                              );
-                                            }
-                                          },
-                                          child: Row(
+                      );
+                      setState(() {
+                        _sortBy = updatedSortBy ?? _sortBy;
+                      });
+                      fetchData();
+                    },
+                  ),
+                  Divider(
+                    color: Colors.white,
+                    height: 2,
+                  ),
+                  ListAction(
+                    title:
+                        LangUtil.getString('List', 'ListFilter.FilterBy.Label'),
+                    selectedCount: _filterBy.length ?? 0,
+                    onTap: () async {
+                      final updatedFilterKey = await Navigator.push(
+                        context,
+                        platformPageRoute(
+                          context: context,
+                          builder: (BuildContext context) =>
+                              SelectedStaffZoneFilterFieldsScreen(
+                            title: LangUtil.getString(
+                                'List', 'ListFilter.FilterBy.Label'),
+                            tableName: widget.tableName,
+                            relatedEntityType: widget.relatedEntityType,
+                            sortBy: _sortBy,
+                            staffZoneType: widget.staffZoneType,
+                            staffZoneListTitle: widget.title,
+                            id: widget.id,
+                            filterBy: _filterBy,
+                          ),
+                        ),
+                      );
+                      setState(() {
+                        _filterBy = updatedFilterKey ?? _filterBy;
+                      });
+                      fetchData();
+                    },
+                  ),
+                ],
+              ),
+            ),
+            Expanded(
+              child: Consumer<DynamicStaffZoneProvider>(
+                  builder: (context, provider, child) {
+                if (provider.getIsLoading) {
+                  return Center(child: CircularProgressIndicator());
+                } else if (provider.getStaffZoneEntity.isEmpty) {
+                  return Center(child: Text("No data available"));
+                } else {
+                  return Expanded(
+                    child: ListView.builder(
+                      shrinkWrap: true,
+                      controller: _scrollController,
+                      itemCount: provider.getStaffZoneEntity.length,
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 10, vertical: 15),
+                      itemBuilder: (context, index) {
+                        var item = provider.getStaffZoneEntity[index];
+                        print("item$item");
+                        return Column(
+                          children: [
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: GestureDetector(
+                                    onTap: () async {
+                                      if (widget.isSelectable) {
+                                        Navigator.pop(context, {
+                                          'ID': item['ENTITY_ID'],
+                                          'TEXT': item['DESCRIPTION'],
+                                          'DATA': item,
+                                        });
+                                        return;
+                                      }
+                                      if (item['HAS_LINK_DOCUMENT'] == "Y") {
+                                        CopyUtil.showCopyMessage(context,
+                                            () => onCopy(item["ENTITY_ID"]));
+                                      } else {
+                                        var result =
+                                            await DynamicProjectService()
+                                                .getStaffZoneEntity(
+                                                    widget.tableName,
+                                                    "ENTITY_ID",
+                                                    widget.staffZoneType,
+                                                    provider.getStaffZoneEntity[
+                                                        index]["ENTITY_ID"],
+                                                    1,
+                                                    _searchText,
+                                                    _sortBy,
+                                                    _filterBy);
+                                        print("result$result");
+                                        Navigator.push(
+                                          context,
+                                          platformPageRoute(
+                                            context: context,
+                                            builder: (BuildContext context) =>
+                                                DynamicStaffZoneEditScreen(
+                                              entity: result["Items"][0],
+                                              isNew: false,
+                                              readonly: true,
+                                              id: widget.id,
+                                              relatedEntityType:
+                                                  widget.relatedEntityType,
+                                              tableName: widget.tableName,
+                                              title: widget.title,
+                                              staffZoneType:
+                                                  widget.staffZoneType,
+                                              sortBy: _sortBy,
+                                              filterBy: _filterBy,
+                                            ),
+                                          ),
+                                        );
+                                      }
+                                    },
+                                    child: Row(
+                                      children: [
+                                        Expanded(
+                                          child: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
                                             children: [
-                                              Expanded(
-                                                child: Column(
-                                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                                  children: [
-                                                    SizedBox(height: 10),
-                                                    // Account Name
-                                                    Text(
-                                                      '${item['ACCTNAME'] ?? ''}',
-                                                      style: TextStyle(
-                                                        fontWeight: FontWeight.w500,
-                                                        color: Colors.black87,
-                                                      ),
-                                                      overflow: TextOverflow.ellipsis,
-                                                    ),
-                                                    SizedBox(height: 5),
-                                                    Text(
-                                                      '${item['PROJECT_TITLE'] ?? ''}',
-                                                      style: TextStyle(
-                                                        fontWeight: FontWeight.w500,
-                                                        color: Colors.black87,
-                                                      ),
-                                                      overflow: TextOverflow.ellipsis,
-                                                    ),
-                                                  ],
+                                              SizedBox(height: 10),
+                                              // Account Name
+                                              Text(
+                                                '${item['ACCTNAME'] ?? ''}',
+                                                style: TextStyle(
+                                                  fontWeight: FontWeight.w500,
+                                                  color: Colors.black87,
                                                 ),
+                                                overflow: TextOverflow.ellipsis,
                                               ),
-                                              SizedBox(width: 10), // Adjust as needed
-                                              Expanded(
-                                                child: Column(
-                                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                                  children: [
-                                                    SizedBox(height: 10),
-                                                    Text(
-                                                      "Submitted By: ${item['SUBMITTED_BY'] ?? ''}",
-                                                      style: TextStyle(
-                                                        fontWeight: FontWeight.w300,
-                                                        color: Colors.black87,
-                                                        fontSize: 14,
-                                                      ),
-                                                      overflow: TextOverflow.ellipsis,
-                                                    ),
-                                                    SizedBox(height: 5),
-                                                    Text(
-                                                      "Submitted On: ${DateUtil.getFormattedDate(item['SUBMITTED_ON'] ?? '')}",
-                                                      style: TextStyle(
-                                                        fontWeight: FontWeight.w300,
-                                                        color: Colors.black87,
-                                                        fontSize: 14,
-                                                      ),
-                                                      overflow: TextOverflow.ellipsis,
-                                                    ),
-                                                  ],
+                                              SizedBox(height: 5),
+                                              Text(
+                                                '${item['PROJECT_TITLE'] ?? ''}',
+                                                style: TextStyle(
+                                                  fontWeight: FontWeight.w500,
+                                                  color: Colors.black87,
                                                 ),
+                                                overflow: TextOverflow.ellipsis,
                                               ),
                                             ],
                                           ),
                                         ),
-                                      ),
-                                      SizedBox(width: 10), // Adjust as needed
-                                      // PDF Icon
-                                      item['HAS_LINK_DOCUMENT'] ==
-                                          "Y"?SizedBox(
+                                        SizedBox(width: 10),
+                                        // Adjust as needed
+                                        Expanded(
+                                          child: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              SizedBox(height: 10),
+                                              Text(
+                                                "Submitted By: ${item['SUBMITTED_BY'] ?? ''}",
+                                                style: TextStyle(
+                                                  fontWeight: FontWeight.w300,
+                                                  color: Colors.black87,
+                                                  fontSize: 14,
+                                                ),
+                                                overflow: TextOverflow.ellipsis,
+                                              ),
+                                              SizedBox(height: 5),
+                                              Text(
+                                                "Submitted On: ${DateUtil.getFormattedDate(item['SUBMITTED_ON'] ?? '')}",
+                                                style: TextStyle(
+                                                  fontWeight: FontWeight.w300,
+                                                  color: Colors.black87,
+                                                  fontSize: 14,
+                                                ),
+                                                overflow: TextOverflow.ellipsis,
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                                SizedBox(width: 10), // Adjust as needed
+                                // PDF Icon
+                                item['HAS_LINK_DOCUMENT'] == "Y"
+                                    ? SizedBox(
                                         width: 40,
                                         height: 40,
                                         child: InkWell(
@@ -375,8 +409,7 @@ class _DynamicStaffZoneListScreenState
                                                 print(
                                                     "decoded bytes $decodedBytes");
                                                 final archive = ZipDecoder()
-                                                    .decodeBytes(
-                                                        decodedBytes);
+                                                    .decodeBytes(decodedBytes);
                                                 print("archive $archive");
                                                 File? outFile;
 
@@ -392,18 +425,14 @@ class _DynamicStaffZoneListScreenState
                                                       File(filePath);
                                                   await pdfFile.writeAsBytes(
                                                       file.content);
-                                                  if (_imageList.length ==
-                                                      0) {
+                                                  if (_imageList.length == 0) {
                                                     _imageList.add({});
                                                   }
-                                                  print(
-                                                      "file path $filePath");
+                                                  print("file path $filePath");
                                                   setState(() {
-                                                    _imageList[0]
-                                                            ['FILEPATH'] =
+                                                    _imageList[0]['FILEPATH'] =
                                                         filePath;
-                                                    _imageList[0]
-                                                            ['FILENAME'] =
+                                                    _imageList[0]['FILENAME'] =
                                                         archive.toString();
                                                   });
                                                   if (file.isFile) {
@@ -411,35 +440,30 @@ class _DynamicStaffZoneListScreenState
                                                     outFile =
                                                         await outFile.create(
                                                             recursive: true);
-                                                    await outFile
-                                                        .writeAsBytes(
-                                                            file.content);
+                                                    await outFile.writeAsBytes(
+                                                        file.content);
                                                   }
                                                 }
-                                                print(
-                                                    "check the output file");
+                                                print("check the output file");
                                                 print(outFile);
 
                                                 if (outFile != null) {
                                                   setState(() {
                                                     _imageList[0]['FILE'] =
                                                         outFile;
-                                                    _imageList[0]
-                                                            ['FILENAME'] =
+                                                    _imageList[0]['FILENAME'] =
                                                         archive.toString();
                                                   });
 
-                                                  print(
-                                                      "ImageList$_imageList");
+                                                  print("ImageList$_imageList");
 
                                                   Navigator.push(
                                                     context,
                                                     MaterialPageRoute(
                                                       builder: (context) =>
                                                           DynamicPhotoPreview(
-                                                              photo:
-                                                                  _imageList[
-                                                                      0]),
+                                                              photo: _imageList[
+                                                                  0]),
                                                     ),
                                                   );
                                                 }
@@ -457,46 +481,50 @@ class _DynamicStaffZoneListScreenState
                                             "assets/images/pdf_icon.png",
                                           ),
                                         ),
-                                      ):
-                                      SizedBox(width: 5), // Adjust as needed
-                                    ],
-                                  ),
-                                  SizedBox(
-                                    height: 5,
-                                  ),
-                                  Divider(
-                                    color: Colors.black26,
-                                  ),
-                                  SizedBox(height: 15),
-                                ],
-                              );
-                            },
-                          ),
-                        ),
-                      ],
+                                      )
+                                    : SizedBox(width: 5), // Adjust as needed
+                              ],
+                            ),
+                            SizedBox(
+                              height: 5,
+                            ),
+                            Divider(
+                              color: Colors.black26,
+                            ),
+                            SizedBox(height: 15),
+                          ],
+                        );
+                      },
                     ),
-          action: widget.isSelectable?SizedBox():
-          PsaAddButton(onTap: () async {
-            Navigator.push(
-              context,
-              platformPageRoute(
-                context: context,
-                builder: (BuildContext context) => DynamicStaffZoneEditScreen(
-                  entity: {},
-                  readonly: false,
-                  id: widget.id,
-                  isNew: true,
-                  relatedEntityType: widget.relatedEntityType,
-                  tableName: widget.tableName,
-                  title: widget.title,
-                  staffZoneType: widget.staffZoneType,
-                  sortBy: _sortBy,
-                  filterBy: _filterBy,
-                ),
-              ),
-            );
-          }));
-    });
+                  );
+                }
+              }),
+            ),
+          ],
+        ),
+        action: widget.isSelectable
+            ? SizedBox()
+            : PsaAddButton(onTap: () async {
+                Navigator.push(
+                  context,
+                  platformPageRoute(
+                    context: context,
+                    builder: (BuildContext context) =>
+                        DynamicStaffZoneEditScreen(
+                      entity: {},
+                      readonly: false,
+                      id: widget.id,
+                      isNew: true,
+                      relatedEntityType: widget.relatedEntityType,
+                      tableName: widget.tableName,
+                      title: widget.title,
+                      staffZoneType: widget.staffZoneType,
+                      sortBy: _sortBy,
+                      filterBy: _filterBy,
+                    ),
+                  ),
+                );
+              }));
   }
 
   Future<void> onCopy(String entityId) async {
