@@ -52,7 +52,7 @@ class Api {
         // you can reject a `DioError` object eg: return `dio.reject(dioError)`
       },
       onError: (DioError e, handler) {
-        print('Dio eEdfhbs: ${e.error}');
+        print('Dio eEdfhbs: ${e.response}');
 
         var message =
             MessageUtil.getMessage(e.response?.statusCode.toString() ?? '500');

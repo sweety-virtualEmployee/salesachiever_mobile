@@ -42,7 +42,7 @@ class SelectedStaffZoneSortFieldsScreen extends StatelessWidget {
                   padding: const EdgeInsets.symmetric(
                       horizontal: 8.0, vertical: 2.0),
                   child: PlatformText(
-                    '${LangUtil.getString(staffZoneType, sortBy?[index]['FieldName'])} (${sortBy?[index]['SortOrder'] == 1 ? 'Ascendig' : 'Decending'})',
+                    '${LangUtil.getString(staffZoneType, sortBy?[index]['FieldName'])} (${sortBy?[index]['SortOrder'] == 1 ? 'Ascending' : 'Descending'})',
                   ),
                 ),
                 onTap: () => print('lll'),

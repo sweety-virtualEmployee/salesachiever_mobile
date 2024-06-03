@@ -162,7 +162,6 @@ class _DynamicStaffZoneListScreenState
                 autocorrect: false,
                 placeholder: LangUtil.getString('Entities', 'List.Search'),
                 onSubmitted: (value) {
-                  print("submitted");
                   setState(() {
                     _searchText = value;
                   });
@@ -170,14 +169,13 @@ class _DynamicStaffZoneListScreenState
                 },
                 prefix: Icon(context.platformIcons.search),
                 onChanged: (value) {
-                  print("yes $value");
                   if (value.isEmpty) {
                     setState(() {
                       _searchText = value;
                     });
                     fetchData();
                   }
-                  },
+                },
                 textInputAction: TextInputAction.search,
                 clearButtonMode: OverlayVisibilityMode.editing,
               ),
@@ -252,14 +250,13 @@ class _DynamicStaffZoneListScreenState
             ),
             Expanded(
               child: Consumer<DynamicStaffZoneProvider>(
-                  builder: (context, provider, child) {
-                if (provider.getIsLoading) {
-                  return Center(child: CircularProgressIndicator());
-                } else if (provider.getStaffZoneEntity.isEmpty) {
-                  return Center(child: Text("No data available"));
-                } else {
-                  return Expanded(
-                    child: ListView.builder(
+                builder: (context, provider, child) {
+                  if (provider.getIsLoading) {
+                    return Center(child: CircularProgressIndicator());
+                  } else if (provider.getStaffZoneEntity.isEmpty) {
+                    return Center(child: Text("No data available"));
+                  } else {
+                    return ListView.builder(
                       shrinkWrap: true,
                       controller: _scrollController,
                       itemCount: provider.getStaffZoneEntity.length,
@@ -267,7 +264,6 @@ class _DynamicStaffZoneListScreenState
                           EdgeInsets.symmetric(horizontal: 10, vertical: 15),
                       itemBuilder: (context, index) {
                         var item = provider.getStaffZoneEntity[index];
-                        print("item$item");
                         return Column(
                           children: [
                             Row(
@@ -299,7 +295,6 @@ class _DynamicStaffZoneListScreenState
                                                     _searchText,
                                                     _sortBy,
                                                     _filterBy);
-                                        print("result$result");
                                         Navigator.push(
                                           context,
                                           platformPageRoute(
@@ -331,7 +326,6 @@ class _DynamicStaffZoneListScreenState
                                                 CrossAxisAlignment.start,
                                             children: [
                                               SizedBox(height: 10),
-                                              // Account Name
                                               Text(
                                                 '${item['ACCTNAME'] ?? ''}',
                                                 style: TextStyle(
@@ -353,7 +347,6 @@ class _DynamicStaffZoneListScreenState
                                           ),
                                         ),
                                         SizedBox(width: 10),
-                                        // Adjust as needed
                                         Expanded(
                                           child: Column(
                                             crossAxisAlignment:
@@ -386,31 +379,24 @@ class _DynamicStaffZoneListScreenState
                                     ),
                                   ),
                                 ),
-                                SizedBox(width: 10), // Adjust as needed
-                                // PDF Icon
+                                SizedBox(width: 10),
                                 item['HAS_LINK_DOCUMENT'] == "Y"
                                     ? SizedBox(
                                         width: 40,
                                         height: 40,
                                         child: InkWell(
                                           onTap: () async {
-                                            // Your PDF handling logic
                                             context.loaderOverlay.show();
-
                                             SitePhotoService()
                                                 .getBlobById(item[
                                                     'LINK_DOCUMENT_BLOB_ID'])
                                                 .then((blob) async {
                                               try {
-                                                print("blob checking $blob");
                                                 var decodedBytes = base64
                                                     .decode(blob.replaceAll(
                                                         '\r\n', ''));
-                                                print(
-                                                    "decoded bytes $decodedBytes");
                                                 final archive = ZipDecoder()
                                                     .decodeBytes(decodedBytes);
-                                                print("archive $archive");
                                                 File? outFile;
 
                                                 for (var file in archive) {
@@ -425,10 +411,9 @@ class _DynamicStaffZoneListScreenState
                                                       File(filePath);
                                                   await pdfFile.writeAsBytes(
                                                       file.content);
-                                                  if (_imageList.length == 0) {
+                                                  if (_imageList.isEmpty) {
                                                     _imageList.add({});
                                                   }
-                                                  print("file path $filePath");
                                                   setState(() {
                                                     _imageList[0]['FILEPATH'] =
                                                         filePath;
@@ -444,8 +429,6 @@ class _DynamicStaffZoneListScreenState
                                                         file.content);
                                                   }
                                                 }
-                                                print("check the output file");
-                                                print(outFile);
 
                                                 if (outFile != null) {
                                                   setState(() {
@@ -454,8 +437,6 @@ class _DynamicStaffZoneListScreenState
                                                     _imageList[0]['FILENAME'] =
                                                         archive.toString();
                                                   });
-
-                                                  print("ImageList$_imageList");
 
                                                   Navigator.push(
                                                     context,
@@ -482,23 +463,19 @@ class _DynamicStaffZoneListScreenState
                                           ),
                                         ),
                                       )
-                                    : SizedBox(width: 5), // Adjust as needed
+                                    : SizedBox(width: 5),
                               ],
                             ),
-                            SizedBox(
-                              height: 5,
-                            ),
-                            Divider(
-                              color: Colors.black26,
-                            ),
+                            SizedBox(height: 5),
+                            Divider(color: Colors.black26),
                             SizedBox(height: 15),
                           ],
                         );
                       },
-                    ),
-                  );
-                }
-              }),
+                    );
+                  }
+                },
+              ),
             ),
           ],
         ),
