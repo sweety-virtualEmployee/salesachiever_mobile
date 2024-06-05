@@ -41,6 +41,7 @@ class _PsaEntityListViewState extends State<PsaEntityListView> {
   late EntityListStream entityList;
   String _searchText = '';
   late EntityService entityService;
+  TextEditingController _textEditingController = TextEditingController();
 
   @override
   void initState() {
@@ -68,36 +69,75 @@ class _PsaEntityListViewState extends State<PsaEntityListView> {
     return Container(
       child: Column(
         children: [
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: CupertinoTextField(
-              autocorrect: false,
-              placeholder: LangUtil.getString('Entities', 'List.Search'),
-              onSubmitted: (value) {
-                print("submitted");
+      Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Stack(
+        alignment: Alignment.centerRight,
+        children: [
+          CupertinoTextField(
+            controller: _textEditingController, // Make sure you have a controller defined
+            autocorrect: false,
+            decoration: BoxDecoration(
+              color: Colors.grey.withOpacity(0.15),
+              borderRadius: BorderRadius.circular(8.0), // Optional: adds rounded corners
+            ),
+            placeholder: LangUtil.getString('Entities', 'List.Search'),
+            style: TextStyle(
+              color: Colors.black, // Text color
+            ),
+            placeholderStyle: TextStyle(
+              color: Colors.grey, // Placeholder text color (optional)
+            ),
+            onSubmitted: (value) {
+              print("submitted");
+              setState(() {
+                _searchText = value;
+              });
+              entityList.search(_searchText);
+            },
+            prefix: Icon(context.platformIcons.search),
+            onChanged: (value) {
+              print("yes");
+              if (value.isEmpty) {
                 setState(() {
                   _searchText = value;
                 });
                 entityList.search(_searchText);
-              },
-              prefix: Icon(context.platformIcons.search),
-              onChanged: (value) {
-                print("yes");
-                if (value.isEmpty) {
+              }
+              // entityList.filter(value);
+              print("entityList$entityList");
+            },
+            textInputAction: TextInputAction.search,
+            clearButtonMode: OverlayVisibilityMode.never, // Disable default clear button
+          ),
+          if (_textEditingController.text.isNotEmpty)
+            Positioned(
+              right: 0,
+              child: GestureDetector(
+                onTap: () {
+                  _textEditingController.clear();
                   setState(() {
-                    _searchText = value;
+                    _searchText = '';
                   });
                   entityList.search(_searchText);
-                }
-                //entityList.filter(value);
-                print("entityList$entityList");
-              },
-              textInputAction: TextInputAction.search,
-              clearButtonMode: OverlayVisibilityMode.editing,
+                },
+                child: Padding(
+                  padding: const EdgeInsets.only(right: 8.0),
+                  child: Icon(
+                    CupertinoIcons.clear_thick_circled,
+                    color: Colors.blueAccent,// Custom clear button color
+                  ),
+                ),
+              ),
             ),
-          ),
-          if (!widget.hideSortFilter)
+        ],
+      ),
+    ),
+    if (!widget.hideSortFilter)
             Container(
+              decoration: BoxDecoration(
+                color: Colors.grey.withOpacity(0.15),
+              ),
               child: Column(
                 children: [
                   ListAction(

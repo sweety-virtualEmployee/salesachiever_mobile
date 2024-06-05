@@ -92,66 +92,61 @@ class _DynamicQuotationTabScreenState extends State<DynamicQuotationTabScreen> {
               child: ListView(
                 shrinkWrap: true,
                 children: [
-                  CupertinoFormSection(
-                    backgroundColor: CupertinoColors.systemGroupedBackground,
+                  Column(
                     children: [
-                      Column(
-                        children: [
-                          ListView.separated(
-                            shrinkWrap: true,
-                            physics: NeverScrollableScrollPhysics(),
-                            separatorBuilder: (context, index) => Divider(
-                              height: 0,
-                              endIndent: 1.0,
-                              color: Colors.black12,
-                            ),
-                            itemCount:tabQuotationData.length,
-                            itemBuilder: (context, index) {
-                              return GestureDetector(
-                                onTap: () async {
-                                  if (tabQuotationData[index]['TAB_TYPE'] == "C") {
-                                    _onCTap(provider, index);
-                                  } else if (tabQuotationData[index]['TAB_TYPE'] == "P") {
-                                    _onPTap(provider, index);
-                                  } else if (tabQuotationData[index]['TAB_TYPE'] == "L") {
-                                    _onLTap(provider, index);
-                                  }
-                                },
-                                child: Container(
-                                  color: Colors.white,
-                                  padding: EdgeInsets.symmetric(vertical: 10),
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.start,
-                                    crossAxisAlignment: CrossAxisAlignment.center,
-                                    children: [
-                                      Expanded(
-                                        child: Padding(
-                                          padding: const EdgeInsets.only(left: 8.0),
-                                          child: PlatformText(
-                                           tabQuotationData[index]['TAB_DESC'].toString(),
-                                            textAlign: TextAlign.right,
-                                            softWrap: true,
-                                            style: TextStyle(),
-                                          ),
-                                        ),
-                                      ),
-                                      Spacer(),
-                                      _buildTabTypeIcon(provider, index),
-                                      Padding(
-                                        padding: const EdgeInsets.only(right: 15.0),
-                                        child: Icon(
-                                          context.platformIcons.rightChevron,
-                                          color: Colors.grey,
-                                          size: 20,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              );
+                      ListView.separated(
+                        shrinkWrap: true,
+                        physics: NeverScrollableScrollPhysics(),
+                        separatorBuilder: (context, index) => Divider(
+                          height: 0,
+                          endIndent: 1.0,
+                          color: Colors.black12,
+                        ),
+                        itemCount:tabQuotationData.length,
+                        itemBuilder: (context, index) {
+                          return GestureDetector(
+                            onTap: () async {
+                              if (tabQuotationData[index]['TAB_TYPE'] == "C") {
+                                _onCTap(provider, index);
+                              } else if (tabQuotationData[index]['TAB_TYPE'] == "P") {
+                                _onPTap(provider, index);
+                              } else if (tabQuotationData[index]['TAB_TYPE'] == "L") {
+                                _onLTap(provider, index);
+                              }
                             },
-                          ),
-                        ],
+                            child: Container(
+                              color: Colors.white,
+                              padding: EdgeInsets.symmetric(vertical: 10),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  Expanded(
+                                    child: Padding(
+                                      padding: const EdgeInsets.only(left: 8.0),
+                                      child: PlatformText(
+                                       tabQuotationData[index]['TAB_DESC'].toString(),
+                                        textAlign: TextAlign.right,
+                                        softWrap: true,
+                                        style: TextStyle(),
+                                      ),
+                                    ),
+                                  ),
+                                  Spacer(),
+                                  _buildTabTypeIcon(provider, index),
+                                  Padding(
+                                    padding: const EdgeInsets.only(right: 15.0),
+                                    child: Icon(
+                                      context.platformIcons.rightChevron,
+                                      color: Colors.grey,
+                                      size: 20,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          );
+                        },
                       ),
                     ],
                   ),

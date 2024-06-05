@@ -133,8 +133,10 @@ class _DynamicSignatureViewerPageState
 
   Future<void> convertSignatureToImage() async {
     try {
-      context.loaderOverlay.show();
 
+      context.loaderOverlay.show();
+      await Future.delayed(Duration(milliseconds: 100));
+      Navigator.pop(context);
       ui.Image? image = await _controller.toImage();
       ByteData? byteData =
           await image!.toByteData(format: ui.ImageByteFormat.png);
@@ -200,7 +202,6 @@ class _DynamicSignatureViewerPageState
       );
     } finally {
       context.loaderOverlay.hide();
-      Navigator.pop(context); // Hide the dialog
     }
   }
 

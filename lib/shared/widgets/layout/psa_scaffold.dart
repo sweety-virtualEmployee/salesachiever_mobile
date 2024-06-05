@@ -11,6 +11,7 @@ class PsaScaffold extends StatelessWidget {
   final Widget? action;
   final bool showHome;
   final Function? onBackPressed;
+  final bool showBack;
 
   const PsaScaffold({
     Key? key,
@@ -18,6 +19,7 @@ class PsaScaffold extends StatelessWidget {
     required this.body,
     this.action,
     this.showHome = true,
+    this.showBack = true,
     this.onBackPressed,
   }) : super(key: key);
 
@@ -47,10 +49,11 @@ class PsaScaffold extends StatelessWidget {
       child: PlatformScaffold(
         appBar: PlatformAppBar(
           automaticallyImplyLeading: false,
+          backgroundColor: Colors.white,
           title: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              BackButton(onBackPressed),
+              showBack ? BackButton(onBackPressed) : Container(),
               SizedBox(width: 25,),
               showHome ? HomeButton() : Container(),
               Expanded(
@@ -60,6 +63,9 @@ class PsaScaffold extends StatelessWidget {
                     child: PlatformText(
                       title,
                       maxLines: 4,
+                      style: TextStyle(
+                        color: Colors.black
+                      ),
                       overflow: TextOverflow.ellipsis,
                     ),
                   ),
@@ -152,15 +158,17 @@ class _BackButtonState extends State<BackButton> {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-        child: Icon(context.platformIcons.back),
-        onTap: () async {
-          if (widget.onBackPressed != null) {
-           widget.onBackPressed!();
-          } else {
-            Navigator.pop(context);
+    return Material(
+      child: InkWell(
+          child: Icon(context.platformIcons.back,size: 35,),
+          onTap: () async {
+            if (widget.onBackPressed != null) {
+             widget.onBackPressed!();
+            } else {
+              Navigator.pop(context);
+            }
           }
-        }
+      ),
     );
   }
 }

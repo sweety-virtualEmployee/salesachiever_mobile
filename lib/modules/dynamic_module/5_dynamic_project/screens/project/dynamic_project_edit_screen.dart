@@ -355,6 +355,7 @@ class _DynamicProjectEditScreenState extends State<DynamicProjectEditScreen> {
       return Center(child: PsaProgressIndicator());
     }
     return CupertinoFormSection(
+      backgroundColor: CupertinoColors.white,
       key: key,
       children: widgets.length > 0 ? widgets : [Container()],
     );

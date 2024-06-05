@@ -132,6 +132,7 @@ class _HomeScreenState extends State<DyanmicHomeScreen> {
     return PsaScaffold(
       title: LangUtil.getString('Application', 'Application.Title'),
       showHome: false,
+      showBack: false,
       body: DynamicHomeMenu(
         itemSelectedCallback: (item) async {
           setState(() {

@@ -219,9 +219,6 @@ class _DynamicStaffZoneEditScreenState
     filedList.sort((a, b) => (a["ORDER_NUM"] as int).compareTo(b["ORDER_NUM"] as int));
     List<Widget> widgets = [];
     for (dynamic field in filedList) {
-      print("field of entity${field}");
-      print("field of entity${field['FIELD_TYPE']}");
-      print("field of name${field['FIELD_NAME']}");
       var isRequired = mandatoryFields.any((e) =>
           e['TABLE_NAME'] == field['TABLE_NAME'] &&
           e['FIELD_NAME'] == field['FIELD_NAME']);
@@ -466,8 +463,9 @@ class _DynamicStaffZoneEditScreenState
       }
     }
     return CupertinoFormSection(
+      backgroundColor: CupertinoColors.white,
       key: key,
-      children: widgets.length > 0 ? widgets : [Container()],
+      children: widgets.length > 0 ? widgets : [SizedBox()],
     );
   }
 
@@ -539,9 +537,7 @@ class _DynamicStaffZoneEditScreenState
       title: _entity['ENTITY_ID'] != null
           ? "${widget.title}"
           : "Add new ${widget.title}",
-      body: Container(
-        child: buildBody(visibleFields),
-      ),
+      body: buildBody(visibleFields),
     );
   }
 
@@ -559,16 +555,14 @@ class _DynamicStaffZoneEditScreenState
           child: SingleChildScrollView(
             child: Column(
               children: [
-                Container(
-                  child: generateFields(
-                    key,
-                    widget.tableName,
-                    _entity,
-                    visibleFields,
-                    mandatoryFields,
-                    _readonly,
-                    _onChange,
-                  ),
+                generateFields(
+                  key,
+                  widget.tableName,
+                  _entity,
+                  visibleFields,
+                  mandatoryFields,
+                  _readonly,
+                  _onChange,
                 ),
               ],
             ),
@@ -718,23 +712,24 @@ class _DynamicStaffZoneEditScreenState
 
   void onTap() async {
     String strPrefix = widget.staffZoneType.split('/List/')[1].substring(0, 2);
-    String projectTitle = _entity["PROJECT_TITLE"]!=null?_entity["PROJECT_TITLE"]:"";
-    String companyName = _entity["ACCTNAME"]!=null?_entity["ACCTNAME"]!:"";
+    String projectTitle = _entity["PROJECT_TITLE"] ?? "";
+    String companyName = _entity["ACCTNAME"] ?? "";
     int number = DateTime.now().millisecond;
-    if (_readonly) {
-      setState(() {
-        _entity["DESCRIPTION"] = "$strPrefix-$projectTitle-$companyName-$number";
-        _readonly = !_readonly;
-      });
-      return;
+    String description = "$strPrefix-$projectTitle-$companyName-$number";
+    setState(() {
+      _entity["DESCRIPTION"] = description;
+      if (!_readonly) {
+        _readonly = true;
+      }
+    });
+    if (!_readonly) {
+      await saveProject();
     }
-    await saveProject();
   }
 
   Future<void> saveProject() async {
     try {
       context.loaderOverlay.show();
-      print("entity check $_entity");
       if (_entity['ENTITY_ID'] != null) {
         await DynamicProjectService().updateStaffZoneEntity(
             _entity!['ENTITY_ID'], _entity, widget.tableName);

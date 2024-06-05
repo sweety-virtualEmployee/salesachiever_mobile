@@ -155,39 +155,76 @@ class _DynamicStaffZoneListScreenState
         title: "${capitalizeFirstLetter(widget.title)} - List",
         body: Column(
           children: [
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: CupertinoTextField(
-                controller: _textEditingController,
-                autocorrect: false,
-                placeholder: LangUtil.getString('Entities', 'List.Search'),
-                onSubmitted: (value) {
+        Padding(
+        padding: const EdgeInsets.all(8.0),
+      child: Stack(
+        alignment: Alignment.centerRight,
+        children: [
+          CupertinoTextField(
+            controller: _textEditingController,
+            autocorrect: false,
+            placeholder: LangUtil.getString('Entities', 'List.Search'),
+            onSubmitted: (value) {
+              setState(() {
+                _searchText = value;
+              });
+              fetchData();
+            },
+            decoration: BoxDecoration(
+              color: Colors.grey.withOpacity(0.15),
+              borderRadius: BorderRadius.circular(8.0), // Optional: adds rounded corners
+            ),
+            style: TextStyle(
+              color: Colors.black, // Text color
+            ),
+            placeholderStyle: TextStyle(
+              color: Colors.grey, // Placeholder text color (optional)
+            ),
+            prefix: Icon(context.platformIcons.search),
+            onChanged: (value) {
+              if (value.isEmpty) {
+                setState(() {
+                  _searchText = value;
+                });
+                fetchData();
+              }
+            },
+            textInputAction: TextInputAction.search,
+            clearButtonMode: OverlayVisibilityMode.never, // Disable default clear button
+          ),
+          if (_textEditingController.text.isNotEmpty)
+            Positioned(
+              right: 0,
+              child: GestureDetector(
+                onTap: () {
+                  _textEditingController.clear();
                   setState(() {
-                    _searchText = value;
+                    _searchText = '';
                   });
                   fetchData();
                 },
-                prefix: Icon(context.platformIcons.search),
-                onChanged: (value) {
-                  if (value.isEmpty) {
-                    setState(() {
-                      _searchText = value;
-                    });
-                    fetchData();
-                  }
-                },
-                textInputAction: TextInputAction.search,
-                clearButtonMode: OverlayVisibilityMode.editing,
+                child: Padding(
+                  padding: const EdgeInsets.only(right: 8.0),
+                  child: Icon(
+                    CupertinoIcons.clear_thick_circled,
+                    color: Colors.blueAccent, // Custom clear button color
+                  ),
+                ),
               ),
             ),
-            Container(
-              color: Colors.white,
+        ],
+      ),
+    ),
+    Container(
+              decoration: BoxDecoration(
+                color: Colors.grey.withOpacity(0.02),
+              ),
               child: Column(
                 children: [
                   ListAction(
                     title:
                         LangUtil.getString('List', 'ListFilter.SortBy.Label'),
-                    selectedCount: _sortBy?.length ?? 0,
+                    selectedCount: _sortBy.length ?? 0,
                     onTap: () async {
                       final updatedSortBy = await Navigator.push(
                         context,
@@ -327,7 +364,7 @@ class _DynamicStaffZoneListScreenState
                                             children: [
                                               SizedBox(height: 10),
                                               Text(
-                                                '${item['ACCTNAME'] ?? ''}',
+                                                '${item['ACCTNAME'] ?? item['ACCT_NAME'] ?? ''}',
                                                 style: TextStyle(
                                                   fontWeight: FontWeight.w500,
                                                   color: Colors.black87,

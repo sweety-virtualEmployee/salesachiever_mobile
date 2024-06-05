@@ -85,7 +85,7 @@ class _DynamicProjectRelatedEntityScreenState
         Provider.of<DynamicTabProvide>(context, listen: false);
     _dynamicTabProvider.setProjectEntity(widget.entity);
     callApi();
-    list = widget.list["Items"];
+    list = widget.list["Items"]??[];
     isLastPage = widget.list["IsLastPage"] ?? true;
     pageNumber = widget.list["PageNumber"] ?? 1;
     _scrollController.addListener(() {

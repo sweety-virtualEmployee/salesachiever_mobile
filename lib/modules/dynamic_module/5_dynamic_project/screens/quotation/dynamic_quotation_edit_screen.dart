@@ -359,6 +359,7 @@ class _DynamicQuotationEditScreenState extends State<DynamicQuotationEditScreen>
       return Center(child: PsaProgressIndicator());
     }
     return CupertinoFormSection(
+      backgroundColor: CupertinoColors.white,
       key: key,
       children: widgets.length > 0 ? widgets : [Container()],
     );

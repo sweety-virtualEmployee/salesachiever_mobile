@@ -23,9 +23,6 @@ class DataFieldService {
       Function onChange,
       [String? updatedFieldKey]) {
     List<Widget> widgets = [];
-    print("filedList of the projecy$filedList");
-    print("filedList of the projecy$mandatoryFields");
-    print("in this value check");
     print(mandatoryFields.where((element) =>element['TABLE_NAME'] == "ACCIDENT_RECORD"));
     for (dynamic field in filedList) {
       var isRequired = mandatoryFields.any((e) =>
@@ -190,7 +187,6 @@ class DataFieldService {
           break;
       }
     }
-
     return CupertinoFormSection(
       key: key,
       children: widgets.length > 0 ? widgets : [Container()],
