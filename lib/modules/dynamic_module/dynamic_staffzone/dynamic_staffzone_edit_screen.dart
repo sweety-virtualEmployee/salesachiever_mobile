@@ -712,19 +712,17 @@ class _DynamicStaffZoneEditScreenState
 
   void onTap() async {
     String strPrefix = widget.staffZoneType.split('/List/')[1].substring(0, 2);
-    String projectTitle = _entity["PROJECT_TITLE"] ?? "";
-    String companyName = _entity["ACCTNAME"] ?? "";
+    String projectTitle = _entity["PROJECT_TITLE"]!=null?_entity["PROJECT_TITLE"]:"";
+    String companyName = _entity["ACCTNAME"]!=null?_entity["ACCTNAME"]!:"";
     int number = DateTime.now().millisecond;
-    String description = "$strPrefix-$projectTitle-$companyName-$number";
-    setState(() {
-      _entity["DESCRIPTION"] = description;
-      if (!_readonly) {
-        _readonly = true;
-      }
-    });
-    if (!_readonly) {
-      await saveProject();
+    _entity["DESCRIPTION"] = "$strPrefix-$projectTitle-$companyName-$number";
+    if (_readonly) {
+      setState(() {
+        _readonly = !_readonly;
+      });
+      return;
     }
+    await saveProject();
   }
 
   Future<void> saveProject() async {
