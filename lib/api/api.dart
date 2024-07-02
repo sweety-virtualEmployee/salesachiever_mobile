@@ -52,7 +52,7 @@ class Api {
         // you can reject a `DioError` object eg: return `dio.reject(dioError)`
       },
       onError: (DioError e, handler) {
-        print('Dio eEdfhbs: ${e.response}');
+        print('Dio eEdfhbs: ${e.response?.statusCode}');
 
         var message =
             MessageUtil.getMessage(e.response?.statusCode.toString() ?? '500');
@@ -76,9 +76,7 @@ class Api {
       print(headers);
        headers?.forEach(
           (header) => _dio.options.headers[header['key']] = header['headers']);
-      companyModule = await _dio.get(path,options: Options(headers: {"TableName":"ACCOUNT","FieldName":"ACCTNAME","SortOrder":2,"SortIndex":0},
-
-      ));
+      companyModule = await _dio.get(path);
        int timestamp = DateTime.now().millisecondsSinceEpoch;
 
        final prefs = await SharedPreferences.getInstance();

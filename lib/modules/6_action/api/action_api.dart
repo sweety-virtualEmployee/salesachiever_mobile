@@ -67,4 +67,25 @@ class ActionApi {
     Response response = await _api.get('/userField/action');
     return response.data;
   }
+
+  Future<dynamic> siteQuestion(String actionId,int pageNumber) async {
+    List<dynamic> headers = [];
+    var filter = {
+      'TableName': 'VW_ACTION_QUESTIONS',
+      'FieldName': 'ACTION_ID',
+      'Comparison': '2',
+      'ItemValue': actionId,
+    };
+    headers.add({'key': 'FilterSet', 'headers': jsonEncode([filter])});
+    print("herad$headers");
+    Response response = await _api.get(
+        'LIST/ACQUES?SystemLayout=false&pageSize=30&pageNumber=$pageNumber', headers);
+    return response.data;
+  }
+
+  Future<void> updateQuestion(dynamic answer) async {
+    Response response =
+    await _api.put('/ActionQuestion/', answer);
+    return response.data;
+  }
 }

@@ -415,7 +415,6 @@ class PhotoTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    print("fule copy$file");
     return GestureDetector(
       onTap: () => onTap(),
       child: Container(

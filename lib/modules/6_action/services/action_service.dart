@@ -152,4 +152,13 @@ class ActionService extends EntityService {
 
     return invalidUserFields.length <= 0;
   }
+
+  @override
+  Future<dynamic> siteQuestionApi(String actionId,int pageNumber) async {
+    return _actionApi.siteQuestion(actionId,pageNumber);
+  }
+  @override
+  Future<dynamic> updateQuestionAnswer(dynamic answer) async {
+    return _actionApi.updateQuestion(answer);
+  }
 }

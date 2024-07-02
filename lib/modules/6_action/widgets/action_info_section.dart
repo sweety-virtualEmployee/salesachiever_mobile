@@ -3,6 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:salesachiever_mobile/modules/6_action/screens/action_info_screen.dart';
 import 'package:salesachiever_mobile/modules/6_action/services/action_service.dart';
+import 'package:salesachiever_mobile/modules/6_action/widgets/action_photos_screen.dart';
+import 'package:salesachiever_mobile/modules/6_action/widgets/action_signature.dart';
+import 'package:salesachiever_mobile/modules/6_action/widgets/action_site_tier_value.dart';
 import 'package:salesachiever_mobile/shared/widgets/forms/psa_button_row.dart';
 import 'package:salesachiever_mobile/shared/widgets/forms/psa_dropdown_row.dart';
 import 'package:salesachiever_mobile/shared/widgets/forms/psa_textareafield_row.dart';
@@ -93,6 +96,94 @@ class _ActionInfoSectionState extends State<ActionInfoSection> {
             });
           },
         ),
+        widget._action["TIER1"] !=null?
+        PsaButtonRow(
+          isVisible: false,
+          title: LangUtil.getString(
+            'ActionEditWindow',
+            'SiteQuestion.Description',
+          ),
+          color: ActionService().validateUserFields(widget._action)
+              ? null
+              : Colors.red,
+          icon: Icon(context.platformIcons.rightChevron),
+          onTap: () {
+            Navigator.push(
+              context,
+              platformPageRoute(
+                context: context,
+                builder: (BuildContext context) => ActionSiteTierValue(
+                  action: widget._action,
+                ),
+              ),
+            );
+          },
+        ):SizedBox(),
+        PsaButtonRow(
+          isVisible: false,
+          title: LangUtil.getString(
+            'AccountEditWindow',
+            'Photo.Description',
+          ),
+          color: ActionService().validateUserFields(widget._action)
+              ? null
+              : Colors.red,
+          icon: Icon(context.platformIcons.rightChevron),
+          onTap: () {
+            Navigator.push(
+              context,
+              platformPageRoute(
+                context: context,
+                builder: (BuildContext context) => ActionPhotosScreen(
+                  action: widget._action,
+                ),
+              ),
+            );
+          },
+        ),
+        PsaButtonRow(
+          isVisible: false,
+          title: LangUtil.getString(
+            'Entities',
+            'ClientSignature.Description',
+          ),
+          color: ActionService().validateUserFields(widget._action)
+              ? null
+              : Colors.red,
+          icon: Icon(context.platformIcons.rightChevron),
+          onTap: () {
+            Navigator.push(
+              context,
+              platformPageRoute(
+                context: context,
+                builder: (BuildContext context) => ActionSignature(
+                ),
+              ),
+            );
+          },
+        ),
+        PsaButtonRow(
+          isVisible: false,
+          title: LangUtil.getString(
+            'Entities',
+            'Email.Description',
+          ),
+          color: ActionService().validateUserFields(widget._action)
+              ? null
+              : Colors.red,
+          icon: Icon(context.platformIcons.rightChevron),
+          onTap: () {
+            Navigator.push(
+              context,
+              platformPageRoute(
+                context: context,
+                builder: (BuildContext context) => ActionSiteTierValue(
+                  action: widget._action,
+                ),
+              ),
+            );
+          },
+        )
       ],
     );
   }
