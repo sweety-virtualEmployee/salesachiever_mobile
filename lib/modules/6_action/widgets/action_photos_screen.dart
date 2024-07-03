@@ -152,10 +152,6 @@ class _ActionPhotosScreenState extends State<ActionPhotosScreen> {
           await SitePhotoService().updateBlob(image['BLOB_ID'], blob);
         }
       });
-      /* setState(() {
-        Navigator.push(context, MaterialPageRoute(builder: (context)=> ActionAttachmentScreen( action: widget.action)));
-      });*/
-
       _fetchImages();
     } on DioError catch (e) {
       ErrorUtil.showErrorMessage(context, e.message);

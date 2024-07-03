@@ -9,8 +9,10 @@ import 'package:image/image.dart' as img;
 import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:intl/intl.dart';
 import 'package:loader_overlay/loader_overlay.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:salesachiever_mobile/modules/99_50021_site_photos/services/site_photo_service.dart';
 import 'package:salesachiever_mobile/shared/widgets/buttons/psa_edit_button.dart';
 import 'package:salesachiever_mobile/shared/widgets/forms/psa_textfield_row.dart';
 import 'package:salesachiever_mobile/shared/widgets/layout/psa_scaffold.dart';
@@ -22,8 +24,12 @@ import 'package:image_gallery_saver/image_gallery_saver.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 class ActionSignature extends StatefulWidget {
-  const ActionSignature({Key? key}) : super(key: key);
+  ActionSignature({
+    Key? key,
+    required this.action,
+  }) : super(key: key);
 
+  final Map<String, dynamic> action;
   @override
   State<ActionSignature> createState() => _ActionSignatureState();
 }
@@ -146,6 +152,19 @@ class _ActionSignatureState extends State<ActionSignature> {
       String base64Image = base64Encode(bytes);
       print("base64image$base64Image");
       await saveImageToGallery(byteList);
+      var blob = {
+        "DESCRIPTION": "signature_image.png",
+        "ENTITY_ID": widget.action["ACTION_ID"],
+        "ENTITY_NAME": "ACTION_SIGN",
+        "DATE_SIGNED": DateFormat('yyyy-MM-dd').format(DateTime.now()),
+        "JOB_DESG": signatureField['JOB_DESG'],
+        "COMPANY_NAME": signatureField['COMPANY_NAME'],
+        "CLIENT_NAME": signatureField['CLIENT_NAME'],
+        "BLOB_DATA":base64Image
+      };
+      print("blob $blob");
+
+      await SitePhotoService().uploadBlob(blob);
 
     } on DioError catch (e) {
       ErrorUtil.showErrorMessage(context, e.message);

@@ -53,6 +53,7 @@ class Api {
       },
       onError: (DioError e, handler) {
         print('Dio eEdfhbs: ${e.response?.statusCode}');
+        print('Dio eEdfhbs: ${e.response}');
 
         var message =
             MessageUtil.getMessage(e.response?.statusCode.toString() ?? '500');

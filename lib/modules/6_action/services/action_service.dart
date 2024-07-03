@@ -161,4 +161,14 @@ class ActionService extends EntityService {
   Future<dynamic> updateQuestionAnswer(dynamic answer) async {
     return _actionApi.updateQuestion(answer);
   }
+
+  @override
+  Future<dynamic> actionQuestionRptApi() {
+    return _actionApi.actionQuestionReportApi();
+  }
+
+  @override
+  Future<dynamic> questionRptApi(String reportId,String actionId) {
+    return _actionApi.questionReportApi(reportId, actionId);
+  }
 }

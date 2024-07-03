@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:salesachiever_mobile/modules/6_action/services/action_service.dart';
+import 'package:salesachiever_mobile/modules/6_action/widgets/action_site_question_detail_screen.dart';
 import 'package:salesachiever_mobile/shared/widgets/buttons/psa_edit_button.dart';
 import 'package:salesachiever_mobile/shared/widgets/layout/psa_scaffold.dart';
 
@@ -19,6 +20,7 @@ class ActionSiteQuestion extends StatefulWidget {
 }
 
 class _ActionSiteQuestionState extends State<ActionSiteQuestion> {
+
 
   @override
   void initState() {
@@ -44,11 +46,25 @@ class _ActionSiteQuestionState extends State<ActionSiteQuestion> {
           shrinkWrap: true,
           itemBuilder: (context,index){
             print(widget.questions[index]["ANSWER_ID"]);
-            return SwitchItem(
-                question:widget.questions[index]["QUESTION"],
-                isSelected:widget.questions[index]["ANSWER_ID"]=="2"?true:false,
-            questionId:widget.questions[index]["QUESTION_ID"],
-            actionId:widget.questions[index]["ACTION_ID"]);
+            return InkWell(
+              onTap: (){
+                Navigator.push(
+                  context,
+                  platformPageRoute(
+                    context: context,
+                    builder: (BuildContext context) => ActionSiteQuestionDetailScreen(
+                      questions: widget.questions,
+                      index: index,
+                    ),
+                  ),
+                );
+              },
+              child: SwitchItem(
+                  question:widget.questions[index]["QUESTION"],
+                  isSelected:widget.questions[index]["ANSWER_ID"]!=null?true:false,
+              questionId:widget.questions[index]["QUESTION_ID"],
+              actionId:widget.questions[index]["ACTION_ID"]),
+            );
           })
     );
   }

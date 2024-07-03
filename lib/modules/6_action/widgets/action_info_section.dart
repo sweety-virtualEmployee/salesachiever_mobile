@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:salesachiever_mobile/modules/6_action/screens/action_info_screen.dart';
 import 'package:salesachiever_mobile/modules/6_action/services/action_service.dart';
+import 'package:salesachiever_mobile/modules/6_action/widgets/action_email_Screen.dart';
 import 'package:salesachiever_mobile/modules/6_action/widgets/action_photos_screen.dart';
 import 'package:salesachiever_mobile/modules/6_action/widgets/action_signature.dart';
 import 'package:salesachiever_mobile/modules/6_action/widgets/action_site_tier_value.dart';
@@ -157,6 +158,7 @@ class _ActionInfoSectionState extends State<ActionInfoSection> {
               platformPageRoute(
                 context: context,
                 builder: (BuildContext context) => ActionSignature(
+                  action: widget._action,
                 ),
               ),
             );
@@ -177,7 +179,7 @@ class _ActionInfoSectionState extends State<ActionInfoSection> {
               context,
               platformPageRoute(
                 context: context,
-                builder: (BuildContext context) => ActionSiteTierValue(
+                builder: (BuildContext context) => ActionEmailScreen(
                   action: widget._action,
                 ),
               ),

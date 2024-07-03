@@ -79,13 +79,23 @@ class ActionApi {
     headers.add({'key': 'FilterSet', 'headers': jsonEncode([filter])});
     print("herad$headers");
     Response response = await _api.get(
-        'LIST/ACQUES?SystemLayout=false&pageSize=30&pageNumber=$pageNumber', headers);
+        '/LIST/ACQUES?SystemLayout=false&pageSize=30&pageNumber=$pageNumber', headers);
     return response.data;
   }
 
   Future<void> updateQuestion(dynamic answer) async {
     Response response =
     await _api.put('/ActionQuestion/', answer);
+    return response.data;
+  }
+
+  Future<void> actionQuestionReportApi() async {
+    Response response = await _api.get('/system/system.settings?varname=ActionQuestionRpt');
+    return response.data;
+  }
+
+  Future<void> questionReportApi(String reportId, String actionId) async {
+    Response response = await _api.get('/ACTION/Actions.QuestionReport?ReportId=$reportId&ActionId=$actionId');
     return response.data;
   }
 }
