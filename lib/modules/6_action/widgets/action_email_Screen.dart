@@ -40,8 +40,8 @@ class _ActionEmailScreenState extends State<ActionEmailScreen> {
   }
   @override
   void initState() {
-  //  fetchActionQuestionReportId();
-    launchEmailSubmission();
+   fetchActionQuestionReportId();
+    //launchEmailSubmission();
     super.initState();
   }
 
@@ -68,7 +68,9 @@ class _ActionEmailScreenState extends State<ActionEmailScreen> {
       var result = await ActionService().actionQuestionRptApi();
       print(result);
       var response = await ActionService().questionRptApi(result["Items"][0]["VAR_VALUE"], widget.action["ACTION_ID"]);
-      print(response);
+      print(response["Value"]);
+      print("value printed");
+      fetchPdfFilePath(response["Value"]);
     }on DioError catch (e) {
       ErrorUtil.showErrorMessage(context, e.message);
     } catch (e) {
