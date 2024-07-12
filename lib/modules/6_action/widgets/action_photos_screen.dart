@@ -19,13 +19,13 @@ import 'package:salesachiever_mobile/utils/message_util.dart';
 import 'package:uuid/uuid.dart';
 
 class ActionPhotosScreen extends StatefulWidget {
-
   ActionPhotosScreen({
     Key? key,
     required this.action,
   }) : super(key: key);
 
   final Map<String, dynamic> action;
+
   @override
   State<ActionPhotosScreen> createState() => _ActionPhotosScreenState();
 }
@@ -51,6 +51,7 @@ class _ActionPhotosScreenState extends State<ActionPhotosScreen> {
     var file = await Directory("$_dir").list().toList();
     print(file);
   }
+
   @override
   Widget build(BuildContext context) {
     return PsaScaffold(
@@ -58,7 +59,8 @@ class _ActionPhotosScreenState extends State<ActionPhotosScreen> {
       action: Row(
         children: [
           PsaAddButton(onTap: () async {
-            final List<XFile>? selectedImages = await imagePicker.pickMultiImage(imageQuality: 50);
+            final List<XFile>? selectedImages =
+            await imagePicker.pickMultiImage(imageQuality: 50);
             print(selectedImages);
             if (selectedImages!.isNotEmpty) {
               imageFileList!.addAll(selectedImages);
@@ -66,7 +68,7 @@ class _ActionPhotosScreenState extends State<ActionPhotosScreen> {
             print("Image List Length:" + imageFileList!.length.toString());
             setState(() {
               if (imageFileList != null) {
-                for(int i = 0;i<imageFileList!.length;i++){
+                for (int i = 0; i < imageFileList!.length; i++) {
                   setState(() {
                     _imageList.insert(i, {
                       'FILE': File(imageFileList![i].path),
@@ -74,17 +76,18 @@ class _ActionPhotosScreenState extends State<ActionPhotosScreen> {
                       'ISUPDATED': false,
                       'DESCRIPTION': 'new img'
                     });
-
                   });
                 }
               }
             });
             uploadImages();
           }),
-          SizedBox(width: 20,),
+          SizedBox(
+            width: 20,
+          ),
           PsaCameraButton(onTap: () async {
             final pickedFile =
-                await imagePicker.pickImage(source: ImageSource.camera);
+            await imagePicker.pickImage(source: ImageSource.camera);
             setState(() {
               if (pickedFile != null) {
                 setState(() {
@@ -102,90 +105,95 @@ class _ActionPhotosScreenState extends State<ActionPhotosScreen> {
           })
         ],
       ),
-        title: '',
+      title: '',
       body: Container(
         child: Stack(
           children: [
             Padding(
-              padding: const EdgeInsets.all(8),
-              child: isLoading
-                  ? Center(child: PlatformCircularProgressIndicator())
-                  : GridView.builder(
-                itemCount: _imageList.length,
-                gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
-                  maxCrossAxisExtent: 150,
-                  // mainAxisExtent: 150,
-                  mainAxisSpacing: 8,
-                  crossAxisSpacing: 8,
-                ),
-                itemBuilder: (BuildContext context, int index) {
-                  print(path.extension(_imageList[index]['FILENAME'].toString()));
-                  return PhotoTile(
-                    file: _imageList[index]['FILE'],
-                    fileExtension:_imageList[index]['FILENAME']!=null?_imageList[index]['FILENAME']:"",
-                    description: _imageList[index]['DESCRIPTION'] ?? '',
-                    isSelected: _imageList[index]['SELECTED'] ?? false,
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        platformPageRoute(
-                          context: context,
-                          builder: (BuildContext context) =>
-                              ActionPhotoPreviewScreen(
-                                photos: _imageList,
-                                selectedIndex: index,
-                                onDescriptionChanged: (i, text) {
-                                  setState(() {
-                                    _imageList[i]['DESCRIPTION'] = text ?? '';
-                                    _imageList[i]['ISUPDATED'] = true;
-                                  });
-                                },
-                              ),
-                        ),
-                      );
-                    },
-                    isNew: (_imageList[index]['ISNEW'] == true ||
-                        _imageList[index]['ISUPDATED'] == true),
-                    onDelete: () {
-                      showPlatformDialog(
-                        context: context,
-                        builder: (_) => PlatformAlertDialog(
-                          title: Text('Delete File'),
-                          content: Text(
-                              'Do you want to delete selected file?'),
-                          actions: <Widget>[
-                            PlatformDialogAction(
-                              child: PlatformText('Cancel'),
-                              onPressed: () {
-                                Navigator.pop(context);
-                              },
+                padding: const EdgeInsets.all(8),
+                child: isLoading
+                    ? Center(child: PlatformCircularProgressIndicator())
+                    : GridView.builder(
+                  itemCount: _imageList.length,
+                  gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+                    maxCrossAxisExtent: 150,
+                    mainAxisSpacing: 8,
+                    crossAxisSpacing: 8,
+                  ),
+                  itemBuilder: (BuildContext context, int index) {
+                    return Visibility(
+                      visible: _imageList[index]['FILENAME'] == null || path.extension(_imageList[index]['FILENAME'].toString()) != ".pdf",
+                      child: PhotoTile(
+                        file: _imageList[index]['FILE'],
+                        fileExtension: _imageList[index]['FILENAME'] != null
+                            ? _imageList[index]['FILENAME']
+                            : "",
+                        description: _imageList[index]['DESCRIPTION'] ?? '',
+                        isSelected: _imageList[index]['SELECTED'] ?? false,
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            platformPageRoute(
+                              context: context,
+                              builder: (BuildContext context) =>
+                                  ActionPhotoPreviewScreen(
+                                    photos: _imageList,
+                                    selectedIndex: index,
+                                    onDescriptionChanged: (i, text) {
+                                      setState(() {
+                                        _imageList[i]['DESCRIPTION'] =
+                                            text ?? '';
+                                        _imageList[i]['ISUPDATED'] = true;
+                                      });
+                                    },
+                                  ),
                             ),
-                            PlatformDialogAction(
-                              child: PlatformText('Delete'),
-                              onPressed: () async {
-                                if (_imageList[index]['ISNEW'] == null ||
-                                    _imageList[index]['ISNEW'] == false)
-                                  await SitePhotoService().deleteBlob(
-                                      _imageList[index]['BLOB_ID']);
+                          );
+                        },
+                        isNew: (_imageList[index]['ISNEW'] == true ||
+                            _imageList[index]['ISUPDATED'] == true),
+                        onDelete: () {
+                          showPlatformDialog(
+                            context: context,
+                            builder: (_) => PlatformAlertDialog(
+                              title: Text('Delete File'),
+                              content: Text(
+                                  'Do you want to delete selected file?'),
+                              actions: <Widget>[
+                                PlatformDialogAction(
+                                  child: PlatformText('Cancel'),
+                                  onPressed: () {
+                                    Navigator.pop(context);
+                                  },
+                                ),
+                                PlatformDialogAction(
+                                  child: PlatformText('Delete'),
+                                  onPressed: () async {
+                                    if (_imageList[index]['ISNEW'] ==
+                                        null ||
+                                        _imageList[index]['ISNEW'] == false)
+                                      await SitePhotoService().deleteBlob(
+                                          _imageList[index]['BLOB_ID']);
 
-                                setState(() {
-                                  _imageList.removeAt(index);
-                                });
+                                    setState(() {
+                                      _imageList.removeAt(index);
+                                    });
 
-                                Navigator.pop(context);
-                              },
+                                    Navigator.pop(context);
+                                  },
+                                ),
+                              ],
                             ),
-                          ],
-                        ),
-                      );
-                    },
-                  );
-                },
-              ),
-            ),
+                          );
+                        },
+                      ),
+                    );
+                  },
+                )),
           ],
         ),
-      ),);
+      ),
+    );
   }
 
   Future uploadImages() async {
@@ -215,7 +223,9 @@ class _ActionPhotosScreenState extends State<ActionPhotosScreen> {
             'BLOB_DATA': base64Image,
             'ENTITY_ID': widget.action['ACTION_ID'],
             'ENTITY_NAME': 'ACTION',
-            'FILENAME': '${widget.action['ACCTNAME']}' '$uuid' '${path.extension(image["FILE"].toString())}',
+            'FILENAME': '${widget.action['ACCTNAME']}'
+                '$uuid'
+                '${path.extension(image["FILE"].toString())}',
           };
 
           await SitePhotoService().uploadBlob(blob);
@@ -308,9 +318,13 @@ class _ActionPhotosScreenState extends State<ActionPhotosScreen> {
           }
         });
       }
-      print("image list $_imageList");
+      _imageList = _imageList.where((item) => item['FILENAME'] == null || path.extension(item['FILENAME'].toString()) != '.pdf').toList();
       loadMore = !response['IsLastPage'];
       pageNumber++;
+
     }
+
+
   }
+
 }

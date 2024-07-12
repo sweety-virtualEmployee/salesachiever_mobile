@@ -41,6 +41,8 @@ class _PsaTextFieldRowState extends State<PsaTextFieldRow> {
   @override
   void initState() {
     _validNumber;
+    print("yeslvhkdba");
+    print(widget.value);
     textController.text = widget.value?.toString() ?? '';
     super.initState();
   }

@@ -5,4 +5,5 @@ const ACCESS_CODES = {
   'Saving sort and filters': 60015,
   'StaffZone': 40007,
   'Show Dynamic Forms for New Records': 60016,
+  'Stormsaver': 60018,
 };

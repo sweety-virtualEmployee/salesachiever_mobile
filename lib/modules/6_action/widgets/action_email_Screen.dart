@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_email_sender/flutter_email_sender.dart';
 import 'package:flutter_pdfview/flutter_pdfview.dart';
 import 'package:loader_overlay/loader_overlay.dart';
 import 'package:path_provider/path_provider.dart';
@@ -30,29 +31,21 @@ class _ActionEmailScreenState extends State<ActionEmailScreen> {
   String filePath = "";
   String base64EncodedString = "";
   Key _pdfViewKey = UniqueKey(); // Add a unique key for the PDFView
-  String email="contact@ouiquit.com";
-  _launchEmail() async {
-    if (await canLaunch("mailto:$email")) {
-      await launch("mailto:$email");
-    } else {
-      throw 'Could not launch';
-    }
-  }
+
   @override
   void initState() {
-   fetchActionQuestionReportId();
-    //launchEmailSubmission();
     super.initState();
+    fetchActionQuestionReportId();
   }
 
   void launchEmailSubmission() async {
     final Uri params = Uri(
-        scheme: 'mailto',
-        path: 'myOwnEmailAddress@gmail.com',
-        queryParameters: {
-          'subject': 'Default Subject',
-          'body': 'Default body'
-        }
+      scheme: 'mailto',
+      path: 'myOwnEmailAddress@gmail.com',
+      queryParameters: {
+        'subject': 'Default Subject',
+        'body': 'Default body',
+      },
     );
     String url = params.toString();
     if (await canLaunch(url)) {
@@ -63,21 +56,23 @@ class _ActionEmailScreenState extends State<ActionEmailScreen> {
   }
 
   fetchActionQuestionReportId() async {
+    context.loaderOverlay.show(); // Show loader
     try {
-      context.loaderOverlay.show();
       var result = await ActionService().actionQuestionRptApi();
       print(result);
       var response = await ActionService().questionRptApi(result["Items"][0]["VAR_VALUE"], widget.action["ACTION_ID"]);
       print(response["Value"]);
       print("value printed");
-      fetchPdfFilePath(response["Value"]);
-    }on DioError catch (e) {
+      await fetchPdfFilePath(response["Value"]);
+    } on DioError catch (e) {
       ErrorUtil.showErrorMessage(context, e.message);
     } catch (e) {
       ErrorUtil.showErrorMessage(
         context,
         MessageUtil.getMessage('500'),
       );
+    } finally {
+      context.loaderOverlay.hide(); // Hide loader
     }
   }
 
@@ -94,7 +89,6 @@ class _ActionEmailScreenState extends State<ActionEmailScreen> {
         filePath = fileValue;
         base64EncodedString = base64String;
         _pdfViewKey = UniqueKey(); // Change the key to trigger a rebuild
-
       });
       print("filePath: $fileValue");
     } catch (e) {
@@ -102,24 +96,61 @@ class _ActionEmailScreenState extends State<ActionEmailScreen> {
     }
   }
 
+  Future<void> send() async {
+    final Email email = Email(
+      body: "",
+      subject: "Action Report",
+      recipients: [],
+      attachmentPaths: [filePath],
+      isHTML: true,
+    );
+
+    String platformResponse;
+
+    try {
+      await FlutterEmailSender.send(email);
+      platformResponse = 'success';
+    } catch (error) {
+      print(error);
+      platformResponse = error.toString();
+    }
+
+    if (!mounted) return;
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(platformResponse),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    return PsaScaffold(title: '',
+    return LoaderOverlay(
+      useDefaultLoading: true,
+      overlayWidget: Center(
+        child: CircularProgressIndicator(),
+      ),
+      child: PsaScaffold(
+        title: '',
         showHome: false,
-        action:
-          IconButton(
-            onPressed: _launchEmail,
-            icon: Icon(Icons.send),
-          ),
+        action: IconButton(
+          onPressed: send,
+          icon: Icon(Icons.send),
+        ),
         body: Column(
-        children: [
-          Expanded(
-            child: PDFView(
-              key: _pdfViewKey, // Set the key for PDFView
-              filePath: filePath,
+          children: [
+            Expanded(
+              child: filePath.isEmpty
+                  ? Center(child: CircularProgressIndicator())
+                  : PDFView(
+                key: _pdfViewKey, // Set the key for PDFView
+                filePath: filePath,
+              ),
             ),
-          ),
-        ],
-    ));
+          ],
+        ),
+      ),
+    );
   }
 }

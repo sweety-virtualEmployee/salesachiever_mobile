@@ -37,10 +37,41 @@ class ActionSignature extends StatefulWidget {
 class _ActionSignatureState extends State<ActionSignature> {
   Map<String, dynamic> signatureField = {};
   bool isButtonEnabled = false;
+  bool isLoading = false; // Track loading state
 
   @override
   void initState() {
     super.initState();
+    fetchData();
+  }
+
+  fetchData() async {
+    setState(() {
+      isLoading = true; // Start loading
+    });
+
+    try {
+      var response = await SitePhotoService()
+          .getImagesByActionId(widget.action['ACTION_ID'], 1);
+
+      for (var item in response) {
+        if (item['ENTITY_NAME'] == 'ACTION_SIGN') {
+          setState(() {
+            signatureField['CLIENT_NAME'] = item['CLIENT_NAME'];
+            signatureField['JOB_DESG'] = item['JOB_DESG'];
+            signatureField['COMPANY_NAME'] = item['COMPANY_NAME'];
+            isButtonEnabled = false;
+          });
+          break; // Assuming there's only one entry for ACTION_SIGN
+        }
+      }
+    } catch (e) {
+      print("Error fetching data: $e");
+    } finally {
+      setState(() {
+        isLoading = false; // Stop loading
+      });
+    }
   }
 
   final SignatureController _controller = SignatureController(
@@ -84,7 +115,6 @@ class _ActionSignatureState extends State<ActionSignature> {
             ),
           ),
           SizedBox(height: 16.0),
-          SizedBox(height: 16.0),
           Signature(
             backgroundColor: Colors.white,
             controller: _controller,
@@ -105,7 +135,7 @@ class _ActionSignatureState extends State<ActionSignature> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 PlatformTextButton(
-                  onPressed:(){
+                  onPressed: () {
                     Navigator.pop(context);
                   },
                   child: Text(
@@ -160,7 +190,7 @@ class _ActionSignatureState extends State<ActionSignature> {
         "JOB_DESG": signatureField['JOB_DESG'],
         "COMPANY_NAME": signatureField['COMPANY_NAME'],
         "CLIENT_NAME": signatureField['CLIENT_NAME'],
-        "BLOB_DATA":base64Image
+        "BLOB_DATA": base64Image
       };
       print("blob $blob");
 
@@ -199,7 +229,8 @@ class _ActionSignatureState extends State<ActionSignature> {
       context.loaderOverlay.show();
       await Future.delayed(Duration(milliseconds: 100));
       Navigator.pop(context);
-      final pickedFile = await ImagePicker().getImage(source: ImageSource.gallery);
+      final pickedFile =
+      await ImagePicker().getImage(source: ImageSource.gallery);
       if (pickedFile != null) {
         final uploadBytes = await pickedFile.readAsBytes();
         await convertAndUploadImage(uploadBytes, context);
@@ -211,6 +242,9 @@ class _ActionSignatureState extends State<ActionSignature> {
 
   void onChange(String key, dynamic value, dynamic isRequired) {
     setState(() {
+      if (signatureField.containsKey(key)) {
+        return; // Exit function if value is from API
+      }
       signatureField[key] = value;
       _validateFields();
     });
@@ -239,82 +273,69 @@ class _ActionSignatureState extends State<ActionSignature> {
     }
   }
 
-
   @override
   Widget build(BuildContext context) {
-    return PsaScaffold(
-      action: PsaEditButton(
-        text: "Sign",
-        onTap: isButtonEnabled
-            ? () {
-          showDialog(
-            context: context,
-            builder: (BuildContext context) {
-              return signaturePad();
-            },
-          );
-        }
-            : null,
+    return LoaderOverlay(
+      overlayWidget: Center(
+        child: CircularProgressIndicator(),
       ),
-      body: Column(
-        children: [
-          PsaTextFieldRow(
-            isRequired: false,
-            fieldKey: "CLIENT_NAME",
-            title: LangUtil.getString("ACCOUNT", "ACCTNAME"),
-            value: signatureField["CLIENT_NAME"],
-            keyboardType: TextInputType.text,
-            readOnly: false,
-            onChange: (key, value) => onChange(key, value, true),
-          ),
-          PsaTextFieldRow(
-            isRequired: false,
-            fieldKey: "JOB_DESG",
-            title: LangUtil.getString("CONTACT", "JOB_TITLE"),
-            value: signatureField["JOB_DESG"],
-            keyboardType: TextInputType.text,
-            readOnly: false,
-            onChange: (key, value) => onChange(key, value, true),
-          ),
-          PsaTextFieldRow(
-            isRequired: false,
-            fieldKey: "COMPANY_NAME",
-            title: LangUtil.getString("SignatureEditWindow", "CompanyName.Title"),
-            value: signatureField["COMPANY_NAME"],
-            keyboardType: TextInputType.text,
-            readOnly: false,
-            onChange: (key, value) => onChange(key, value, true),
-          ),
-          SizedBox(height: 20),
-        ],
+      overlayColor: Colors.black.withOpacity(0.5),
+      overlayOpacity: 0.7,
+      child: PsaScaffold(
+        action: PsaEditButton(
+          text: "Sign",
+          onTap: isButtonEnabled
+              ? () {
+            showDialog(
+              context: context,
+              builder: (BuildContext context) {
+                return signaturePad();
+              },
+            );
+          }
+              : null,
+        ),
+        body: isLoading
+            ? Center(child: CircularProgressIndicator())
+            : Column(
+          children: [
+            PsaTextFieldRow(
+              isRequired: false,
+              fieldKey: "CLIENT_NAME",
+              title: LangUtil.getString("ACCOUNT", "ACCTNAME"),
+              value: signatureField["CLIENT_NAME"],
+              keyboardType: TextInputType.text,
+              readOnly:
+              signatureField.containsKey("CLIENT_NAME"), // Disable editing if value is from API
+              onChange: (key, value) => onChange(key, value, true),
+            ),
+            PsaTextFieldRow(
+              isRequired: false,
+              fieldKey: "JOB_DESG",
+              title: LangUtil.getString("CONTACT", "JOB_TITLE"),
+              value: signatureField["JOB_DESG"],
+              keyboardType: TextInputType.text,
+              readOnly:
+              signatureField.containsKey("JOB_DESG"), // Disable editing if value is from API
+              onChange: (key, value) => onChange(key, value, true),
+            ),
+            PsaTextFieldRow(
+              isRequired: false,
+              fieldKey: "COMPANY_NAME",
+              title: LangUtil.getString(
+                  "SignatureEditWindow", "CompanyName.Title"),
+              value: signatureField["COMPANY_NAME"],
+              keyboardType: TextInputType.text,
+              readOnly: signatureField.containsKey(
+                  "COMPANY_NAME"), // Disable editing if value is from API
+              onChange: (key, value) => onChange(key, value, true),
+            ),
+            SizedBox(height: 20),
+          ],
+        ),
+        title: '',
+        showHome: false,
       ),
-      title: '',
-      showHome: false,
     );
-  }
-}
-
-class SignaturePainter extends CustomPainter {
-  final List<Offset> points;
-
-  SignaturePainter(this.points);
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final paint = Paint()
-      ..color = Colors.black
-      ..strokeCap = StrokeCap.round
-      ..strokeWidth = 5.0;
-
-    for (int i = 0; i < points.length - 1; i++) {
-      if (points[i] != null && points[i + 1] != null) {
-        canvas.drawLine(points[i], points[i + 1], paint);
-      }
-    }
-  }
-
-  @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) {
-    return true;
   }
 }
