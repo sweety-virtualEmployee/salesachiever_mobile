@@ -97,20 +97,22 @@ class _ActionEmailScreenState extends State<ActionEmailScreen> {
   }
 
   Future<void> send() async {
-    final emailUri = Uri(
-      scheme: 'mailto',
-      path: 'example@example.com',
-      queryParameters: {
-        'subject': 'Test Email',
-        'body': 'This is a test email with attachment.',
-        'attachment': filePath,
-      },
+    final Email email = Email(
+      body: "",
+      subject: "Action Report",
+      recipients: [],
+      attachmentPaths: [filePath],
+      isHTML: true,
     );
-    final url = emailUri.toString();
-    if (await canLaunch(url)) {
-      await launch(url);
-    } else {
-      throw 'Could not launch $url';
+
+    String platformResponse;
+
+    try {
+      await FlutterEmailSender.send(email);
+      platformResponse = 'success';
+    } catch (error) {
+      print(error);
+      platformResponse = error.toString();
     }
   }
 
