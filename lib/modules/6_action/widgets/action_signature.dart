@@ -19,6 +19,7 @@ import 'package:salesachiever_mobile/shared/widgets/layout/psa_scaffold.dart';
 import 'package:salesachiever_mobile/utils/error_util.dart';
 import 'package:salesachiever_mobile/utils/lang_util.dart';
 import 'package:salesachiever_mobile/utils/message_util.dart';
+import 'package:salesachiever_mobile/utils/success_util.dart';
 import 'package:signature/signature.dart';
 import 'package:image_gallery_saver/image_gallery_saver.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -180,7 +181,7 @@ class _ActionSignatureState extends State<ActionSignature> {
 
       var bytes = zipFile.readAsBytesSync();
       String base64Image = base64Encode(bytes);
-      print("base64image$base64Image");
+      print("base64image $base64Image");
       await saveImageToGallery(byteList);
       var blob = {
         "DESCRIPTION": "signature_image.png",
@@ -195,6 +196,11 @@ class _ActionSignatureState extends State<ActionSignature> {
       print("blob $blob");
 
       await SitePhotoService().uploadBlob(blob);
+
+      // Show success message after successful upload
+      SuccessUtil.showSuccessMessage(
+          context, 'Signature uploaded successfully!!'
+      );
 
     } on DioError catch (e) {
       ErrorUtil.showErrorMessage(context, e.message);
@@ -212,8 +218,7 @@ class _ActionSignatureState extends State<ActionSignature> {
       await Future.delayed(Duration(milliseconds: 100));
       Navigator.pop(context);
       ui.Image? image = await _controller.toImage();
-      ByteData? byteData =
-      await image!.toByteData(format: ui.ImageByteFormat.png);
+      ByteData? byteData = await image!.toByteData(format: ui.ImageByteFormat.png);
       Uint8List byteList = byteData!.buffer.asUint8List();
       img.Image imgImage = img.decodeImage(byteList)!;
 
@@ -223,6 +228,7 @@ class _ActionSignatureState extends State<ActionSignature> {
       context.loaderOverlay.hide();
     }
   }
+
 
   Future<void> uploadSignatureFromGallery() async {
     try {
@@ -259,9 +265,7 @@ class _ActionSignatureState extends State<ActionSignature> {
   }
 
   Future<void> saveImageToGallery(Uint8List byteList) async {
-    // Request storage permission
     if (await Permission.storage.request().isGranted) {
-      // Save the image to the gallery
       final result = await ImageGallerySaver.saveImage(byteList);
       if (result['isSuccess']) {
         print("Image saved to gallery successfully!");
@@ -304,9 +308,7 @@ class _ActionSignatureState extends State<ActionSignature> {
               fieldKey: "CLIENT_NAME",
               title: LangUtil.getString("ACCOUNT", "ACCTNAME"),
               value: signatureField["CLIENT_NAME"],
-              keyboardType: TextInputType.text,
-              readOnly:
-              signatureField.containsKey("CLIENT_NAME"), // Disable editing if value is from API
+              readOnly:false, // Disable editing if value is from API
               onChange: (key, value) => onChange(key, value, true),
             ),
             PsaTextFieldRow(
@@ -315,8 +317,7 @@ class _ActionSignatureState extends State<ActionSignature> {
               title: LangUtil.getString("CONTACT", "JOB_TITLE"),
               value: signatureField["JOB_DESG"],
               keyboardType: TextInputType.text,
-              readOnly:
-              signatureField.containsKey("JOB_DESG"), // Disable editing if value is from API
+              readOnly: false, // Disable editing if value is from API
               onChange: (key, value) => onChange(key, value, true),
             ),
             PsaTextFieldRow(
@@ -326,8 +327,7 @@ class _ActionSignatureState extends State<ActionSignature> {
                   "SignatureEditWindow", "CompanyName.Title"),
               value: signatureField["COMPANY_NAME"],
               keyboardType: TextInputType.text,
-              readOnly: signatureField.containsKey(
-                  "COMPANY_NAME"), // Disable editing if value is from API
+              readOnly: false, // Disable editing if value is from API
               onChange: (key, value) => onChange(key, value, true),
             ),
             SizedBox(height: 20),

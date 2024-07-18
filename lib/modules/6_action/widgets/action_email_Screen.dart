@@ -97,31 +97,21 @@ class _ActionEmailScreenState extends State<ActionEmailScreen> {
   }
 
   Future<void> send() async {
-    final Email email = Email(
-      body: "",
-      subject: "Action Report",
-      recipients: [],
-      attachmentPaths: [filePath],
-      isHTML: true,
+    final emailUri = Uri(
+      scheme: 'mailto',
+      path: 'example@example.com',
+      queryParameters: {
+        'subject': 'Test Email',
+        'body': 'This is a test email with attachment.',
+        'attachment': filePath,
+      },
     );
-
-    String platformResponse;
-
-    try {
-      await FlutterEmailSender.send(email);
-      platformResponse = 'success';
-    } catch (error) {
-      print(error);
-      platformResponse = error.toString();
+    final url = emailUri.toString();
+    if (await canLaunch(url)) {
+      await launch(url);
+    } else {
+      throw 'Could not launch $url';
     }
-
-    if (!mounted) return;
-
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(platformResponse),
-      ),
-    );
   }
 
   @override

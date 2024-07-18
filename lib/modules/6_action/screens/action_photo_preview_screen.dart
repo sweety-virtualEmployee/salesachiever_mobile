@@ -112,7 +112,7 @@ class _PhotoPreviewState extends State<PhotoPreview> {
             child: Container(
               color: Colors.black,
               child: Image.file(
-               File('/Users/charul/Library/Developer/CoreSimulator/Devices/313E0F9D-3627-4040-9415-62FD660255EB/data/Containers/Data/Application/2A680AEB-DD63-42EC-AAFB-4F7B1E94EEA4/Documents/000004985748'),
+               File(widget.photo["FILEPATH"]),
                 fit: BoxFit.fitWidth,
               ),
             ),
