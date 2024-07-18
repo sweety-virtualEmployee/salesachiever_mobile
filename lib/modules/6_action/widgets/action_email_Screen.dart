@@ -3,18 +3,17 @@ import 'dart:io';
 
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_email_sender/flutter_email_sender.dart';
 import 'package:flutter_pdfview/flutter_pdfview.dart';
 import 'package:loader_overlay/loader_overlay.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:salesachiever_mobile/modules/6_action/services/action_service.dart';
 import 'package:salesachiever_mobile/shared/widgets/layout/psa_scaffold.dart';
 import 'package:salesachiever_mobile/utils/error_util.dart';
+import 'package:salesachiever_mobile/utils/flutter_email.dart';
 import 'package:salesachiever_mobile/utils/message_util.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class ActionEmailScreen extends StatefulWidget {
-
   ActionEmailScreen({
     Key? key,
     required this.action,
@@ -27,7 +26,6 @@ class ActionEmailScreen extends StatefulWidget {
 }
 
 class _ActionEmailScreenState extends State<ActionEmailScreen> {
-
   String filePath = "";
   String base64EncodedString = "";
   Key _pdfViewKey = UniqueKey(); // Add a unique key for the PDFView
@@ -60,8 +58,10 @@ class _ActionEmailScreenState extends State<ActionEmailScreen> {
     try {
       var result = await ActionService().actionQuestionRptApi();
       print(result);
-      var response = await ActionService().questionRptApi(result["Items"][0]["VAR_VALUE"], widget.action["ACTION_ID"]);
-      print(response["Value"]);
+      var response = await ActionService().questionRptApi(
+          result["Items"][0]["VAR_VALUE"], widget.action["ACTION_ID"]);
+      print("${widget.action["PROJECT_TITLE"]}");
+      print("${widget.action["PROJECT_ID"]}");
       print("value printed");
       await fetchPdfFilePath(response["Value"]);
     } on DioError catch (e) {
@@ -97,22 +97,19 @@ class _ActionEmailScreenState extends State<ActionEmailScreen> {
   }
 
   Future<void> send() async {
-    final Email email = Email(
-      body: "",
-      subject: "Action Report",
-      recipients: [],
-      attachmentPaths: [filePath],
-      isHTML: true,
-    );
-
-    String platformResponse;
-
     try {
-      await FlutterEmailSender.send(email);
-      platformResponse = 'success';
-    } catch (error) {
-      print(error);
-      platformResponse = error.toString();
+      await FlutterEmailSender.send(
+        Email(
+          attachmentPaths: [filePath],
+          body: '',
+          subject: '${widget.action["PROJECT_ID"]} ${widget.action["PROJECT_TITLE"]}',
+          recipients: [],
+          isHTML: true,
+        ),
+      );
+    } on Exception catch (error) {
+      print(error.toString());
+      ErrorUtil.showErrorMessage(context, error.toString());
     }
   }
 
@@ -136,9 +133,9 @@ class _ActionEmailScreenState extends State<ActionEmailScreen> {
               child: filePath.isEmpty
                   ? Center(child: CircularProgressIndicator())
                   : PDFView(
-                key: _pdfViewKey, // Set the key for PDFView
-                filePath: filePath,
-              ),
+                      key: _pdfViewKey, // Set the key for PDFView
+                      filePath: filePath,
+                    ),
             ),
           ],
         ),
