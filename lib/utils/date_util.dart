@@ -8,7 +8,6 @@ class DateUtil {
     }
 
     var localeId = StorageUtil.getString('localeId');
-    print("locale id $localeId");
     var dt = DateTime.parse(date);
     if(localeId == "1033"){
       var formatter = new DateFormat('MMM dd, yyyy');

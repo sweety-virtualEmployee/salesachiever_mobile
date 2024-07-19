@@ -7,6 +7,7 @@ import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart' show ProviderScope;
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:provider/provider.dart';
+import 'package:salesachiever_mobile/modules/6_action/provider/action_stormsaver_provider.dart';
 import 'package:salesachiever_mobile/modules/dynamic_module/5_dynamic_project/provider/dynamic_tab_provider.dart';
 import 'package:salesachiever_mobile/modules/dynamic_module/dynamic_staffzone/provider/dynamic_staffzone_provider.dart';
 import 'package:salesachiever_mobile/shared/models/locale.dart';
@@ -88,6 +89,7 @@ class AppRootState extends State<AppRoot> {
       providers: [
        ChangeNotifierProvider(create: (context) => DynamicTabProvide()),
        ChangeNotifierProvider(create: (context) => DynamicStaffZoneProvider()),
+       ChangeNotifierProvider(create: (context) => ActionSiteTierValueProvider()),
       ],
       child: PlatformApp(
       debugShowCheckedModeBanner: false,

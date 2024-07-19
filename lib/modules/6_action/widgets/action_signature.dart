@@ -248,9 +248,6 @@ class _ActionSignatureState extends State<ActionSignature> {
 
   void onChange(String key, dynamic value, dynamic isRequired) {
     setState(() {
-      if (signatureField.containsKey(key)) {
-        return; // Exit function if value is from API
-      }
       signatureField[key] = value;
       _validateFields();
     });

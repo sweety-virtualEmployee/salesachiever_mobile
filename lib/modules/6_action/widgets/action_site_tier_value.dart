@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:loader_overlay/loader_overlay.dart';
+import 'package:provider/provider.dart';
+import 'package:salesachiever_mobile/modules/6_action/provider/action_stormsaver_provider.dart';
 import 'package:salesachiever_mobile/modules/6_action/services/action_service.dart';
 import 'package:salesachiever_mobile/modules/6_action/widgets/action_site_question.dart';
 import 'package:salesachiever_mobile/shared/widgets/layout/psa_scaffold.dart';
+import 'package:salesachiever_mobile/utils/lang_util.dart';
 
 class ActionSiteTierValue extends StatefulWidget {
   ActionSiteTierValue({
@@ -19,98 +22,118 @@ class ActionSiteTierValue extends StatefulWidget {
 
 class _ActionSiteTierValueState extends State<ActionSiteTierValue> {
   final ScrollController _scrollController = ScrollController();
-  int _currentPage = 1;
-  bool isLastPage = false;
-  Map<String, List<Map<String, dynamic>>> groupedQuestions = {};
+  late ActionSiteTierValueProvider _actionSiteTierValueProvider;
+  Map<String, List<Map<String, dynamic>>> groupedQuestion = {};
 
   @override
   void initState() {
     super.initState();
+    _actionSiteTierValueProvider = Provider.of<ActionSiteTierValueProvider>(context,listen: false);
+    _actionSiteTierValueProvider.clearData();
     fetchData();
     _scrollController.addListener(() {
-      if (_scrollController.position.pixels ==
-          _scrollController.position.maxScrollExtent) {
-        // Load more data if needed
-        //_loadNextPage();
+      if (_scrollController.position.pixels == _scrollController.position.maxScrollExtent) {
+        _loadNextPage();
       }
     });
   }
 
-  fetchData() async {
+  Future<void> fetchData() async {
     try {
-      context.loaderOverlay.show(); // Show loader overlay
-      var result =
-      await ActionService().siteQuestionApi(widget.action["ACTION_ID"], 1);
-      print(result["Items"]);
+      context.loaderOverlay.show();
+      var result = await ActionService().siteQuestionApi(widget.action["ACTION_ID"], _actionSiteTierValueProvider.getCurrentPage);
       List<dynamic> items = result["Items"];
+      print("iyem$items");
+      bool lastPage = result["IsLastPage"] ?? false;
+
       for (var question in items) {
         String tier2 = question['TIER2'];
-        if (!groupedQuestions.containsKey(tier2)) {
-          groupedQuestions[tier2] = [];
+        if (!groupedQuestion.containsKey(tier2)) {
+          groupedQuestion[tier2] = [];
         }
         setState(() {
-          groupedQuestions[tier2]!.add(question);
+          groupedQuestion[tier2]!.add(question);
         });
+        _actionSiteTierValueProvider.setGroupedQuestions(groupedQuestion);
       }
-      print("grouped question $groupedQuestions");
-      groupedQuestions.keys.forEach((key) => print(key));
+
+      _actionSiteTierValueProvider.setIsLastPage(lastPage);
+      _actionSiteTierValueProvider.setCurrentPage(_actionSiteTierValueProvider.getCurrentPage+1);
+
     } catch (e) {
       print("Error fetching data: $e");
     } finally {
-      context.loaderOverlay.hide(); // Hide loader overlay
+      _actionSiteTierValueProvider.setIsLoading(false);
+      context.loaderOverlay.hide();
+    }
+  }
+
+  void _loadNextPage() {
+    if (!_actionSiteTierValueProvider.getIsLoading && !_actionSiteTierValueProvider.getIsLastPage) {
+      fetchData();
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    return LoaderOverlay(
-      useDefaultLoading: true, // Ensure this is set to true
-      overlayWidget: Center(
-        child: CircularProgressIndicator(), // Customize loader if needed
-      ),
-      child: PsaScaffold(
-        showHome: false,
-        body: ListView.separated(
-          controller: _scrollController,
-          itemCount: groupedQuestions.length,
-          separatorBuilder: (context, index) => Divider(),
-          itemBuilder: (context, index) {
-            String tier2 = groupedQuestions.keys.elementAt(index);
-            List<Map<String, dynamic>> questionsForTier2 =
-            groupedQuestions[tier2]!;
-            int totalQuestions = questionsForTier2.length;
-            int answeredQuestions = questionsForTier2
-                .where((q) => q['ANSWER_ID'] != null)
-                .toList()
-                .length;
-            return InkWell(
-              onTap: () {
-                Navigator.push(
-                  context,
-                  platformPageRoute(
-                    context: context,
-                    builder: (BuildContext context) => ActionSiteQuestion(
-                      questions: questionsForTier2,
-                      questionTitle: tier2,
+    return Consumer<ActionSiteTierValueProvider>(
+        builder: (context, provider, child) {
+        return LoaderOverlay(
+          useDefaultLoading: true,
+          overlayWidget: Center(
+            child: CircularProgressIndicator(),
+          ),
+          child: PsaScaffold(
+            showHome: false,
+            body: ListView.separated(
+              controller: _scrollController,
+              itemCount: provider.getGroupedQuestions.length + 1,
+              separatorBuilder: (context, index) => Divider(),
+              itemBuilder: (context, index) {
+                if (index == provider.getGroupedQuestions.length) {
+                  return provider.getIsLastPage
+                      ? Container()
+                      : Center(child: CircularProgressIndicator());
+                }
+                String tier2 = provider.getGroupedQuestions.keys.elementAt(index);
+                List<Map<String, dynamic>> questionsForTier2 = provider.getGroupedQuestions[tier2]!;
+                int totalQuestions = questionsForTier2.length;
+                int answeredQuestions = questionsForTier2
+                    .where((q) => q['ANSWER_ID'] != null)
+                    .toList()
+                    .length;
+                return InkWell(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      platformPageRoute(
+                        context: context,
+                        builder: (BuildContext context) => ActionSiteQuestion(
+                          questionTitle: tier2,
+                        ),
+                      ),
+                    );
+                  },
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 15.0,horizontal: 15),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(LangUtil.getString("TBL_TIER1.TIER1_ID", tier2),style: TextStyle(
+                          fontSize: 14
+                        ),),
+                        Text("$answeredQuestions/$totalQuestions")
+                      ],
                     ),
                   ),
                 );
               },
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(tier2),
-                    Text("$answeredQuestions/$totalQuestions")
-                  ],
-                ),
-              ),
-            );
-          },
-        ),
-        title: '',
-      ),
+            ),
+            title: '',
+          ),
+        );
+      }
     );
   }
 }
+

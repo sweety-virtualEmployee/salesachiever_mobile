@@ -79,7 +79,7 @@ class ActionApi {
     headers.add({'key': 'FilterSet', 'headers': jsonEncode([filter])});
     print("herad$headers");
     Response response = await _api.get(
-        '/LIST/ACQUES?SystemLayout=false&pageSize=30&pageNumber=$pageNumber', headers);
+        '/LIST/ACQUES?SystemLayout=false&pageSize=300&pageNumber=$pageNumber', headers);
     return response.data;
   }
 

@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_pdfview/flutter_pdfview.dart';
 import 'package:loader_overlay/loader_overlay.dart';
 import 'package:path_provider/path_provider.dart';
@@ -11,6 +12,7 @@ import 'package:salesachiever_mobile/shared/widgets/layout/psa_scaffold.dart';
 import 'package:salesachiever_mobile/utils/error_util.dart';
 import 'package:salesachiever_mobile/utils/flutter_email.dart';
 import 'package:salesachiever_mobile/utils/message_util.dart';
+import 'package:share/share.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class ActionEmailScreen extends StatefulWidget {
@@ -96,22 +98,20 @@ class _ActionEmailScreenState extends State<ActionEmailScreen> {
     }
   }
 
+
   Future<void> send() async {
-    try {
-      await FlutterEmailSender.send(
-        Email(
-          attachmentPaths: [filePath],
-          body: '',
-          subject: '${widget.action["PROJECT_ID"]} ${widget.action["PROJECT_TITLE"]}',
-          recipients: [],
-          isHTML: true,
-        ),
-      );
-    } on Exception catch (error) {
-      print(error.toString());
-      ErrorUtil.showErrorMessage(context, error.toString());
+      final file = File(filePath);
+
+      if (file.existsSync()) {
+        Share.shareFiles(
+          [file.path],
+          text: '${widget.action["PROJECT_ID"]} ${widget.action["PROJECT_TITLE"]}',
+          subject: '${widget.action["PROJECT_ID"]} ${widget.action["PROJECT_TITLE"]}'
+        );
+      } else {
+        print('PDF file does not exist at the specified path');
+      }
     }
-  }
 
   @override
   Widget build(BuildContext context) {

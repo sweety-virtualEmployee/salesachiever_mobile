@@ -19,8 +19,7 @@ class HiveUtil {
     var result = Hive.box<dynamic>('dataDictionaryLookups').values.firstWhere(
         (e) => e['TABLE_NAME'] == tableName && e['FIELD_NAME'] == fieldName,
         orElse: () => null);
-    print("lets check result$result");
-    print("lets check result$entityType");
+
 
     if (result == null) return '';
 
