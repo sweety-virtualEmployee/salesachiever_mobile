@@ -17,7 +17,6 @@ class LoginApi {
     );
 
     print('$loginName $password $company $api');
-//Response response = await Dio().post('$api',
     Response response = await Dio().post('$api/login',
         data: {
           'LoginName': loginName,

@@ -54,7 +54,6 @@ class _ActionPhotoPreviewScreenState extends State<ActionPhotoPreviewScreen> {
               index: photos.indexOf(photo),
               onDescriptionChanged: (index, text) {
                 widget.onDescriptionChanged(index, text);
-
                 setState(() {
                   photos[photos.indexOf(photo)]['DESCRIPTION'] = text;
                 });
@@ -66,6 +65,7 @@ class _ActionPhotoPreviewScreenState extends State<ActionPhotoPreviewScreen> {
   @override
   Widget build(BuildContext context) {
     return PsaScaffold(
+      showHome: false,
       title: '',
       body: PageView(
         controller: _controller,
@@ -97,9 +97,6 @@ class _PhotoPreviewState extends State<PhotoPreview> {
   @override
   void initState() {
     super.initState();
-    print(widget.photo["FILE"]);
-    print(widget.photo["FILENAME"]);
-    print(widget.photo["FILEPATH"]);
     textController.text = widget.photo['DESCRIPTION'];
   }
 
@@ -108,7 +105,10 @@ class _PhotoPreviewState extends State<PhotoPreview> {
     return Container(
       child: Column(
         children: [
-          path.extension(widget.photo["FILENAME"].toString()).contains(".jpg'")?Expanded(
+          path.extension(widget.photo["FILENAME"].toString()).contains(".pdf'")?Expanded(
+            child: PDFView(
+                filePath: widget.photo['FILEPATH']),
+          ):Expanded(
             child: Container(
               color: Colors.black,
               child: Image.file(
@@ -116,9 +116,6 @@ class _PhotoPreviewState extends State<PhotoPreview> {
                 fit: BoxFit.fitWidth,
               ),
             ),
-          ):Expanded(
-            child: PDFView(
-              filePath: widget.photo['FILEPATH']),
           ),
           Container(
             child: Padding(

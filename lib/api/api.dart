@@ -129,6 +129,7 @@ class Api {
       print("dateTime${timestamp}");
       return await _dio.post(path, data: data);
     } catch (e) {
+      print("vgcewjhdnkv${e.toString()}");
       throw (e);
     }
   }

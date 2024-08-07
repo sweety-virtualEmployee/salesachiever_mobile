@@ -71,6 +71,7 @@ class _ActionSiteQuestionDetailScreenState
 
   Future<void> _handleSave() async {
     await _saveCurrentQuestionData();
+    Navigator.pop(context);
   }
 
   Future<void> _handleNext() async {

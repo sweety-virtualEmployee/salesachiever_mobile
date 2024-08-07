@@ -4,6 +4,7 @@ import 'dart:typed_data';
 import 'package:archive/archive.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:image/image.dart' as img;
 import 'dart:ui' as ui;
@@ -23,6 +24,7 @@ import 'package:salesachiever_mobile/utils/success_util.dart';
 import 'package:signature/signature.dart';
 import 'package:image_gallery_saver/image_gallery_saver.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class ActionSignature extends StatefulWidget {
   ActionSignature({
@@ -31,6 +33,7 @@ class ActionSignature extends StatefulWidget {
   }) : super(key: key);
 
   final Map<String, dynamic> action;
+
   @override
   State<ActionSignature> createState() => _ActionSignatureState();
 }
@@ -39,6 +42,7 @@ class _ActionSignatureState extends State<ActionSignature> {
   Map<String, dynamic> signatureField = {};
   bool isButtonEnabled = false;
   bool isLoading = false; // Track loading state
+  int retryAttempts = 0; // Track retry attempts
 
   @override
   void initState() {
@@ -61,6 +65,9 @@ class _ActionSignatureState extends State<ActionSignature> {
             signatureField['CLIENT_NAME'] = item['CLIENT_NAME'];
             signatureField['JOB_DESG'] = item['JOB_DESG'];
             signatureField['COMPANY_NAME'] = item['COMPANY_NAME'];
+            signatureField['BLOB_ID'] = item['BLOB_ID'];
+            signatureField['BLOB_TYPE'] = item['BLOB_TYPE'];
+            signatureField['FILENAME'] = item['FILENAME'];
             isButtonEnabled = false;
           });
           break; // Assuming there's only one entry for ACTION_SIGN
@@ -159,7 +166,149 @@ class _ActionSignatureState extends State<ActionSignature> {
     );
   }
 
-  Future<void> convertAndUploadImage(Uint8List byteList, BuildContext context) async {
+  Future<void> fetchSignatureImage(BuildContext context) async {
+    // Show loader dialog
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return Dialog(
+          insetPadding: EdgeInsets.symmetric(horizontal: 10),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(0.0),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                CircularProgressIndicator(),
+                SizedBox(width: 20),
+                Text("Loading..."),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+
+    try {
+      if (signatureField['BLOB_TYPE'] == '1') {
+        final base64String =
+            await SitePhotoService().getBlobById(signatureField['BLOB_ID']);
+
+
+        var decodedBytes = base64.decode(base64String.replaceAll('\r\n', ''));
+
+        final archive = ZipDecoder().decodeBytes(decodedBytes);
+        final directory = await getApplicationDocumentsDirectory();
+        final uniqueFileName =
+            '${DateTime.now().millisecondsSinceEpoch}_decoded_signature_image.png';
+        final filePath = '${directory.path}/$uniqueFileName';
+        File? outFile;
+
+        for (var file in archive) {
+          if (file.isFile) {
+            outFile = File(filePath);
+            outFile = await outFile.create(recursive: true);
+            await outFile.writeAsBytes(file.content);
+          }
+        }
+        Navigator.of(context).pop();
+
+        await precacheImage(FileImage(outFile!), context);
+
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return Dialog(
+              insetPadding: EdgeInsets.symmetric(horizontal: 10),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(0.0),
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Container(
+                      height: 200,
+                      width: double.infinity, // Set your desired height
+                      child: Image.file(outFile!, fit: BoxFit.contain),
+                    ),
+                  ),
+                  SizedBox(height: 20),
+                  ElevatedButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                    child: Text('Close'),
+                  ),
+                  SizedBox(height: 20),
+                ],
+              ),
+            );
+          },
+        );
+      } else if (signatureField['BLOB_TYPE'] == '2') {
+        // Handle URL for BLOB_TYPE 2
+        final url = signatureField['FILENAME'];
+
+        String cleanedUrl = url.replaceAll(r'\\', '//').replaceAll(r'\', '/');
+
+        final encodedUrl = Uri.encodeFull(cleanedUrl);
+
+        print(encodedUrl);
+        if (await canLaunch(encodedUrl)) {
+          Navigator.of(context).pop(); // Close the loader dialog
+          await launch(encodedUrl);
+        } else {
+          // Handle URL launch error
+          Navigator.of(context).pop(); // Close the loader dialog
+          showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return AlertDialog(
+                title: Text('Error'),
+                content: Text('Could not launch the URL.'),
+                actions: [
+                  TextButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                    child: Text('OK'),
+                  ),
+                ],
+              );
+            },
+          );
+        }
+      }
+    } catch (e) {
+      print("Error fetching or processing image: $e");
+      Navigator.of(context).pop(); // Close the loader dialog
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text('Error'),
+            content: Text('An error occurred while processing the image.'),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: Text('OK'),
+              ),
+            ],
+          );
+        },
+      );
+    }
+  }
+
+  Future<void> convertAndUploadImage(
+      Uint8List byteList, BuildContext context) async {
     try {
       final directory = await getApplicationDocumentsDirectory();
       final filePath = '${directory.path}/signature_image.png';
@@ -177,12 +326,14 @@ class _ActionSignatureState extends State<ActionSignature> {
 
       final zipFilePath = '${directory.path}/signature_image.zip';
       final zipFile = File(zipFilePath);
-      await zipFile.writeAsBytes(Uint8List.fromList(ZipEncoder().encode(archive)!));
+      await zipFile
+          .writeAsBytes(Uint8List.fromList(ZipEncoder().encode(archive)!));
 
       var bytes = zipFile.readAsBytesSync();
       String base64Image = base64Encode(bytes);
-      print("base64image $base64Image");
+
       await saveImageToGallery(byteList);
+
       var blob = {
         "DESCRIPTION": "signature_image.png",
         "ENTITY_ID": widget.action["ACTION_ID"],
@@ -193,23 +344,54 @@ class _ActionSignatureState extends State<ActionSignature> {
         "CLIENT_NAME": signatureField['CLIENT_NAME'],
         "BLOB_DATA": base64Image
       };
-      print("blob $blob");
 
+      // Attempt to upload the blob
       await SitePhotoService().uploadBlob(blob);
-
-      // Show success message after successful upload
+      print('Blob uploaded successfully');
       SuccessUtil.showSuccessMessage(
-          context, 'Signature uploaded successfully!!'
-      );
-
-    } on DioError catch (e) {
-      ErrorUtil.showErrorMessage(context, e.message);
+          context, 'Signature uploaded successfully!!');
     } catch (e) {
-      ErrorUtil.showErrorMessage(
-        context,
-        MessageUtil.getMessage('500'),
-      );
+      print("Error: $e");
+      handleUploadFailure(byteList, context);
     }
+  }
+
+  void handleUploadFailure(Uint8List byteList, BuildContext context) {
+    if (retryAttempts < 1) {
+      retryAttempts++;
+      showRetryDialog(byteList, context);
+    } else {
+      retryAttempts = 0;
+      ErrorUtil.showErrorMessage(context,
+          "The signature upload was unsuccessful. This has been saved to your Photo Gallery. Please try again later.");
+    }
+  }
+
+  void showRetryDialog(Uint8List byteList, BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text("Upload Failed"),
+          content: Text("Would you like to retry the upload?"),
+          actions: <Widget>[
+            TextButton(
+              child: Text("Cancel"),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: Text("Retry"),
+              onPressed: () {
+                Navigator.of(context).pop();
+                convertAndUploadImage(byteList, context);
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 
   Future<void> convertSignatureToImage() async {
@@ -218,17 +400,16 @@ class _ActionSignatureState extends State<ActionSignature> {
       await Future.delayed(Duration(milliseconds: 100));
       Navigator.pop(context);
       ui.Image? image = await _controller.toImage();
-      ByteData? byteData = await image!.toByteData(format: ui.ImageByteFormat.png);
+      ByteData? byteData =
+          await image!.toByteData(format: ui.ImageByteFormat.png);
       Uint8List byteList = byteData!.buffer.asUint8List();
       img.Image imgImage = img.decodeImage(byteList)!;
 
       await convertAndUploadImage(byteList, context);
-
     } finally {
       context.loaderOverlay.hide();
     }
   }
-
 
   Future<void> uploadSignatureFromGallery() async {
     try {
@@ -236,7 +417,7 @@ class _ActionSignatureState extends State<ActionSignature> {
       await Future.delayed(Duration(milliseconds: 100));
       Navigator.pop(context);
       final pickedFile =
-      await ImagePicker().getImage(source: ImageSource.gallery);
+          await ImagePicker().getImage(source: ImageSource.gallery);
       if (pickedFile != null) {
         final uploadBytes = await pickedFile.readAsBytes();
         await convertAndUploadImage(uploadBytes, context);
@@ -283,53 +464,62 @@ class _ActionSignatureState extends State<ActionSignature> {
       overlayColor: Colors.black.withOpacity(0.5),
       overlayOpacity: 0.7,
       child: PsaScaffold(
-        action: PsaEditButton(
-          text: "Sign",
-          onTap: isButtonEnabled
-              ? () {
-            showDialog(
-              context: context,
-              builder: (BuildContext context) {
-                return signaturePad();
-              },
-            );
-          }
-              : null,
-        ),
+        action: signatureField['BLOB_ID'] != null
+            ? PsaEditButton(
+                text: "View Signature",
+                onTap: () {
+                  fetchSignatureImage(context);
+                })
+            : PsaEditButton(
+                text: "Sign",
+                onTap: isButtonEnabled
+                    ? () {
+                        showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return signaturePad();
+                          },
+                        );
+                      }
+                    : null,
+              ),
         body: isLoading
             ? Center(child: CircularProgressIndicator())
             : Column(
-          children: [
-            PsaTextFieldRow(
-              isRequired: false,
-              fieldKey: "CLIENT_NAME",
-              title: LangUtil.getString("ACCOUNT", "ACCTNAME"),
-              value: signatureField["CLIENT_NAME"],
-              readOnly:false, // Disable editing if value is from API
-              onChange: (key, value) => onChange(key, value, true),
-            ),
-            PsaTextFieldRow(
-              isRequired: false,
-              fieldKey: "JOB_DESG",
-              title: LangUtil.getString("CONTACT", "JOB_TITLE"),
-              value: signatureField["JOB_DESG"],
-              keyboardType: TextInputType.text,
-              readOnly: false, // Disable editing if value is from API
-              onChange: (key, value) => onChange(key, value, true),
-            ),
-            PsaTextFieldRow(
-              isRequired: false,
-              fieldKey: "COMPANY_NAME",
-              title: LangUtil.getString(
-                  "SignatureEditWindow", "CompanyName.Title"),
-              value: signatureField["COMPANY_NAME"],
-              keyboardType: TextInputType.text,
-              readOnly: false, // Disable editing if value is from API
-              onChange: (key, value) => onChange(key, value, true),
-            ),
-            SizedBox(height: 20),
-          ],
-        ),
+                children: [
+                  PsaTextFieldRow(
+                    isRequired: false,
+                    fieldKey: "CLIENT_NAME",
+                    title: LangUtil.getString("ACCOUNT", "ACCTNAME"),
+                    value: signatureField["CLIENT_NAME"],
+                    readOnly: false,
+                    // Disable editing if value is from API
+                    onChange: (key, value) => onChange(key, value, true),
+                  ),
+                  PsaTextFieldRow(
+                    isRequired: false,
+                    fieldKey: "JOB_DESG",
+                    title: LangUtil.getString("CONTACT", "JOB_TITLE"),
+                    value: signatureField["JOB_DESG"],
+                    keyboardType: TextInputType.text,
+                    readOnly: false,
+                    // Disable editing if value is from API
+                    onChange: (key, value) => onChange(key, value, true),
+                  ),
+                  PsaTextFieldRow(
+                    isRequired: false,
+                    fieldKey: "COMPANY_NAME",
+                    title: LangUtil.getString(
+                        "SignatureEditWindow", "CompanyName.Title"),
+                    value: signatureField["COMPANY_NAME"],
+                    keyboardType: TextInputType.text,
+                    readOnly: false,
+                    // Disable editing if value is from API
+                    onChange: (key, value) => onChange(key, value, true),
+                  ),
+                  SizedBox(height: 20),
+                ],
+              ),
         title: '',
         showHome: false,
       ),

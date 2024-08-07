@@ -47,9 +47,6 @@ class _ActionPhotosScreenState extends State<ActionPhotosScreen> {
     if (null == _dir) {
       _dir = '${(await getApplicationDocumentsDirectory()).path}/blobs';
     }
-
-    var file = await Directory("$_dir").list().toList();
-    print(file);
   }
 
   @override
@@ -60,12 +57,10 @@ class _ActionPhotosScreenState extends State<ActionPhotosScreen> {
         children: [
           PsaAddButton(onTap: () async {
             final List<XFile>? selectedImages =
-            await imagePicker.pickMultiImage(imageQuality: 50);
-            print(selectedImages);
+                await imagePicker.pickMultiImage(imageQuality: 50);
             if (selectedImages!.isNotEmpty) {
               imageFileList!.addAll(selectedImages);
             }
-            print("Image List Length:" + imageFileList!.length.toString());
             setState(() {
               if (imageFileList != null) {
                 for (int i = 0; i < imageFileList!.length; i++) {
@@ -87,7 +82,7 @@ class _ActionPhotosScreenState extends State<ActionPhotosScreen> {
           ),
           PsaCameraButton(onTap: () async {
             final pickedFile =
-            await imagePicker.pickImage(source: ImageSource.camera);
+                await imagePicker.pickImage(source: ImageSource.camera);
             setState(() {
               if (pickedFile != null) {
                 setState(() {
@@ -114,29 +109,31 @@ class _ActionPhotosScreenState extends State<ActionPhotosScreen> {
                 child: isLoading
                     ? Center(child: PlatformCircularProgressIndicator())
                     : GridView.builder(
-                  itemCount: _imageList.length,
-                  gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
-                    maxCrossAxisExtent: 150,
-                    mainAxisSpacing: 8,
-                    crossAxisSpacing: 8,
-                  ),
-                  itemBuilder: (BuildContext context, int index) {
-                    return Visibility(
-                      visible: _imageList[index]['FILENAME'] == null || path.extension(_imageList[index]['FILENAME'].toString()) != ".pdf",
-                      child: PhotoTile(
-                        file: _imageList[index]['FILE'],
-                        fileExtension: _imageList[index]['FILENAME'] != null
-                            ? _imageList[index]['FILENAME']
-                            : "",
-                        description: _imageList[index]['DESCRIPTION'] ?? '',
-                        isSelected: _imageList[index]['SELECTED'] ?? false,
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            platformPageRoute(
-                              context: context,
-                              builder: (BuildContext context) =>
-                                  ActionPhotoPreviewScreen(
+                        itemCount: _imageList.length,
+                        gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+                          maxCrossAxisExtent: 150,
+                          mainAxisSpacing: 8,
+                          crossAxisSpacing: 8,
+                        ),
+                        itemBuilder: (BuildContext context, int index) {
+                          return PhotoTile(
+                            file: _imageList[index]['FILE'],
+                            fileExtension:
+                                _imageList[index]['FILENAME'] != null
+                                    ? _imageList[index]['FILENAME']
+                                    : "",
+                            description:
+                                _imageList[index]['DESCRIPTION'] ?? '',
+                            isSelected:
+                                _imageList[index]['SELECTED'] ?? false,
+                            isDelete:false,
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                platformPageRoute(
+                                  context: context,
+                                  builder: (BuildContext context) =>
+                                      ActionPhotoPreviewScreen(
                                     photos: _imageList,
                                     selectedIndex: index,
                                     onDescriptionChanged: (i, text) {
@@ -147,49 +144,49 @@ class _ActionPhotosScreenState extends State<ActionPhotosScreen> {
                                       });
                                     },
                                   ),
-                            ),
+                                ),
+                              );
+                            },
+                            isNew: (_imageList[index]['ISNEW'] == true ||
+                                _imageList[index]['ISUPDATED'] == true),
+                            onDelete: () {
+                              showPlatformDialog(
+                                context: context,
+                                builder: (_) => PlatformAlertDialog(
+                                  title: Text('Delete File'),
+                                  content: Text(
+                                      'Do you want to delete selected file?'),
+                                  actions: <Widget>[
+                                    PlatformDialogAction(
+                                      child: PlatformText('Cancel'),
+                                      onPressed: () {
+                                        Navigator.pop(context);
+                                      },
+                                    ),
+                                    PlatformDialogAction(
+                                      child: PlatformText('Delete'),
+                                      onPressed: () async {
+                                        if (_imageList[index]['ISNEW'] ==
+                                                null ||
+                                            _imageList[index]['ISNEW'] ==
+                                                false)
+                                          await SitePhotoService().deleteBlob(
+                                              _imageList[index]['BLOB_ID']);
+
+                                        setState(() {
+                                          _imageList.removeAt(index);
+                                        });
+
+                                        Navigator.pop(context);
+                                      },
+                                    ),
+                                  ],
+                                ),
+                              );
+                            },
                           );
                         },
-                        isNew: (_imageList[index]['ISNEW'] == true ||
-                            _imageList[index]['ISUPDATED'] == true),
-                        onDelete: () {
-                          showPlatformDialog(
-                            context: context,
-                            builder: (_) => PlatformAlertDialog(
-                              title: Text('Delete File'),
-                              content: Text(
-                                  'Do you want to delete selected file?'),
-                              actions: <Widget>[
-                                PlatformDialogAction(
-                                  child: PlatformText('Cancel'),
-                                  onPressed: () {
-                                    Navigator.pop(context);
-                                  },
-                                ),
-                                PlatformDialogAction(
-                                  child: PlatformText('Delete'),
-                                  onPressed: () async {
-                                    if (_imageList[index]['ISNEW'] ==
-                                        null ||
-                                        _imageList[index]['ISNEW'] == false)
-                                      await SitePhotoService().deleteBlob(
-                                          _imageList[index]['BLOB_ID']);
-
-                                    setState(() {
-                                      _imageList.removeAt(index);
-                                    });
-
-                                    Navigator.pop(context);
-                                  },
-                                ),
-                              ],
-                            ),
-                          );
-                        },
-                      ),
-                    );
-                  },
-                )),
+                      )),
           ],
         ),
       ),
@@ -201,23 +198,14 @@ class _ActionPhotosScreenState extends State<ActionPhotosScreen> {
 
     try {
       _imageList.forEach((image) async {
-        print(path.extension(image["FILE"].toString()));
-        print(image['ISNEW']);
-
         if (image['ISNEW'] == true) {
           var uuid = Uuid().v1().toUpperCase();
-          print("dir$_dir");
           var encoder = ZipFileEncoder();
           encoder.create('$_dir/$uuid.zip');
           encoder.addFile(image['FILE']);
           encoder.close();
-          print(encoder);
-
           var bytes = File('$_dir/$uuid.zip').readAsBytesSync();
-          print("bytes");
           String base64Image = base64Encode(bytes);
-          print("base64iamge$base64Image");
-
           var blob = {
             'DESCRIPTION': image['DESCRIPTION'],
             'BLOB_DATA': base64Image,
@@ -230,8 +218,6 @@ class _ActionPhotosScreenState extends State<ActionPhotosScreen> {
 
           await SitePhotoService().uploadBlob(blob);
           File('$_dir/$uuid.zip').deleteSync();
-
-          //_fetchImages();
         } else if (image['ISUPDATED'] == true) {
           var blob = {
             'ENTITY_ID': widget.action['ACTION_ID'],
@@ -265,66 +251,92 @@ class _ActionPhotosScreenState extends State<ActionPhotosScreen> {
 
     while (loadMore) {
       var response = await SitePhotoService()
-          .getImagesByActionId(widget.action['ACTION_ID'], pageNumber);
+          .galleryImage(widget.action['ACTION_ID'], pageNumber);
 
       setState(() {
         isLoading = false;
       });
-      print("data----${response}");
 
       List<dynamic> files = response;
-
+      List<dynamic> imageFiles = files.where((file) {
+        String filename = file['FILENAME'] ?? '';
+        return filename.isNotEmpty &&
+            !filename.endsWith('.pdf') &&
+            (filename.endsWith('.jpg') ||
+                filename.endsWith('.jpeg') ||
+                filename.endsWith('.png'));
+      }).toList();
       setState(() {
-        _imageList.addAll(files);
+        _imageList.addAll(imageFiles);
       });
 
-      for (var i = 0; i < files.length; i++) {
-        SitePhotoService().getBlobById(files[i]['BLOB_ID']).then((blob) async {
-          var decodedBytes = base64.decode(blob.replaceAll('\r\n', ''));
-          print("decodeBytes$decodedBytes");
+      for (var i = 0; i < _imageList.length; i++) {
+        if (_imageList[i]['BLOB_TYPE'] == "1") {
+          SitePhotoService()
+              .getBlobById(_imageList[i]['BLOB_ID'])
+              .then((blob) async {
+            var decodedBytes = base64.decode(blob.replaceAll('\r\n', ''));
+            final archive = ZipDecoder().decodeBytes(decodedBytes);
+            File? outFile;
+
+            for (var file in archive) {
+              var fileName = '$_dir/${files[i]['BLOB_ID']}';
+              final directory = await getApplicationDocumentsDirectory();
+              final filePath = '${directory.path}/file.pdf';
+
+              final pdfFile = File(filePath);
+              await pdfFile.writeAsBytes(file.content);
+              setState(() {
+                int index = _imageList.indexWhere(
+                    (element) => element['BLOB_ID'] == files[i]['BLOB_ID']);
+                if (index != -1) {
+                  _imageList[index]['FILEPATH'] = filePath;
+                }
+              });
+
+              if (file.isFile) {
+                outFile = File(fileName);
+                outFile = await outFile.create(recursive: true);
+                await outFile.writeAsBytes(file.content);
+              }
+            }
+            if (outFile != null) {
+              setState(() {
+                int index = _imageList.indexWhere(
+                    (element) => element['BLOB_ID'] == files[i]['BLOB_ID']);
+                if (index != -1) {
+                  _imageList[index]['FILE'] = outFile;
+                }
+              });
+            }
+          });
+        } else if (_imageList[i]['BLOB_TYPE'] == "2") {
+          var decodedBytes =
+              base64.decode(_imageList[i]['BLOB_DATA'].replaceAll('\r\n', ''));
           final archive = ZipDecoder().decodeBytes(decodedBytes);
-          print("archive$archive");
+          final directory = await getApplicationDocumentsDirectory();
+          final uniqueFileName =
+              '${DateTime.now().millisecondsSinceEpoch}image.png';
+          final filePath = '${directory.path}/$uniqueFileName';
           File? outFile;
 
           for (var file in archive) {
-            var fileName = '$_dir/${files[i]['BLOB_ID']}';
-            final directory = await getApplicationDocumentsDirectory();
-            final filePath = '${directory.path}/file.pdf';
-
-            final pdfFile = File(filePath);
-            await pdfFile.writeAsBytes(file.content);
-
-            print("filepath$filePath");
-            setState(() {
-              _imageList[_imageList.indexOf(_imageList.firstWhere(
-                      (element) => element['BLOB_ID'] == files[i]['BLOB_ID']))]
-              ['FILEPATH'] = filePath;
-            });
             if (file.isFile) {
-              outFile = File(fileName);
+              outFile = File(filePath);
               outFile = await outFile.create(recursive: true);
               await outFile.writeAsBytes(file.content);
             }
           }
-          print("check the output file");
-          print(outFile);
-
           if (outFile != null) {
             setState(() {
-              _imageList[_imageList.indexOf(_imageList.firstWhere(
-                      (element) => element['BLOB_ID'] == files[i]['BLOB_ID']))]
-              ['FILE'] = outFile;
+              _imageList[i]['FILE'] = outFile;
+              _imageList[i]['FILEPATH'] = outFile?.path;
             });
           }
-        });
+        }
       }
-      _imageList = _imageList.where((item) => item['FILENAME'] == null || path.extension(item['FILENAME'].toString()) != '.pdf').toList();
-      loadMore = !response['IsLastPage'];
+      loadMore = false;
       pageNumber++;
-
     }
-
-
   }
-
 }

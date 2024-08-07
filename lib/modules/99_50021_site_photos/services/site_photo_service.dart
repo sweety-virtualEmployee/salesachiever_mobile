@@ -18,14 +18,19 @@ class SitePhotoService {
   }
 
   Future<dynamic> uploadBlob(dynamic blob) async {
-    try{
+    try {
       await _sitePhotoApi.uploadBlob(blob);
-    }catch(e){
-      print("Error Message${e.toString()}",);
+    } catch (e) {
+      print("Error Message: ${e.toString()}");
+      rethrow; // Rethrow the error so it's caught by the caller
     }
   }
 
   Future<dynamic> updateBlob(String blobId, dynamic blob) async {
     await _sitePhotoApi.updateBlob(blobId, blob);
   }
+
+  Future<dynamic> galleryImage(String actionId,int pageNumber) async {
+    return await _sitePhotoApi.getGalleryImage(actionId, pageNumber);  }
+
 }

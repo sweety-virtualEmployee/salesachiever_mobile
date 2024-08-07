@@ -61,4 +61,11 @@ class SitePhotoApi {
 
     return response.data;
   }
+
+  Future<dynamic> getGalleryImage(String actionId, int pageNumber) async {
+    Response response = await _api
+        .get('/Document/Entity.Gallery?id=$actionId&searchText=%25&pageSize=30&pageNumber=$pageNumber');
+    print("photos data---${response.data}");
+    return response.data;
+  }
 }

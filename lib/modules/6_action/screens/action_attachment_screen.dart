@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'dart:typed_data';
 import 'package:dio/dio.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:loader_overlay/loader_overlay.dart';
@@ -16,7 +17,6 @@ import 'package:salesachiever_mobile/utils/error_util.dart';
 import 'package:salesachiever_mobile/utils/message_util.dart';
 import 'package:uuid/uuid.dart';
 import 'package:path/path.dart' as path;
-
 
 class ActionAttachmentScreen extends StatefulWidget {
   const ActionAttachmentScreen({Key? key, required this.action})
@@ -51,10 +51,9 @@ class _ActionAttachmentScreenState extends State<ActionAttachmentScreen> {
     var file = await Directory("$_dir").list().toList();
     print(file);
   }
+
   final ImagePicker imagePicker = ImagePicker();
   List<XFile>? imageFileList = [];
-
-
 
   Future addImage() async {
     showCupertinoModalPopup<void>(
@@ -65,53 +64,50 @@ class _ActionAttachmentScreenState extends State<ActionAttachmentScreen> {
           CupertinoActionSheetAction(
             child: const Text('Choose from Document'),
             onPressed: () async {
-                FilePickerResult? result = await FilePicker.platform.pickFiles(type: FileType.any);
-                setState(() {
-                  if (result != null) {
-                    setState(() {
-                      isLoading = false;
-                      _imageList.insert(0, {
-                        'FILE': File(result.files.single.path!),
-                        'ISNEW': true,
-                        'ISUPDATED': false,
-                        'DESCRIPTION': 'new document'
-                      });
+              FilePickerResult? result =
+                  await FilePicker.platform.pickFiles(type: FileType.any);
+              setState(() {
+                if (result != null) {
+                  setState(() {
+                    isLoading = false;
+                    _imageList.insert(0, {
+                      'FILE': File(result.files.single.path!),
+                      'ISNEW': true,
+                      'ISUPDATED': false,
+                      'DESCRIPTION': 'new document'
                     });
-                  } else {
-                    print('No document selected.');
-                  }}
-                );
+                  });
+                } else {
+                  print('No document selected.');
+                }
+              });
             },
           ),
           CupertinoActionSheetAction(
-            child: const Text('Choose Image from Gallery'),
-            onPressed: () async {
-              final List<XFile>? selectedImages = await
-              imagePicker.pickMultiImage(imageQuality: 50);
-              if (selectedImages!.isNotEmpty) {
-                imageFileList!.addAll(selectedImages);
-              }
-              print("Image List Length:" + imageFileList!.length.toString());
-              setState(() {
-                if (imageFileList != null) {
-                  for(int i = 0;i<imageFileList!.length;i++){
-                    setState(() {
-                      isLoading =false;
-                      _imageList.insert(i, {
-                        'FILE': File(imageFileList![i].path),
-                        'ISNEW': true,
-                        'ISUPDATED': false,
-                        'DESCRIPTION': 'new img'
-                      });
-
-                    });
-                  }
+              child: const Text('Choose Image from Gallery'),
+              onPressed: () async {
+                final List<XFile>? selectedImages =
+                    await imagePicker.pickMultiImage(imageQuality: 50);
+                if (selectedImages!.isNotEmpty) {
+                  imageFileList!.addAll(selectedImages);
                 }
-              });
-            }
-
-
-          ),
+                print("Image List Length:" + imageFileList!.length.toString());
+                setState(() {
+                  if (imageFileList != null) {
+                    for (int i = 0; i < imageFileList!.length; i++) {
+                      setState(() {
+                        isLoading = false;
+                        _imageList.insert(i, {
+                          'FILE': File(imageFileList![i].path),
+                          'ISNEW': true,
+                          'ISUPDATED': false,
+                          'DESCRIPTION': 'new img'
+                        });
+                      });
+                    }
+                  }
+                });
+              }),
           CupertinoActionSheetAction(
             child: const Text('Take Photo'),
             onPressed: () async {
@@ -169,13 +165,15 @@ class _ActionAttachmentScreenState extends State<ActionAttachmentScreen> {
             'BLOB_DATA': base64Image,
             'ENTITY_ID': widget.action['ACTION_ID'],
             'ENTITY_NAME': 'ACTION',
-            'FILENAME': '${widget.action['ACCTNAME']}' '$uuid' '${path.extension(image["FILE"].toString())}',
+            'FILENAME': '${widget.action['ACCTNAME']}'
+                '$uuid'
+                '${path.extension(image["FILE"].toString())}',
           };
 
           await SitePhotoService().uploadBlob(blob);
           File('$_dir/$uuid.zip').deleteSync();
 
-           _fetchImages();
+          _fetchImages();
         } else if (image['ISUPDATED'] == true) {
           var blob = {
             'ENTITY_ID': widget.action['ACTION_ID'],
@@ -187,7 +185,7 @@ class _ActionAttachmentScreenState extends State<ActionAttachmentScreen> {
           await SitePhotoService().updateBlob(image['BLOB_ID'], blob);
         }
       });
-     /* setState(() {
+      /* setState(() {
         Navigator.push(context, MaterialPageRoute(builder: (context)=> ActionAttachmentScreen( action: widget.action)));
       });*/
 
@@ -200,8 +198,6 @@ class _ActionAttachmentScreenState extends State<ActionAttachmentScreen> {
       context.loaderOverlay.hide();
       imageFileList!.clear();
     }
-
-
   }
 
   _fetchImages() async {
@@ -220,7 +216,7 @@ class _ActionAttachmentScreenState extends State<ActionAttachmentScreen> {
       setState(() {
         isLoading = false;
       });
-     print("data----${response}");
+      print("data----${response}");
 
       List<dynamic> files = response;
 
@@ -233,8 +229,8 @@ class _ActionAttachmentScreenState extends State<ActionAttachmentScreen> {
           var decodedBytes = base64.decode(blob.replaceAll('\r\n', ''));
           print("decodeBytes$decodedBytes");
           final archive = ZipDecoder().decodeBytes(decodedBytes);
-           print("archive$archive");
-           File? outFile;
+          print("archive$archive");
+          File? outFile;
 
           for (var file in archive) {
             var fileName = '$_dir/${files[i]['BLOB_ID']}';
@@ -248,7 +244,7 @@ class _ActionAttachmentScreenState extends State<ActionAttachmentScreen> {
             setState(() {
               _imageList[_imageList.indexOf(_imageList.firstWhere(
                       (element) => element['BLOB_ID'] == files[i]['BLOB_ID']))]
-              ['FILEPATH'] = filePath;
+                  ['FILEPATH'] = filePath;
             });
             if (file.isFile) {
               outFile = File(fileName);
@@ -256,8 +252,6 @@ class _ActionAttachmentScreenState extends State<ActionAttachmentScreen> {
               await outFile.writeAsBytes(file.content);
             }
           }
-          print("check the output file");
-          print(outFile);
 
           if (outFile != null) {
             setState(() {
@@ -321,10 +315,13 @@ class _ActionAttachmentScreenState extends State<ActionAttachmentScreen> {
                         crossAxisSpacing: 8,
                       ),
                       itemBuilder: (BuildContext context, int index) {
-                        print(path.extension(_imageList[index]['FILENAME'].toString()));
+                        print(path.extension(
+                            _imageList[index]['FILENAME'].toString()));
                         return PhotoTile(
                           file: _imageList[index]['FILE'],
-                          fileExtension:_imageList[index]['FILENAME']!=null?_imageList[index]['FILENAME']:"",
+                          fileExtension: _imageList[index]['FILENAME'] != null
+                              ? _imageList[index]['FILENAME']
+                              : "",
                           description: _imageList[index]['DESCRIPTION'] ?? '',
                           isSelected: _imageList[index]['SELECTED'] ?? false,
                           onTap: () {
@@ -393,7 +390,6 @@ class _ActionAttachmentScreenState extends State<ActionAttachmentScreen> {
 }
 
 class PhotoTile extends StatelessWidget {
-
   const PhotoTile({
     Key? key,
     required this.file,
@@ -403,6 +399,7 @@ class PhotoTile extends StatelessWidget {
     required this.onDelete,
     this.isNew = false,
     this.isSelected = false,
+    this.isDelete = true,
   }) : super(key: key);
 
   final File? file;
@@ -412,6 +409,7 @@ class PhotoTile extends StatelessWidget {
   final Function onDelete;
   final bool isNew;
   final bool isSelected;
+  final bool isDelete;
 
   @override
   Widget build(BuildContext context) {
@@ -441,17 +439,26 @@ class PhotoTile extends StatelessWidget {
                   Positioned.fill(
                     child: Container(
                       child: file != null
-                          ?  (path.extension(fileExtension).contains(".jpg'"))||(path.extension(fileExtension).contains(".png'"))||(path.extension(fileExtension).contains(".jpeg'"))?Image.file(
-                              file!,
-                              fit: BoxFit.cover,
-                            ):Icon(Icons.file_copy)
+                          ? (path.extension(fileExtension).contains(".pdf'")) ||
+                                  (path
+                                      .extension(fileExtension)
+                                      .contains(".png'")) ||
+                                  (path
+                                      .extension(fileExtension)
+                                      .contains(".jpeg'"))
+                              ? Icon(Icons.file_copy)
+                              : Image.file(
+                                  file!,
+                                  fit: BoxFit.cover,
+                                )
                           : Padding(
-                            padding: const EdgeInsets.only(left: 45,right: 45,top: 30,bottom: 30),
-                            child: SizedBox(
-                        height: 30,
-                            width: 40,
-                            child: PlatformCircularProgressIndicator()),
-                          ),
+                              padding: const EdgeInsets.only(
+                                  left: 45, right: 45, top: 30, bottom: 30),
+                              child: SizedBox(
+                                  height: 30,
+                                  width: 40,
+                                  child: PlatformCircularProgressIndicator()),
+                            ),
                     ),
                   ),
                   isNew
@@ -479,14 +486,14 @@ class PhotoTile extends StatelessWidget {
                     overflow: TextOverflow.ellipsis,
                     softWrap: false,
                   )),
-                  GestureDetector(
+                  isDelete?GestureDetector(
                     onTap: () => onDelete(),
                     child: Icon(
                       Icons.delete,
                       size: 20,
                       color: Colors.red.shade500,
                     ),
-                  ),
+                  ):SizedBox(),
                   isSelected
                       ? Icon(
                           context.platformIcons.checkMark,
