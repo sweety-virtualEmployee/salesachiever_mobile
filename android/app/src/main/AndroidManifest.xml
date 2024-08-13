@@ -7,7 +7,7 @@
         </intent>
     </queries>
     <application
-        android:label="PSA"
+        android:label="ConstructionCRM"
         android:icon="@mipmap/launcher_icon">
         <activity
             android:name=".MainActivity"
