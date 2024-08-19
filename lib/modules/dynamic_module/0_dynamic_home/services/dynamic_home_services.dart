@@ -13,7 +13,6 @@ class DynamicHomeService {
     if (dataResult.isNotEmpty) {
       await Hive.box<dynamic>('homeModule').clear();
       await Hive.box<dynamic>('homeModule').addAll(dataResult);
-      log("Home Module${jsonEncode(dataResult)}");
     }
      return dataResult;
   }

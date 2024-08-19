@@ -18,8 +18,6 @@ class LookupService {
 
     if (response != null) {
       final List<dynamic> activeFeatures = response['Items'];
-      log("activefeature$activeFeatures");
-
       await Hive.box<dynamic>('features').clear();
       await Hive.box<dynamic>('features').addAll(activeFeatures);
     }
@@ -30,7 +28,6 @@ class LookupService {
 
     if (response != null) {
       final List<dynamic> dataDictionary = response['Items'];
-      print("sweety---$dataDictionary");
       await Hive.box<dynamic>('dataDictionary').clear();
       await Hive.box<dynamic>('dataDictionary').addAll(dataDictionary);
     }
@@ -50,20 +47,14 @@ class LookupService {
 
   Future<void> getDynamicFormData(String entityId) async{
     final dynamic response = await DynamicProjectApi().getProjectForm(entityId,"Init");
-    print("response of the value dynamic form");
-    print(response);
     await Hive.box<dynamic>('dynamicFormFields_$entityId').clear();
     await Hive.box<dynamic>('dynamicFormFields_$entityId').addAll(response);
   }
 
   Future<void> getIpadFields(String entityType, bool dynmaicUIEnabled) async {
     List<dynamic> iPadFields = [];
-    print("check the dynamic ui enable for this section$dynmaicUIEnabled$entityType");
     if (dynmaicUIEnabled) {
       final dynamic response = await LookupApi().getIpadFields(entityType);
-      print("response of the value");
-      print(response);
-
       if (response != null) {
         iPadFields = response['Items'];
       }
@@ -100,10 +91,8 @@ class LookupService {
 
   Future<void> getUserFields(String entityType) async {
     final dynamic response = await LookupApi().getUserFields(entityType);
-    print("entutyyype${entityType}resposne$response");
     if (response != null) {
       final List<dynamic> userFields = response['Items'];
-
       await Hive.box<dynamic>('userFields_$entityType').clear();
       await Hive.box<dynamic>('userFields_$entityType').addAll(userFields);
     }
@@ -111,12 +100,8 @@ class LookupService {
 
   Future<void> getUserFieldProperties() async {
     final dynamic response = await LookupApi().getUserFieldProperties();
-
     if (response != null) {
       final List<dynamic> userFieldProperties = response['Items'];
-
-      log("useertfirekl,gsdf${userFieldProperties.toString()}");
-
       await Hive.box<dynamic>('userFieldProperties').clear();
       await Hive.box<dynamic>('userFieldProperties')
           .addAll(userFieldProperties);
@@ -125,10 +110,8 @@ class LookupService {
 
   Future<void> getSystemCounty() async {
     final dynamic response = await LookupApi().getSystemCounty();
-
     if (response != null) {
       final List<dynamic> systemCounty = response['Items'];
-
       await Hive.box<dynamic>('county').clear();
       await Hive.box<dynamic>('county').addAll(systemCounty);
     }
@@ -138,12 +121,9 @@ class LookupService {
     bool upgradedTo_1_0_10 = AuthUtil.hasAccess(40009);
     String userName =
         upgradedTo_1_0_10 ? 'current_user' : AuthUtil.getUserName();
-
     final dynamic response = await LookupApi().getAccessRights(userName);
-
     if (response != null) {
       final List<dynamic> accessRights = response;
-
       await Hive.box<dynamic>('accessRights').clear();
       await Hive.box<dynamic>('accessRights').addAll(accessRights);
     }
@@ -169,7 +149,6 @@ class LookupService {
 
     if (response != null) {
       final List<dynamic> userFieldVisibility = response['Items'];
-
       await Hive.box<dynamic>('userFieldVisibility').clear();
       await Hive.box<dynamic>('userFieldVisibility')
           .addAll(userFieldVisibility);
@@ -204,16 +183,11 @@ class LookupService {
   }
 
   List<dynamic> getDefaultCurrencyValues(String entityType) {
-    print("cherkcnskjabhjskhbjak");
-    print(Hive.box<dynamic>('currencyValue')
-        .values.toList());
-    print("entity of currency${entityType}");
     var defaultValues = Hive.box<dynamic>('currencyValue')
         .values
         .where((e) =>
     e['FIELD_NAME'] == entityType.toUpperCase())
         .toList();
-    print(defaultValues);
     return defaultValues;
   }
 

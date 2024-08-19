@@ -50,6 +50,9 @@ class _DynamicProjectListScreenState extends State<DynamicProjectListScreen> {
   @override
   void initState() {
     super.initState();
+    print("list value");
+    print(widget.listType);
+    print(widget.listName);
     if(AuthUtil.hasAccess(
         int.parse(ACCESS_CODES['Saving sort and filters'].toString()))){
       fetchData();
@@ -87,7 +90,6 @@ class _DynamicProjectListScreenState extends State<DynamicProjectListScreen> {
         });
       }
       for (int i = 0; i < filterValue.length; i++) {
-        print("lenth of filter value${filterValue[i]["VAR_VALUE"]}");
         if (filterValue[i]["VAR_VALUE"] != null) {
           List<String> varValueParts = filterValue[i]["VAR_VALUE"].split(':');
           if (varValueParts.length == 2) {
@@ -119,7 +121,6 @@ class _DynamicProjectListScreenState extends State<DynamicProjectListScreen> {
         service: DynamicProjectService(listName: widget.listName),
         display: (
             {required final dynamic entity, required final Function refresh}) {
-          print("entity passed$entity");
           return DynamicProjectListItemWidget(
               entity: entity,
               refresh: refresh,
@@ -134,8 +135,6 @@ class _DynamicProjectListScreenState extends State<DynamicProjectListScreen> {
       ),
       action: PsaAddButton(
         onTap: () {
-          print("checking list type");
-          print(widget.listType);
           if (widget.listType == "COMPANY") {
             if(AuthUtil.hasAccess(
                 int.parse(ACCESS_CODES['Show Dynamic Forms for New Records'].toString()))) {

@@ -257,8 +257,6 @@ class _ActionSignatureState extends State<ActionSignature> {
         String cleanedUrl = url.replaceAll(r'\\', '//').replaceAll(r'\', '/');
 
         final encodedUrl = Uri.encodeFull(cleanedUrl);
-
-        print(encodedUrl);
         if (await canLaunch(encodedUrl)) {
           Navigator.of(context).pop(); // Close the loader dialog
           await launch(encodedUrl);
@@ -285,7 +283,6 @@ class _ActionSignatureState extends State<ActionSignature> {
         }
       }
     } catch (e) {
-      print("Error fetching or processing image: $e");
       Navigator.of(context).pop(); // Close the loader dialog
       showDialog(
         context: context,
@@ -344,14 +341,10 @@ class _ActionSignatureState extends State<ActionSignature> {
         "CLIENT_NAME": signatureField['CLIENT_NAME'],
         "BLOB_DATA": base64Image
       };
-
-      // Attempt to upload the blob
       await SitePhotoService().uploadBlob(blob);
-      print('Blob uploaded successfully');
       SuccessUtil.showSuccessMessage(
           context, 'Signature uploaded successfully!!');
     } catch (e) {
-      print("Error: $e");
       handleUploadFailure(byteList, context);
     }
   }

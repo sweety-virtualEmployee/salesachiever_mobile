@@ -117,7 +117,6 @@ class _LoginScreenState extends State<LoginScreen> {
         apiController.text
       );
       bool isContainActiveFeature = await feature.activeFeatures();
-      print("isContaineActibefeature$isContainActiveFeature");
        if(isContainActiveFeature){
          int timestamp = DateTime.now().millisecondsSinceEpoch;
 
@@ -125,8 +124,6 @@ class _LoginScreenState extends State<LoginScreen> {
          prefs.setInt('myTimestampKey', timestamp);
 
          DateTime dateTime = DateTime.fromMillisecondsSinceEpoch(timestamp);
-         print("dateTime${dateTime}");
-         print("dateTime${timestamp}");
          Navigator.pushAndRemoveUntil(
         context,
         PageRouteBuilder(
@@ -137,7 +134,6 @@ class _LoginScreenState extends State<LoginScreen> {
       );
       }
       else{
-        print("error");
          Navigator.pushAndRemoveUntil(
         context,
         PageRouteBuilder(

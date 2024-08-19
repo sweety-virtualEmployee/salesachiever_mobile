@@ -47,9 +47,7 @@ class _ActionAttachmentScreenState extends State<ActionAttachmentScreen> {
     if (null == _dir) {
       _dir = '${(await getApplicationDocumentsDirectory()).path}/blobs';
     }
-
     var file = await Directory("$_dir").list().toList();
-    print(file);
   }
 
   final ImagePicker imagePicker = ImagePicker();
@@ -91,7 +89,6 @@ class _ActionAttachmentScreenState extends State<ActionAttachmentScreen> {
                 if (selectedImages!.isNotEmpty) {
                   imageFileList!.addAll(selectedImages);
                 }
-                print("Image List Length:" + imageFileList!.length.toString());
                 setState(() {
                   if (imageFileList != null) {
                     for (int i = 0; i < imageFileList!.length; i++) {
@@ -143,23 +140,14 @@ class _ActionAttachmentScreenState extends State<ActionAttachmentScreen> {
 
     try {
       _imageList.forEach((image) async {
-        print(path.extension(image["FILE"].toString()));
-        print(image['ISNEW']);
-
         if (image['ISNEW'] == true) {
           var uuid = Uuid().v1().toUpperCase();
-          print("dir$_dir");
           var encoder = ZipFileEncoder();
           encoder.create('$_dir/$uuid.zip');
           encoder.addFile(image['FILE']);
           encoder.close();
-          print(encoder);
-
           var bytes = File('$_dir/$uuid.zip').readAsBytesSync();
-          print("bytes");
           String base64Image = base64Encode(bytes);
-          print("base64iamge$base64Image");
-
           var blob = {
             'DESCRIPTION': image['DESCRIPTION'],
             'BLOB_DATA': base64Image,
@@ -172,7 +160,6 @@ class _ActionAttachmentScreenState extends State<ActionAttachmentScreen> {
 
           await SitePhotoService().uploadBlob(blob);
           File('$_dir/$uuid.zip').deleteSync();
-
           _fetchImages();
         } else if (image['ISUPDATED'] == true) {
           var blob = {
@@ -216,31 +203,21 @@ class _ActionAttachmentScreenState extends State<ActionAttachmentScreen> {
       setState(() {
         isLoading = false;
       });
-      print("data----${response}");
-
       List<dynamic> files = response;
-
       setState(() {
         _imageList.addAll(files);
       });
-
       for (var i = 0; i < files.length; i++) {
         SitePhotoService().getBlobById(files[i]['BLOB_ID']).then((blob) async {
           var decodedBytes = base64.decode(blob.replaceAll('\r\n', ''));
-          print("decodeBytes$decodedBytes");
           final archive = ZipDecoder().decodeBytes(decodedBytes);
-          print("archive$archive");
           File? outFile;
-
           for (var file in archive) {
             var fileName = '$_dir/${files[i]['BLOB_ID']}';
             final directory = await getApplicationDocumentsDirectory();
             final filePath = '${directory.path}/file.pdf';
-
             final pdfFile = File(filePath);
             await pdfFile.writeAsBytes(file.content);
-
-            print("filepath$filePath");
             setState(() {
               _imageList[_imageList.indexOf(_imageList.firstWhere(
                       (element) => element['BLOB_ID'] == files[i]['BLOB_ID']))]
@@ -252,7 +229,6 @@ class _ActionAttachmentScreenState extends State<ActionAttachmentScreen> {
               await outFile.writeAsBytes(file.content);
             }
           }
-
           if (outFile != null) {
             setState(() {
               _imageList[_imageList.indexOf(_imageList.firstWhere(
@@ -262,7 +238,6 @@ class _ActionAttachmentScreenState extends State<ActionAttachmentScreen> {
           }
         });
       }
-      print("image list $_imageList");
       loadMore = !response['IsLastPage'];
       pageNumber++;
     }
@@ -315,8 +290,6 @@ class _ActionAttachmentScreenState extends State<ActionAttachmentScreen> {
                         crossAxisSpacing: 8,
                       ),
                       itemBuilder: (BuildContext context, int index) {
-                        print(path.extension(
-                            _imageList[index]['FILENAME'].toString()));
                         return PhotoTile(
                           file: _imageList[index]['FILE'],
                           fileExtension: _imageList[index]['FILENAME'] != null

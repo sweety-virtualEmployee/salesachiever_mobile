@@ -36,11 +36,6 @@ class DynamicPsaMenu extends StatelessWidget {
               child: image==null&& image ==""?SizedBox():PlatformText(title,
                   style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
             ),
-            /*if (subtitle != null)
-              PlatformText(
-                subtitle ?? '',
-                style: TextStyle(fontSize: 12),
-              ),*/
           ],
         ),
       ),

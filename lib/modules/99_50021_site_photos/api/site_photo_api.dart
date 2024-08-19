@@ -26,7 +26,6 @@ class SitePhotoApi {
       }
     ];
     filterData = jsonEncode(filterBy);
-    print(filterData);
 
     /*Response response = await _api
         .get('/LIST/ACPIC/?searchText=%25&pageSize=20&pageNumber=1', [
@@ -34,7 +33,6 @@ class SitePhotoApi {
     ]);*/
     Response response = await _api
         .get('/Document/$actionId');
-    print("photos data---${response.data}");
     return response.data;
   }
 
@@ -52,7 +50,6 @@ class SitePhotoApi {
 
   Future<dynamic> uploadBlob(dynamic blob) async {
     Response response = await _api.post('/BlobStore', blob);
-    print("response.date${response.data}");
     return response.data;
   }
 
@@ -65,7 +62,6 @@ class SitePhotoApi {
   Future<dynamic> getGalleryImage(String actionId, int pageNumber) async {
     Response response = await _api
         .get('/Document/Entity.Gallery?id=$actionId&searchText=%25&pageSize=30&pageNumber=$pageNumber');
-    print("photos data---${response.data}");
     return response.data;
   }
 }

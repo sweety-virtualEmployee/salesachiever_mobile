@@ -47,7 +47,7 @@ class _HomeScreenState extends State<DyanmicHomeScreen> {
   Future<void> _navigate(String item) async {
     bool isContainActiveFeature = await feature.activeFeatures();
     try {
-      print("item$item");
+      print("item value$item");
       Navigator.push(
         context,
         platformPageRoute(
@@ -82,7 +82,7 @@ class _HomeScreenState extends State<DyanmicHomeScreen> {
                     'pjfilt_api',
               );
             }
-            if (item == 'OPPORTUNITY')
+            if (item == 'OPPORTUNITY'|| item =='Opportunities')
               return DynamicProjectListScreen(
               listType: item,
                 listName: defaultLists.firstWhere(
@@ -91,7 +91,6 @@ class _HomeScreenState extends State<DyanmicHomeScreen> {
                     'ALLDE', //acsrch_api
               );
             if (item == 'QUOTATION') {
-              print("we are the quotaion module");
               return DynamicProjectListScreen(
                 listType: item,
                 listName: defaultLists.firstWhere(
@@ -135,6 +134,7 @@ class _HomeScreenState extends State<DyanmicHomeScreen> {
       showBack: false,
       body: DynamicHomeMenu(
         itemSelectedCallback: (item) async {
+          print("vadkjwhsufcikdehv$item");
           setState(() {
             _selectedItem = item;
           });

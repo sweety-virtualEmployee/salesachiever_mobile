@@ -59,12 +59,8 @@ class _ActionEmailScreenState extends State<ActionEmailScreen> {
     context.loaderOverlay.show(); // Show loader
     try {
       var result = await ActionService().actionQuestionRptApi();
-      print(result);
       var response = await ActionService().questionRptApi(
           result["Items"][0]["VAR_VALUE"], widget.action["ACTION_ID"]);
-      print("${widget.action["PROJECT_TITLE"]}");
-      print("${widget.action["PROJECT_ID"]}");
-      print("value printed");
       await fetchPdfFilePath(response["Value"]);
     } on DioError catch (e) {
       ErrorUtil.showErrorMessage(context, e.message);
@@ -92,7 +88,6 @@ class _ActionEmailScreenState extends State<ActionEmailScreen> {
         base64EncodedString = base64String;
         _pdfViewKey = UniqueKey(); // Change the key to trigger a rebuild
       });
-      print("filePath: $fileValue");
     } catch (e) {
       print("Error in fetchPdfFilePath: $e");
     }
@@ -101,7 +96,6 @@ class _ActionEmailScreenState extends State<ActionEmailScreen> {
 
   Future<void> send() async {
       final file = File(filePath);
-
       if (file.existsSync()) {
         Share.shareFiles(
           [file.path],

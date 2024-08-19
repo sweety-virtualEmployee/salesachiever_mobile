@@ -20,7 +20,6 @@ class CustomActiveFeature{
       break;
   }else{
     isContain = false;
-    print(propertyId);
   }
 }
 return isContain;

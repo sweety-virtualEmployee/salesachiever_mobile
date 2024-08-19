@@ -97,25 +97,19 @@ class _PDFViewerPageState extends State<PDFViewerPage> {
       final filePath = '${directory.path}/signature_image.png';
       final pdfFile = File(filePath);
       await pdfFile.writeAsBytes(img.encodePng(imgImage));
-      print("File written to: $filePath");
       Archive archive = Archive()
         ..addFile(ArchiveFile('signature_image.png', pdfFile.lengthSync(), pdfFile.readAsBytesSync()));
       final zipFilePath = '${directory.path}/signature_image.zip';
       final zipFile = File(zipFilePath);
       await zipFile.writeAsBytes(Uint8List.fromList(ZipEncoder().encode(archive)!));
-      print("Zip file written to: $zipFilePath");
       var bytes = File(zipFilePath).readAsBytesSync();
-      print("Zip file read as bytes");
       String base64Image = base64Encode(bytes);
-      print("Base64 encoded image: $base64Image");
       var blob = {
         'ENTITY_ID': widget.entityId,
         "ENTITY_NAME": "AUTH_SIG",
         "FILENAME": "Signature.png",
         'BLOB_DATA': base64Image,
       };
-
-      print("Blob data: ${blob.toString()}");
       await SitePhotoService().uploadBlob(blob);
       dynamic value = await DynamicProjectService().getStaffZoneSubScribedReports("RA");
       dynamic encodedString = await DynamicProjectService().getStaffZoneGeneratedReports(value[0]["ID"],value[0]["Title"], widget.entityId);

@@ -85,12 +85,8 @@ class DynamicPsaHeader extends StatelessWidget {
                             ),
                             overflow: TextOverflow.ellipsis,
                           )
-
-
                         ],
                       ),
-                     // SizedBox(height: 2,),
-
                     ],
                   ),
                 ),

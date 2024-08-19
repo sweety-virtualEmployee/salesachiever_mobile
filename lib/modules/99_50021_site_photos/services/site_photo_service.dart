@@ -21,7 +21,6 @@ class SitePhotoService {
     try {
       await _sitePhotoApi.uploadBlob(blob);
     } catch (e) {
-      print("Error Message: ${e.toString()}");
       rethrow; // Rethrow the error so it's caught by the caller
     }
   }

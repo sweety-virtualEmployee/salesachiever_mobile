@@ -41,8 +41,6 @@ class _PsaTextFieldRowState extends State<PsaTextFieldRow> {
   @override
   void initState() {
     _validNumber;
-    print("yeslvhkdba");
-    print(widget.value);
     textController.text = widget.value?.toString() ?? '';
     super.initState();
   }
@@ -53,8 +51,6 @@ class _PsaTextFieldRowState extends State<PsaTextFieldRow> {
 
   @override
   Widget build(BuildContext context) {
-    print("widget.titile${widget.title}");
-
     _validNumber =  RegExp(r'^[789]\d{13}$').hasMatch(textController.text);
  //   bool _validURL = Uri.parse(textController.text).isAbsolute;
     bool _validEmail = RegExp(

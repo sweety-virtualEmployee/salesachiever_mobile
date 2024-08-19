@@ -16,7 +16,6 @@ class LoginApi {
       headers: {'Content-Type': 'application/json; charset=UTF-8'},
     );
 
-    print('$loginName $password $company $api');
     Response response = await Dio().post('$api/login',
         data: {
           'LoginName': loginName,
@@ -25,10 +24,6 @@ class LoginApi {
           'AppId': '2',
         },
         options: options);
-        debugPrint("Sweety");
-        log(response.data['Token'].toString());
-        log(response.data.toString());
-
     return response.data['Token'];
   }
 
