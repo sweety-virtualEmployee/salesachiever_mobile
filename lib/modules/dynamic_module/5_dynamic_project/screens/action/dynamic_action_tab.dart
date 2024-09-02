@@ -85,7 +85,8 @@ class _DynamicActionTabScreenState extends State<DynamicActionTabScreen> {
         title: "${capitalizeFirstLetter(widget.entityType)} Tabs",
         body: Column(
           children: [
-            Container(height: 70,child: CommonHeader(entityType: widget.entityType.toUpperCase(), entity: provider.getActionEntity)),
+            Container(height: 80,
+                child: CommonHeader(entityType: widget.entityType.toUpperCase(), entity: provider.getActionEntity)),
             ListView(
               shrinkWrap: true,
               children: [

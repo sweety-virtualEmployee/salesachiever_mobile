@@ -7,7 +7,7 @@ class LocaleApi {
     return response.data;
   }
 
-  Future<dynamic> updateSelectdLocalization(localeId) async {
+  Future<dynamic> updateSelectedLocalization(localeId) async {
     Response response = await Api().post('/localization/$localeId', {});
     return response.data;
   }

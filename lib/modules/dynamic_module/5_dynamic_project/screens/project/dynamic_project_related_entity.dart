@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
+import 'package:hive/hive.dart';
 import 'package:loader_overlay/loader_overlay.dart';
 import 'package:provider/provider.dart';
 import 'package:salesachiever_mobile/data/access_codes.dart';
@@ -481,7 +482,7 @@ class _DynamicProjectRelatedEntityScreenState
         body: Column(
           children: [
             Container(
-                height: 70,
+                height: 80,
                 child: CommonHeader(
                     entityType: widget.entityType,
                     entity: provider.getProjectEntity)),
@@ -500,14 +501,15 @@ class _DynamicProjectRelatedEntityScreenState
                   itemCount: list.length,
                   controller: _scrollController,
                   itemBuilder: (BuildContext context, int index) {
+                    print("list length${list.length}");
                     final item = list[index];
+                    print(item.length);
                     return InkWell(
                       onTap: () {
-                        if(AuthUtil.hasAccess(
-                            int.parse(ACCESS_CODES['Show Dynamic Forms for New Records'].toString()))) {
+                        if (AuthUtil.hasAccess(int.parse(
+                            ACCESS_CODES['Show Dynamic Forms for New Records'].toString()))) {
                           handleOnTapFunction(item);
-                        }
-                        else{
+                        } else {
                           handleOnNonDynamic(item);
                         }
                       },
@@ -520,170 +522,151 @@ class _DynamicProjectRelatedEntityScreenState
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    for (final entry in item.entries)
-                                      entry.key == "SAUSER_ID"
-                                          ? Padding(
-                                              padding: const EdgeInsets.only(
-                                                  left: 20.0,
-                                                  right: 20,
-                                                  top: 10),
-                                              child: Row(
-                                                children: [
-                                                  Expanded(
-                                                    child: Padding(
-                                                        padding:
-                                                            const EdgeInsets
-                                                                .fromLTRB(
-                                                                0, 4, 0, 4),
-                                                        child: Text(
-                                                          '${LangUtil.getString('${entry.key.contains("_") ? entry.key.substring(0, entry.key.indexOf('_')) : ""}', '${entry.key.split('_').length < 3 ? entry.key : entry.key.contains("_") ? entry.key.substring(entry.key.indexOf("_") + 1) : entry.key}')} :',
-                                                          style: TextStyle(
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .w700,
-                                                              color: widget
-                                                                          .type ==
-                                                                      "companies"
-                                                                  ? Color(
-                                                                      0xff3cab4f)
-                                                                  : widget.type ==
-                                                                          "contacts"
-                                                                      ? Color(
-                                                                          0xff4C99E0)
-                                                                      : widget.type == "opportunities" ||
-                                                                              widget.type ==
-                                                                                  "opp history"
-                                                                          ? Color(
-                                                                              0xffA4C400)
-                                                                          : widget.type == "actions"
-                                                                              ? Color(0xffae1a3e)
-                                                                              : Color(0xffE67E6B)),
-                                                          overflow: TextOverflow
-                                                              .ellipsis,
-                                                          softWrap: false,
-                                                          maxLines: 2,
-                                                        )),
-                                                  ),
-                                                  Expanded(
-                                                    child: Padding(
-                                                      padding: const EdgeInsets
-                                                          .fromLTRB(0, 4, 0, 4),
-                                                      child: Text(
-                                                        entry.value != null
-                                                            ? entry.key
-                                                                    .contains(
-                                                                        "DATE")
-                                                                ? DateUtil
-                                                                    .getFormattedDate(
-                                                                        entry
-                                                                            .value)
-                                                                : entry.key.contains(
-                                                                        "TIME")
-                                                                    ? DateUtil
-                                                                        .getFormattedTime(
-                                                                            entry.value)
-                                                                    : '${entry.value.toString()}'
-                                                            : "",
-                                                        style: TextStyle(
-                                                            color: widget
-                                                                        .type ==
-                                                                    "opp history"
-                                                                ? Colors.grey
-                                                                : Colors.black),
-                                                        overflow: TextOverflow
-                                                            .ellipsis,
-                                                        softWrap: false,
-                                                        maxLines: 2,
-                                                      ),
+                                    ListView.builder(
+                                      padding: EdgeInsets.only(left: 20.0, right: 20, top: 10),
+                                      itemCount: item.entries.length,
+                                      shrinkWrap: true,
+                                      itemBuilder: (context, index) {
+                                        final entriesList = item.entries.toList();
+                                        final entry = entriesList[index];
+                                        print("item.entries${entry.key}");
+                                        if (entry.key == "SAUSER_ID") {
+                                          final key = entry.key;
+                                          String contextId = "";
+                                          List<dynamic> items = Hive.box<dynamic>('dataDictionary').values.toList();
+                                          String itemId = entry.key;
+                                          for (var item in items) {
+                                            if (key == "${item["TABLE_NAME"].toString().toUpperCase()}_${item["FIELD_NAME"]}") {
+                                              print("in the loop");
+                                              contextId = item["TABLE_NAME"];
+                                              itemId = item["FIELD_NAME"];
+                                              break;
+                                            }
+                                          }
+                                          print("context id$contextId");
+                                          print("item id$itemId");
+                                          return Padding(
+                                            padding: const EdgeInsets.only(top: 10),
+                                            child: Row(
+                                              children: [
+                                                Expanded(
+                                                  child: Padding(
+                                                    padding: const EdgeInsets.fromLTRB(0, 4, 0, 4),
+                                                    child: Text(
+                                                      LangUtil.getString(contextId, itemId),
+                                                      style: TextStyle(
+                                                          fontWeight: FontWeight.w700,
+                                                          color: widget.type == "companies"
+                                                              ? Color(0xff3cab4f)
+                                                              : widget.type == "contacts"
+                                                              ? Color(0xff4C99E0)
+                                                              : widget.type == "opportunities" || widget.type == "opp history"
+                                                              ? Color(0xffA4C400)
+                                                              : widget.type == "actions"
+                                                              ? Color(0xffae1a3e)
+                                                              : Color(0xffE67E6B)),
+                                                      overflow: TextOverflow.ellipsis,
+                                                      softWrap: false,
+                                                      maxLines: 2,
                                                     ),
                                                   ),
-                                                ],
-                                              ),
-                                            )
-                                          : entry.key.contains("_ID") ||
-                                                  entry.key.contains("__") ||
-                                                  entry.key
-                                                      .contains("_DORMANT") ||
-                                                  entry.key.contains("DORMANT")
-                                              ? SizedBox()
-                                              : Padding(
-                                                  padding:
-                                                      const EdgeInsets.only(
-                                                          left: 20.0,
-                                                          right: 20,
-                                                          top: 10),
-                                                  child: Row(
-                                                    children: [
-                                                      Expanded(
-                                                        child: Padding(
-                                                            padding:
-                                                                const EdgeInsets
-                                                                    .fromLTRB(
-                                                                    0, 4, 0, 4),
-                                                            child: Text(
-                                                              '${LangUtil.getString('${entry.key.contains("_") ? entry.key.substring(0, entry.key.indexOf('_')) : ""}', '${entry.key.split('_').length < 3 ? entry.key : entry.key.contains("_") ? entry.key.substring(entry.key.indexOf("_") + 1) : entry.key}')} :',
-                                                              style: TextStyle(
-                                                                  fontWeight:
-                                                                      FontWeight
-                                                                          .w700,
-                                                                  color: widget
-                                                                              .type ==
-                                                                          "companies"
-                                                                      ? Color(
-                                                                          0xff3cab4f)
-                                                                      : widget.type ==
-                                                                              "contacts"
-                                                                          ? Color(
-                                                                              0xff4C99E0)
-                                                                          : widget.type == "opportunities" || widget.type == "opp history"
-                                                                              ? Color(0xffA4C400)
-                                                                              : widget.type == "actions"
-                                                                                  ? Color(0xffae1a3e)
-                                                                                  : Color(0xffE67E6B)),
-                                                              overflow:
-                                                                  TextOverflow
-                                                                      .ellipsis,
-                                                              softWrap: false,
-                                                              maxLines: 2,
-                                                            )),
-                                                      ),
-                                                      Expanded(
-                                                        child: Padding(
-                                                          padding:
-                                                              const EdgeInsets
-                                                                  .fromLTRB(
-                                                                  0, 4, 0, 4),
-                                                          child: Text(
-                                                            entry.value != null
-                                                                ? entry.key.contains(
-                                                                        "DATE")
-                                                                    ? DateUtil
-                                                                        .getFormattedDate(entry
-                                                                            .value)
-                                                                    : entry.key.contains(
-                                                                            "TIME")
-                                                                        ? DateUtil.getFormattedTime(
-                                                                            entry.value)
-                                                                        : '${entry.value.toString()}'
-                                                                : "",
-                                                            style: TextStyle(
-                                                                color: widget.type ==
-                                                                        "opp history"
-                                                                    ? Colors
-                                                                        .grey
-                                                                    : Colors
-                                                                        .black),
-                                                            overflow:
-                                                                TextOverflow
-                                                                    .ellipsis,
-                                                            softWrap: false,
-                                                            maxLines: 2,
-                                                          ),
-                                                        ),
-                                                      ),
-                                                    ],
+                                                ),
+                                                Expanded(
+                                                  child: Padding(
+                                                    padding: const EdgeInsets.fromLTRB(0, 4, 0, 4),
+                                                    child: Text(
+                                                      entry.value != null
+                                                          ? entry.key.contains("DATE")
+                                                          ? DateUtil.getFormattedDate(entry.value)
+                                                          : entry.key.contains("TIME")
+                                                          ? DateUtil.getFormattedTime(entry.value)
+                                                          : '${entry.value.toString()}'
+                                                          : "",
+                                                      style: TextStyle(
+                                                          color: widget.type == "opp history"
+                                                              ? Colors.grey
+                                                              : Colors.black),
+                                                      overflow: TextOverflow.ellipsis,
+                                                      softWrap: false,
+                                                      maxLines: 2,
+                                                    ),
                                                   ),
-                                                )
+                                                ),
+                                              ],
+                                            ),
+                                          );
+                                        } else if (entry.key.contains("_ID") || entry.key.contains("__") ||
+                                            entry.key.contains("_DORMANT") || entry.key.contains("DORMANT")||entry.key == "ACTION_SAUSER") {
+                                          return SizedBox();
+                                        } else {
+                                          final key = entry.key;
+                                          String contextId = "";
+                                          List<dynamic> items = Hive.box<dynamic>('dataDictionary').values.toList();
+                                          String itemId = entry.key;
+                                          print("key cehck${entry.key}");
+                                          for (var item in items) {
+                                            if (key == "${item["TABLE_NAME"].toString().toUpperCase()}_${item["FIELD_NAME"]}") {
+                                              print("in the loop");
+                                              contextId = item["TABLE_NAME"];
+                                              itemId = item["FIELD_NAME"];
+                                              break;
+                                            }
+                                          }
+                                          print("context id$contextId");
+                                          print("item id$itemId");
+                                          return Padding(
+                                            padding: const EdgeInsets.only(top: 10),
+                                            child: Row(
+                                              children: [
+                                                Expanded(
+                                                  child: Padding(
+                                                    padding: const EdgeInsets.fromLTRB(0, 4, 0, 4),
+                                                    child: Text(
+                                                      LangUtil.getString(contextId, itemId),
+                                                      style: TextStyle(
+                                                          fontWeight: FontWeight.w700,
+                                                          color: widget.type == "companies"
+                                                              ? Color(0xff3cab4f)
+                                                              : widget.type == "contacts"
+                                                              ? Color(0xff4C99E0)
+                                                              : widget.type == "opportunities" || widget.type == "opp history"
+                                                              ? Color(0xffA4C400)
+                                                              : widget.type == "actions"
+                                                              ? Color(0xffae1a3e)
+                                                              : Color(0xffE67E6B)),
+                                                      overflow: TextOverflow.ellipsis,
+                                                      softWrap: false,
+                                                      maxLines: 2,
+                                                    ),
+                                                  ),
+                                                ),
+                                                Expanded(
+                                                  child: Padding(
+                                                    padding: const EdgeInsets.fromLTRB(0, 4, 0, 4),
+                                                    child: Text(
+                                                      entry.value != null
+                                                          ? entry.key.contains("DATE")
+                                                          ? DateUtil.getFormattedDate(entry.value)
+                                                          : entry.key.contains("TIME")
+                                                          ? DateUtil.getFormattedTime(entry.value)
+                                                          : '${entry.value.toString()}'
+                                                          : "",
+                                                      style: TextStyle(
+                                                          color: widget.type == "opp history"
+                                                              ? Colors.grey
+                                                              : Colors.black),
+                                                      overflow: TextOverflow.ellipsis,
+                                                      softWrap: false,
+                                                      maxLines: 2,
+                                                    ),
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          );
+                                        }
+                                      },
+                                    )
                                   ],
                                 ),
                               ),
@@ -694,24 +677,22 @@ class _DynamicProjectRelatedEntityScreenState
                                       ? SizedBox()
                                       : IconButton(
                                       onPressed: () {
-                                        if(AuthUtil.hasAccess(
-                                            int.parse(ACCESS_CODES['Show Dynamic Forms for New Records'].toString()))) {
+                                        if (AuthUtil.hasAccess(int.parse(
+                                            ACCESS_CODES['Show Dynamic Forms for New Records'].toString()))) {
                                           handleOnTapFunction(item);
-                                        }
-                                        else{
+                                        } else {
                                           handleOnNonDynamic(item);
                                         }
                                       },
-                                          icon: Icon(context
-                                              .platformIcons.rightChevron)),
+                                      icon: Icon(context.platformIcons.rightChevron)),
                                 ],
                               ),
                             ],
                           ),
                           if ((widget.type == 'company' ||
-                                  widget.type == 'companies' ||
-                                  widget.type ==
-                                      'companies?pageSize=1000&pageNumber=1') &&
+                              widget.type == 'companies' ||
+                              widget.type ==
+                                  'companies?pageSize=1000&pageNumber=1') &&
                               (item['LINK_ID'] != null ||
                                   item['MULTI_ID'] != null))
                             Row(
@@ -740,7 +721,7 @@ class _DynamicProjectRelatedEntityScreenState
                     );
                   },
                 ),
-              ),
+              )
           ],
         ),
         title: widget.title,

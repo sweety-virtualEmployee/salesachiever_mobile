@@ -83,7 +83,8 @@ class _DynamicCompanyTabScreenState extends State<DynamicCompanyTabScreen> {
         title: "${capitalizeFirstLetter(widget.entityType)} Tabs",
         body: Column(
           children: [
-            Container(height: 70,child: CommonHeader(entityType: widget.entityType.toUpperCase(), entity: provider.getCompanyEntity)),
+            Container(height: 80,
+                child: CommonHeader(entityType: widget.entityType.toUpperCase(), entity: provider.getCompanyEntity)),
             ListView(
               shrinkWrap: true,
               children: [
@@ -226,7 +227,7 @@ class _DynamicCompanyTabScreenState extends State<DynamicCompanyTabScreen> {
     );
   }
   void _onLTap(DynamicTabProvide provider, int index) async {
-    print("on tap L ${widget.entityType}");
+    print("on tap A ${widget.entityType}");
     if (provider.getCompanyEntity.isEmpty) {
       ErrorUtil.showErrorMessage(context, "Please create the record first");
     } else {

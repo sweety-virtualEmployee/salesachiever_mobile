@@ -70,11 +70,13 @@ class _ActionSiteQuestionDetailScreenState
   }
 
   Future<void> _handleSave() async {
+    FocusScope.of(context).unfocus();
     await _saveCurrentQuestionData();
     Navigator.pop(context);
   }
 
   Future<void> _handleNext() async {
+    FocusScope.of(context).unfocus();
     await _saveCurrentQuestionData();
     if (_actionSiteTierValueProvider.getCurrentIndex < questions.length - 1) {
       _actionSiteTierValueProvider.setCurrentIndex(_actionSiteTierValueProvider.getCurrentIndex + 1);
@@ -83,6 +85,7 @@ class _ActionSiteQuestionDetailScreenState
   }
 
   Future<void> _handlePrevious() async {
+    FocusScope.of(context).unfocus();
     await _saveCurrentQuestionData();
     if (_actionSiteTierValueProvider.getCurrentIndex > 0) {
       _actionSiteTierValueProvider.setCurrentIndex(_actionSiteTierValueProvider.getCurrentIndex - 1);
@@ -188,185 +191,196 @@ class _ActionSiteQuestionDetailScreenState
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<ActionSiteTierValueProvider>(builder: (context, provider, child) {
-      return PsaScaffold(
-        title: '',
-        onBackPressed: _onWillPop,
-        showHome: false,
-        body: Column(
-          children: [
-            Container(
-              height: 50,
-              color: Color(0xff076385),
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
+    return Consumer<ActionSiteTierValueProvider>(
+      builder: (context, provider, child) {
+        return PsaScaffold(
+          title: '',
+          onBackPressed: _onWillPop,
+          showHome: false,
+          body: SafeArea(
+            child: SingleChildScrollView(
+              child: SizedBox(
+                width: double.infinity, // Ensures proper layout
+                child: Column(
                   children: [
-                    Text(
-                      "Question ${_actionSiteTierValueProvider.getCurrentIndex + 1}/${questions.length}",
-                      style: TextStyle(color: Colors.white),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            SizedBox(height: 50),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 15.0),
-              child: Container(
-                decoration: BoxDecoration(
-                  color: Color(0xffabdbfb),
-                  border: Border.all(color: Colors.black, width: 1.0),
-                  borderRadius: BorderRadius.circular(8.0),
-                ),
-                height: 150,
-                width: MediaQuery.of(context).size.width,
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Expanded(
-                        child: Text(
-                          questions[_actionSiteTierValueProvider.getCurrentIndex]["QUESTION"],
-                          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                    Container(
+                      height: 50,
+                      color: Color(0xff076385),
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              "Question ${_actionSiteTierValueProvider.getCurrentIndex + 1}/${questions.length}",
+                              style: TextStyle(color: Colors.white),
+                            ),
+                          ],
                         ),
                       ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-            SizedBox(height: 16),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 15.0),
-              child: Container(
-                height: 50,
-                decoration: BoxDecoration(
-                  color: Color(0xffececec),
-                  borderRadius: BorderRadius.circular(8.0),
-                  border: Border.all(color: Colors.grey),
-                ),
-                child: Row(
-                  children: [
-                    _buildOptionButton('yes', 'Yes'),
-                    SizedBox(width: 8),
-                    _buildOptionButton('no', 'No'),
-                    SizedBox(width: 8),
-                    _buildOptionButton('unknown', 'Unknown'),
-                    SizedBox(width: 8),
-                    _buildOptionButton('na', 'N/A'),
-                    SizedBox(width: 8),
-                    _buildOptionButton('none', 'None'),
+                    ),
+                    SizedBox(height: 50),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 15.0),
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: Color(0xffabdbfb),
+                          border: Border.all(color: Colors.black, width: 1.0),
+                          borderRadius: BorderRadius.circular(8.0),
+                        ),
+                        height: 150,
+                        width: MediaQuery.of(context).size.width,
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Expanded(
+                                child: Text(
+                                  questions[_actionSiteTierValueProvider.getCurrentIndex]["QUESTION"]!,
+                                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: 16),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 15.0),
+                      child: Container(
+                        height: 50,
+                        decoration: BoxDecoration(
+                          color: Color(0xffececec),
+                          borderRadius: BorderRadius.circular(8.0),
+                          border: Border.all(color: Colors.grey),
+                        ),
+                        child: Row(
+                          children: [
+                            _buildOptionButton('yes', 'Yes'),
+                            SizedBox(width: 8),
+                            _buildOptionButton('no', 'No'),
+                            SizedBox(width: 8),
+                            _buildOptionButton('unknown', 'Unknown'),
+                            SizedBox(width: 8),
+                            _buildOptionButton('na', 'N/A'),
+                            SizedBox(width: 8),
+                            _buildOptionButton('none', 'None'),
+                          ],
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: 16),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 15.0),
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: Color(0xfffff2d1),
+                          borderRadius: BorderRadius.circular(8.0),
+                          border: Border.all(color: Colors.grey),
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.all(3.0),
+                          child: TextField(
+                            maxLines: 5,
+                            controller: _internalCommentsController,
+                            textInputAction: TextInputAction.done,
+                            decoration: InputDecoration(
+                              hintText: 'Internal Comments',
+                              border: InputBorder.none,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: 8),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 15.0),
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: Color(0xfffff2d1),
+                          borderRadius: BorderRadius.circular(8.0),
+                          border: Border.all(color: Colors.grey),
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.all(3.0),
+                          child: TextField(
+                            maxLines: 5,
+                            controller: _publicCommentsController,
+                            textInputAction: TextInputAction.done,
+                            decoration: InputDecoration(
+                              hintText: 'Public Comments',
+                              border: InputBorder.none,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: 16),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 15.0),
+                      child: Container(
+                        height: 50,
+                        decoration: BoxDecoration(
+                          color: Color(0xffececec),
+                          borderRadius: BorderRadius.circular(8.0),
+                          border: Border.all(color: Colors.grey),
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            TextButton(
+                              onPressed: _handlePrevious,
+                              child: Text(
+                                'Previous',
+                                style: TextStyle(color: Colors.black),
+                              ),
+                            ),
+                            SizedBox(width: 8),
+                            TextButton(
+                              onPressed: _handleNext,
+                              child: Text(
+                                'Next',
+                                style: TextStyle(color: Colors.black),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: 10),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 15.0),
+                      child: Container(
+                        height: 50,
+                        decoration: BoxDecoration(
+                          color: Color(0xff076385),
+                          borderRadius: BorderRadius.circular(8.0),
+                          border: Border.all(color: Colors.grey),
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            TextButton(
+                              onPressed: _handleSave,
+                              child: Text(
+                                'Save',
+                                style: TextStyle(color: Colors.white),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
                   ],
                 ),
               ),
             ),
-            SizedBox(height: 16),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 15.0),
-              child: Container(
-                decoration: BoxDecoration(
-                  color: Color(0xfffff2d1),
-                  borderRadius: BorderRadius.circular(8.0),
-                  border: Border.all(color: Colors.grey),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.all(3.0),
-                  child: TextField(
-                    maxLines: 5,
-                    controller: _internalCommentsController,
-                    decoration: InputDecoration(
-                      hintText: 'Internal Comments',
-                      border: InputBorder.none,
-                    ),
-                  ),
-                ),
-              ),
-            ),
-            SizedBox(height: 8),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 15.0),
-              child: Container(
-                decoration: BoxDecoration(
-                  color: Color(0xfffff2d1),
-                  borderRadius: BorderRadius.circular(8.0),
-                  border: Border.all(color: Colors.grey),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.all(3.0),
-                  child: TextField(
-                    maxLines: 5,
-                    controller: _publicCommentsController,
-                    decoration: InputDecoration(
-                      hintText: 'Public Comments',
-                      border: InputBorder.none,
-                    ),
-                  ),
-                ),
-              ),
-            ),
-            Spacer(),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 15.0),
-              child: Container(
-                height: 50,
-                decoration: BoxDecoration(
-                  color: Color(0xffececec),
-                  borderRadius: BorderRadius.circular(8.0),
-                  border: Border.all(color: Colors.grey),
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    TextButton(
-                      onPressed: _handlePrevious,
-                      child: Text(
-                        'Previous',
-                        style: TextStyle(color: Colors.black),
-                      ),
-                    ),
-                    SizedBox(width: 8),
-                    TextButton(
-                      onPressed: _handleNext,
-                      child: Text(
-                        'Next',
-                        style: TextStyle(color: Colors.black),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            SizedBox(height: 10),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 15.0),
-              child: Container(
-                height: 50,
-                decoration: BoxDecoration(
-                  color: Color(0xff076385),
-                  borderRadius: BorderRadius.circular(8.0),
-                  border: Border.all(color: Colors.grey),
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    TextButton(
-                      onPressed: _handleSave,
-                      child: Text(
-                        'Save',
-                        style: TextStyle(color: Colors.white),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ],
-        ),
-      );
-    });
+          ),
+        );
+      },
+    );
   }
 }

@@ -86,7 +86,8 @@ class _DynamicOpportunityTabScreenState extends State<DynamicOpportunityTabScree
         title: "${capitalizeFirstLetter(widget.entityType)} Tabs",
         body: Column(
           children: [
-            Container(height: 70,child: CommonHeader(entityType: widget.entityType.toUpperCase(), entity: provider.getOpportunityEntity)),
+            Container(height: 80,
+                child: CommonHeader(entityType: widget.entityType.toUpperCase(), entity: provider.getOpportunityEntity)),
             ListView(
               shrinkWrap: true,
               children: [

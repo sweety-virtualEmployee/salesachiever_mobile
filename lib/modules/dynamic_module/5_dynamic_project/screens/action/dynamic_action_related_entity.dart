@@ -405,7 +405,7 @@ class _DynamicActionRelatedEntityScreenState
             body: Column(
               children: [
                 Container(
-                    height: 70,
+                    height: 80,
                     child: CommonHeader(
                         entityType: widget.entityType, entity: provider.getActionEntity)),
                 Container(

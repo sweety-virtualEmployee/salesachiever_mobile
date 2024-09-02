@@ -15,9 +15,7 @@ class ActionSiteTierValueProvider with ChangeNotifier {
   int get getCurrentIndex => currentIndex;
 
   setGroupedQuestions(Map<String, List<Map<String, dynamic>>> newMap) async{
-    print(newMap);
     groupedQuestions = newMap;
-    notifyListeners();
   }
 
   setIsLastPage(bool newLastPage) {

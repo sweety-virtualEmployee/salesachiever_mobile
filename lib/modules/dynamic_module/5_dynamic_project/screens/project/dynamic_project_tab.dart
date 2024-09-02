@@ -59,7 +59,6 @@ class _DynamicProjectTabScreenState extends State<DynamicProjectTabScreen> {
 
 
   Future<void> fetchData() async {
-    context.loaderOverlay.show();
     try {
       var data = await (widget.tabType == "P"
           ? service.getEntitySubTabForm(
@@ -71,7 +70,6 @@ class _DynamicProjectTabScreenState extends State<DynamicProjectTabScreen> {
     } catch (error) {
       print("Error fetching data: $error");
     }
-    context.loaderOverlay.hide();
   }
 
   @override
@@ -82,7 +80,7 @@ class _DynamicProjectTabScreenState extends State<DynamicProjectTabScreen> {
         body: Column(
           children: [
             Container(
-                height: 70,
+                height: 80,
                 child: CommonHeader(entityType: widget.entityType.toUpperCase(), entity: provider.getProjectEntity)),
             ListView(
               shrinkWrap: true,

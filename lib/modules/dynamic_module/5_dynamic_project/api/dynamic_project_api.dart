@@ -104,7 +104,7 @@ class DynamicProjectApi {
 
     final url = hasQueryParameters
         ? '/$path'
-        : '/$path?pageSize=10&pageNumber=$pageNumber';
+        : '/$path?pageSize=20&pageNumber=$pageNumber';
 
     Response response = await Api().get(url, headers);
     print(response.data);

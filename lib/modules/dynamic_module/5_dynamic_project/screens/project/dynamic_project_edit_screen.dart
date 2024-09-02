@@ -376,7 +376,7 @@ class _DynamicProjectEditScreenState extends State<DynamicProjectEditScreen> {
               child: Column(
                 children: [
                   Container(
-                      height: 70,
+                      height: 80,
                       child: CommonHeader(
                           entityType: widget.entityType.toUpperCase(), entity: provider.getProjectEntity)),
                   Expanded(

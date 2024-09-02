@@ -6,7 +6,6 @@ class CustomActiveFeature{
  Future<bool> activeFeatures() async {
      final box= await Hive.openBox<dynamic>('features');
       var features = box.values.toList();
-      log("${features}");
       var propertyId;
     late bool isContain;
 

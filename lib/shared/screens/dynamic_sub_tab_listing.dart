@@ -26,7 +26,7 @@ class DynamicSubTabListingScreen extends StatelessWidget {
         body: Column(
           children: [
             Container(
-                height: 70,
+                height: 80,
                 child: CommonHeader(entityType: entityType, entity: project)),
             Expanded(
               child: ListView.builder(

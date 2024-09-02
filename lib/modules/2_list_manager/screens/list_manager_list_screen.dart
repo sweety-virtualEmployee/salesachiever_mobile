@@ -128,6 +128,8 @@ class _ListManagerListScreenState extends State<ListManagerListScreen> {
             child: PsaMenuItem(
               title: e['DESCRIPTION'],
               onTap: () {
+                print("lisy");
+                print(e['LIST_ID']);
                 _onTap(e);
               },
               hasChild: true,

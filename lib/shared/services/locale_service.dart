@@ -13,7 +13,7 @@ class LocaleService {
     await Hive.box<Locale>('locales').addAll(locales);
   }
 
-  Future<void> updateSelectdLocalization(localeId) async {
-    await LocaleApi().updateSelectdLocalization(localeId);
+  Future<void> updateSelectedLocalization(localeId) async {
+    await LocaleApi().updateSelectedLocalization(localeId);
   }
 }

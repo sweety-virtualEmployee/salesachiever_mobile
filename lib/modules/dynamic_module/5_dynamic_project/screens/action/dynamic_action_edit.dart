@@ -373,7 +373,7 @@ class _DynamicActionEditScreenState extends State<DynamicActionEditScreen> {
               child: Column(
                 children: [
                   Container(
-                      height: 70,
+                      height: 80,
                       child: CommonHeader(
                           entityType: widget.entityType.toUpperCase(), entity: provider.getActionEntity)),
                   Expanded(

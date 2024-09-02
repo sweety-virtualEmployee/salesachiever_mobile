@@ -381,7 +381,7 @@ class _DynamicContactEditScreenState extends State<DynamicContactEditScreen> {
               child: Column(
                 children: [
                   Container(
-                      height: 70,
+                      height: 80,
                       child: CommonHeader(
                           entityType: widget.entityType.toUpperCase(), entity: provider.getContactEntity)),
                   Expanded(

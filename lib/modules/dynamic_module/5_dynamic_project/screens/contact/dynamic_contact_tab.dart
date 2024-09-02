@@ -84,7 +84,8 @@ class _DynamicContactTabScreen extends State<DynamicContactTabScreen> {
         title: "${capitalizeFirstLetter(widget.entityType)} Tabs",
         body: Column(
           children: [
-            Container(height: 70,child: CommonHeader(entityType: widget.entityType.toUpperCase(), entity: provider.getContactEntity)),
+            Container(height: 80,
+                child: CommonHeader(entityType: widget.entityType.toUpperCase(), entity: provider.getContactEntity)),
             ListView(
               shrinkWrap: true,
               children: [
@@ -228,15 +229,17 @@ class _DynamicContactTabScreen extends State<DynamicContactTabScreen> {
     );
   }
   void _onLTap(DynamicTabProvide provider, int index) async {
-    print("on tap L ${widget.entityType}");
+    print("on tap B ${widget.entityType}");
     if (provider.getContactEntity.isEmpty) {
       ErrorUtil.showErrorMessage(context, "Please create the record first");
     } else {
+      print(tabContactData[index]['TAB_LIST']);
       String path = tabContactData[index]['TAB_LIST'];
       String tableName = "";
       String id = "";
       path = path.replaceAll("@RECORDID", provider.getContactEntity['CONT_ID']);
       print("widget.entityType.toUpperCase() ${widget.entityType.toUpperCase() }");
+      print("widget.entityType.toUpperCase() ${tableName }");
       var result = await service.getTabListEntityApi(path.replaceAll("&amp;", "&"), tableName, id, 1);
       Navigator.push(
         context,

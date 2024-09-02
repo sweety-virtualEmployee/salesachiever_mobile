@@ -96,7 +96,7 @@ class _HomeScreenState extends State<DyanmicHomeScreen> {
                 listName: defaultLists.firstWhere(
                         (element) => element['SECTION'] == 'QUOTATION',
                     orElse: () => null)?['VAR_VALUE'] ??
-                    'quote_api', //acsrch_api
+                    'quote_api',
               );
                }
             if (item == 'ACTION')

@@ -86,7 +86,8 @@ class _DynamicQuotationTabScreenState extends State<DynamicQuotationTabScreen> {
         title: "${capitalizeFirstLetter(widget.entityType)} Tabs",
         body: Column(
           children: [
-            Container(height: 70,child: CommonHeader(entityType: widget.entityType.toUpperCase(), entity: provider.getQuotationEntity)),
+            Container(height: 80,
+                child: CommonHeader(entityType: widget.entityType.toUpperCase(), entity: provider.getQuotationEntity)),
             Container(
               color: Colors.white,
               child: ListView(

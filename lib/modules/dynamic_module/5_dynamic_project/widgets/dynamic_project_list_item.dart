@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
+import 'package:hive/hive.dart';
 import 'package:intl/intl.dart';
 import 'package:loader_overlay/loader_overlay.dart';
 import 'package:salesachiever_mobile/modules/5_project/services/project_service.dart';
@@ -78,12 +79,21 @@ class _ProjectListItemWidgetState
           physics: NeverScrollableScrollPhysics(),
           shrinkWrap: true,
           itemBuilder: (BuildContext context, int index) {
-            final key =  widget.entity.keys.elementAt(index);
-            final value =  widget.entity[key];
-            String contextId =
-                key.contains("_") ? key.substring(0, key.indexOf('_')) : key;
-            String itemId =
-                key.contains("_") ? key.substring(key.indexOf("_") + 1) : key;
+            final key = widget.entity.keys.elementAt(index);
+            final value = widget.entity[key];
+            String contextId = "";
+            String itemId = key; // Initialize itemId with the key directly
+            List<dynamic> items = Hive.box<dynamic>('dataDictionary').values.toList();
+
+            for (var item in items) {
+              if (key == "${item["TABLE_NAME"].toString().toUpperCase()}_${item["FIELD_NAME"]}") {
+                print("in the loop");
+                contextId = item["TABLE_NAME"];
+                itemId = item["FIELD_NAME"];
+                break;
+              }
+            }
+
             List<String> parts = key.split('_');
             bool containsCurrencyValue = currencyDefaultValues.any((entry) =>
                 entry["FIELD_NAME"] ==
@@ -188,11 +198,22 @@ class _ProjectListItemWidgetState
             physics: NeverScrollableScrollPhysics(),
             shrinkWrap: true,
             itemBuilder: (BuildContext context, int index) {
-              final key =  widget.entity.keys.elementAt(index);
-              final value =  widget.entity[key];
-              String contextId = key.substring(0, key.indexOf('_'));
-              String itemId =
-                  key.contains("_") ? key.substring(key.indexOf("_") + 1) : key;
+              final key = widget.entity.keys.elementAt(index);
+              final value = widget.entity[key];
+              String contextId = "";
+              String itemId = key; // Initialize itemId with the key directly
+              List<dynamic> items = Hive.box<dynamic>('dataDictionary').values.toList();
+
+              for (var item in items) {
+                if (key == "${item["TABLE_NAME"].toString().toUpperCase()}_${item["FIELD_NAME"]}") {
+                  print("in the loop");
+                  contextId = item["TABLE_NAME"];
+                  itemId = item["FIELD_NAME"];
+                  break;
+                }
+              }
+              print("context id$contextId");
+              print("item id$itemId");
               List<String> parts = key.split('_');
               bool containsCurrencyValue = currencyDefaultValues.any((entry) =>
                   entry["FIELD_NAME"] ==
@@ -300,15 +321,21 @@ class _ProjectListItemWidgetState
               physics: NeverScrollableScrollPhysics(),
               shrinkWrap: true,
               itemBuilder: (BuildContext context, int index) {
-                final key =  widget.entity.keys.elementAt(index);
-                final value =  widget.entity[key];
+                final key = widget.entity.keys.elementAt(index);
+                final value = widget.entity[key];
+                String contextId = "";
+                String itemId = key; // Initialize itemId with the key directly
+                List<dynamic> items = Hive.box<dynamic>('dataDictionary').values.toList();
+
+                for (var item in items) {
+                  if (key == "${item["TABLE_NAME"].toString().toUpperCase()}_${item["FIELD_NAME"]}") {
+                    print("in the loop");
+                    contextId = item["TABLE_NAME"];
+                    itemId = item["FIELD_NAME"];
+                    break;
+                  }
+                }
                 List<String> parts = key.split('_');
-                String contextId = key.contains("_")
-                    ? key.substring(0, key.indexOf('_'))
-                    : "CONTACT";
-                String itemId = key.contains("_")
-                    ? key.substring(key.indexOf("_") + 1)
-                    : key;
                 bool containsCurrencyValue = currencyDefaultValues.any(
                     (entry) =>
                         entry["FIELD_NAME"] ==
@@ -414,12 +441,22 @@ class _ProjectListItemWidgetState
                 physics: NeverScrollableScrollPhysics(),
                 shrinkWrap: true,
                 itemBuilder: (BuildContext context, int index) {
-                  final key =  widget.entity.keys.elementAt(index);
-                  final value =  widget.entity[key];
-                  String contextId = key.substring(0, key.indexOf('_'));
-                  String itemId = key.contains("_")
-                      ? key.substring(key.indexOf("_") + 1)
-                      : key;
+                  final key = widget.entity.keys.elementAt(index);
+                  final value = widget.entity[key];
+                  String contextId = "";
+                  String itemId = key; // Initialize itemId with the key directly
+                  List<dynamic> items = Hive.box<dynamic>('dataDictionary').values.toList();
+
+                  for (var item in items) {
+                    if (key == "${item["TABLE_NAME"].toString().toUpperCase()}_${item["FIELD_NAME"]}") {
+                      print("in the loop");
+                      contextId = item["TABLE_NAME"];
+                      itemId = item["FIELD_NAME"];
+                      break;
+                    }
+                  }
+                  print("context id$contextId");
+                  print("item id$itemId");
                   List<String> parts = key.split('_');
                   bool containsCurrencyValue = currencyDefaultValues.any(
                       (entry) =>
@@ -526,18 +563,21 @@ class _ProjectListItemWidgetState
                   physics: NeverScrollableScrollPhysics(),
                   shrinkWrap: true,
                   itemBuilder: (BuildContext context, int index) {
-                    final key =  widget.entity.keys.elementAt(index);
-                    final value =  widget.entity[key];
+                    final key = widget.entity.keys.elementAt(index);
+                    final value = widget.entity[key];
+                    String contextId = "";
+                    String itemId = key; // Initialize itemId with the key directly
+                    List<dynamic> items = Hive.box<dynamic>('dataDictionary').values.toList();
+
+                    for (var item in items) {
+                      if (key == "${item["TABLE_NAME"].toString().toUpperCase()}_${item["FIELD_NAME"]}") {
+                        print("in the loop");
+                        contextId = item["TABLE_NAME"];
+                        itemId = item["FIELD_NAME"];
+                        break;
+                      }
+                    }
                     List<String> parts = key.split('_');
-                    print("sadrtfYDJHSCF${key}${parts.length - 1}");
-                    String contextId = key.contains("__")
-                        ? "ACTION"
-                        : key.contains("_")
-                            ? key.substring(0, key.indexOf('_'))
-                            : "ACTION";
-                    String itemId = key.contains("_")
-                        ? key.substring(key.indexOf("_") + 1)
-                        : key;
                     bool containsCurrencyValue = currencyDefaultValues.any(
                         (entry) =>
                             entry["FIELD_NAME"] ==
@@ -646,17 +686,21 @@ class _ProjectListItemWidgetState
                     physics: NeverScrollableScrollPhysics(),
                     shrinkWrap: true,
                     itemBuilder: (BuildContext context, int index) {
-                      final key =  widget.entity.keys.elementAt(index);
-                      final value =  widget.entity[key];
-                      String contextId = key.substring(0, key.indexOf('_'));
-                      String itemId = key.contains("_")
-                          ? key.substring(key.indexOf("_") + 1)
-                          : key;
+                      final key = widget.entity.keys.elementAt(index);
+                      final value = widget.entity[key];
+                      String contextId = "";
+                      String itemId = key; // Initialize itemId with the key directly
+                      List<dynamic> items = Hive.box<dynamic>('dataDictionary').values.toList();
+
+                      for (var item in items) {
+                        if (key == "${item["TABLE_NAME"].toString().toUpperCase()}_${item["FIELD_NAME"]}") {
+                          print("in the loop");
+                          contextId = item["TABLE_NAME"];
+                          itemId = item["FIELD_NAME"];
+                          break;
+                        }
+                      }
                       List<String> parts = key.split('_');
-                      print("parts$key${parts.length}");
-                      print("conetxtsdbid${contextId}");
-                      print("erfafxsgasjf${itemId}");
-                      print("erfafxsgasjf${itemId}");
                       bool containsCurrencyValue = currencyDefaultValues.any(
                           (entry) =>
                               entry["FIELD_NAME"] ==

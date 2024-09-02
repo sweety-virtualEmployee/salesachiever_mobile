@@ -380,7 +380,7 @@ class _DynamicQuotationEditScreenState extends State<DynamicQuotationEditScreen>
               child: Column(
                 children: [
                   Container(
-                      height: 70,
+                      height: 80,
                       child: CommonHeader(
                           entityType: widget.entityType.toUpperCase(), entity: provider.getQuotationEntity)),
                   Expanded(
