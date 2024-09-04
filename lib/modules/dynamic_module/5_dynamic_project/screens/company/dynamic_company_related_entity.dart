@@ -99,7 +99,7 @@ class _DynamicCompanyRelatedEntityScreenState
   }
 
   callApi() async {
-stormsaver    if (widget.entity?["ACCT_ID"] != null) {
+    if (widget.entity?["ACCT_ID"] != null) {
       var entity = await CompanyService().getEntity(widget.entity?["ACCT_ID"]);
       _dynamicTabProvider.getCompanyEntity["ACCTNAME"] =
           entity.data["ACCTNAME"];
