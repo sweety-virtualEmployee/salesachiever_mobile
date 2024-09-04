@@ -99,14 +99,12 @@ class _DynamicCompanyRelatedEntityScreenState
   }
 
   callApi() async {
-    context.loaderOverlay.show();
-    if (widget.entity?["ACCT_ID"] != null) {
+stormsaver    if (widget.entity?["ACCT_ID"] != null) {
       var entity = await CompanyService().getEntity(widget.entity?["ACCT_ID"]);
       _dynamicTabProvider.getCompanyEntity["ACCTNAME"] =
           entity.data["ACCTNAME"];
     }
     _dynamicTabProvider.setCompanyEntity(_dynamicTabProvider.getCompanyEntity);
-    context.loaderOverlay.hide();
   }
 
   void _loadNextPage() async {

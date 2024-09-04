@@ -259,9 +259,11 @@ class _ActionPhotosScreenState extends State<ActionPhotosScreen> {
 
       List<dynamic> files = response;
       List<dynamic> imageFiles = files.where((file) {
+        print("filename");
+        print(file['FILENAME']);
         String filename = file['FILENAME'] ?? '';
         return filename.isNotEmpty &&
-            !filename.endsWith('.pdf') &&
+            !filename.endsWith('.pdf') && !filename.contains('signature_image') &&
             (filename.endsWith('.jpg') ||
                 filename.endsWith('.jpeg') ||
                 filename.endsWith('.png'));
@@ -335,6 +337,7 @@ class _ActionPhotosScreenState extends State<ActionPhotosScreen> {
           }
         }
       }
+      print(_imageList);
       loadMore = false;
       pageNumber++;
     }
