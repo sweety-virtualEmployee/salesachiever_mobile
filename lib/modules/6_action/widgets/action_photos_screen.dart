@@ -97,6 +97,7 @@ class _ActionPhotosScreenState extends State<ActionPhotosScreen> {
                 print('No image selected.');
               }
             });
+            uploadImages();
           })
         ],
       ),
@@ -259,12 +260,9 @@ class _ActionPhotosScreenState extends State<ActionPhotosScreen> {
 
       List<dynamic> files = response;
       List<dynamic> imageFiles = files.where((file) {
-        print("filename");
-        print(file['FILENAME']);
         String filename = file['FILENAME'] ?? '';
         return filename.isNotEmpty &&
-            !filename.endsWith('.pdf') && !filename.contains('signature_image') &&
-            (filename.endsWith('.jpg') ||
+            !filename.endsWith('.pdf') && (filename.endsWith('.jpg') ||
                 filename.endsWith('.jpeg') ||
                 filename.endsWith('.png'));
       }).toList();

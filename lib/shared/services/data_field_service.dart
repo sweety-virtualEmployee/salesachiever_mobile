@@ -25,6 +25,8 @@ class DataFieldService {
     List<Widget> widgets = [];
     print(mandatoryFields.where((element) =>element['TABLE_NAME'] == "ACCIDENT_RECORD"));
     for (dynamic field in filedList) {
+      print("madndatoryfields$mandatoryFields");
+      print("madndatoryfields$filedList");
       var isRequired = mandatoryFields.any((e) =>
           e['TABLE_NAME'] == field['TABLE_NAME'] &&
           e['FIELD_NAME'] == field['FIELD_NAME']);

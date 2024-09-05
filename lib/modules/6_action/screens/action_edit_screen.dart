@@ -39,8 +39,6 @@ class ActionEditScreen extends StatefulWidget {
 class _ActionEditScreenState extends State<ActionEditScreen> {
   bool _readonly = true;
   dynamic _action;
-  // String _notes = '';
-  // bool? _isNewNote;
   bool _isValid = false;
 
   var activeFields = ActionService().getActiveFields();
@@ -54,6 +52,8 @@ class _ActionEditScreenState extends State<ActionEditScreen> {
     _action = this.widget.action;
 
      print("_action12$_action");
+     print("mandatotyfields$mandatoryFields");
+     print("mandatotyfields$_action");
     if (_action['ACTION_ID'] == null) {
       _action['ACTION_DATE'] = DateTime.now().toString();
       _action['ACTION_TIME'] = DateTime.now().toString();
@@ -128,7 +128,7 @@ class _ActionEditScreenState extends State<ActionEditScreen> {
   @override
   Widget build(BuildContext context) {
     var visibleFields = activeFields.where((e) => e['COLVAL']).toList();
-
+    print("visible fieldsa$visibleFields");
     return PsaScaffold(
       action: PsaEditButton(
         text: _readonly ? 'Edit' : 'Save',

@@ -1,7 +1,7 @@
-
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:local_auth/local_auth.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:salesachiever_mobile/CustomWidgets/customactivefeature.dart';
 import 'package:salesachiever_mobile/exceptions/invalid_license_exception.dart';
@@ -25,7 +25,7 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  final GlobalKey<State> _keyLoader = new GlobalKey<State>();
+  final GlobalKey<State> _keyLoader = GlobalKey<State>();
   TextEditingController apiController = TextEditingController();
   TextEditingController loginNameController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
@@ -33,42 +33,89 @@ class _LoginScreenState extends State<LoginScreen> {
   String version = '1.0.0';
   String localeId = '1033';
   CustomActiveFeature feature = CustomActiveFeature();
-  String  firstUrl = 'https://dev.psacrm.com/API_423';
-  String secondUrl='';
+  String firstUrl = 'https://dev.psacrm.com/API_423';
+  String secondUrl = '';
+  bool _isBiometricAvailable = false;
+  final LocalAuthentication auth = LocalAuthentication();
+
   @override
   void initState() {
-   // final String api = StorageUtil.getString('api');
-    // var data = apiController..text;
-    bool firstTime = StorageUtil.getBool('first');
-    String newUrl  =StorageUtil.getString('newUrl');
-    String changeUrl = StorageUtil.getString('changeFirstUrl');
-    if(changeUrl == '')
-    {
-      firstUrl;
+    super.initState();
+    _checkBiometricAvailability();
+    _initiateLoginDetails();
+  }
+
+  Future<void> _checkBiometricAvailability() async {
+    try {
+      bool canCheckBiometrics = await auth.canCheckBiometrics;
+      setState(() {
+        _isBiometricAvailable = canCheckBiometrics;
+      });
+    } catch (e) {
+      print("Error checking biometrics: $e");
     }
-    else{
+  }
+
+  void _initiateLoginDetails() async {
+    bool firstTime = StorageUtil.getBool('first');
+    String newUrl = StorageUtil.getString('newUrl');
+    String changeUrl = StorageUtil.getString('changeFirstUrl');
+    if (changeUrl != '') {
       firstUrl = changeUrl;
     }
-    
-    if(newUrl != ''){
-       apiController..text =newUrl;
-    }else if(newUrl!=null){
-      apiController..text = firstUrl;
-    
-   }
-   else{
-     apiController.text = firstUrl;
-   }
 
-    // if(data == 'https://dev.psacrm.com/API_423'){apiController..text =StorageUtil.getString('url');}else{apiController..text = 'https://dev.psacrm.com/API_423';}
-    //  ..text = 'https://dev.psacrm.com/API_423';
-    //  ..text = api.isEmpty ? 'https://salesachievermobile.com/' : api;
-    loginNameController..text = StorageUtil.getString('loginName');
-    companyController..text = StorageUtil.getString('company');
+    if (newUrl != '') {
+      apiController.text = newUrl;
+    } else {
+      apiController.text = firstUrl;
+    }
+
+    loginNameController.text = StorageUtil.getString('loginName');
+    companyController.text = StorageUtil.getString('company');
 
     var savedLocaleId = StorageUtil.getString('localeId');
     if (savedLocaleId != '') localeId = savedLocaleId;
-    super.initState();
+
+    _getVersion();
+
+    if (_isBiometricAvailable) {
+      _authenticateWithBiometrics();
+    }
+  }
+
+  void _getVersion() {
+    PackageInfo.fromPlatform().then((PackageInfo packageInfo) {
+      setState(() {
+        version = packageInfo.version;
+      });
+    });
+  }
+
+  Future<void> _authenticateWithBiometrics() async {
+    try {
+      bool authenticated = await auth.authenticate(
+        localizedReason: 'Please authenticate to proceed',
+        options: const AuthenticationOptions(
+          useErrorDialogs: true,
+          stickyAuth: true,
+        ),
+      );
+      if (authenticated) {
+        String storedPassword = StorageUtil.getString('password');
+        if (storedPassword.isNotEmpty) {
+          _login(
+            context,
+            apiController.text,
+            loginNameController.text,
+            storedPassword,
+            companyController.text,
+            localeId,
+          );
+        }
+      }
+    } catch (e) {
+      print("Error during biometric authentication: $e");
+    }
   }
 
   void _login(
@@ -114,35 +161,33 @@ class _LoginScreenState extends State<LoginScreen> {
         company,
         languageId,
         firstUrl,
-        apiController.text
+        apiController.text,
       );
       bool isContainActiveFeature = await feature.activeFeatures();
-       if(isContainActiveFeature){
-         int timestamp = DateTime.now().millisecondsSinceEpoch;
+      if (isContainActiveFeature) {
+        int timestamp = DateTime.now().millisecondsSinceEpoch;
 
-         final prefs = await SharedPreferences.getInstance();
-         prefs.setInt('myTimestampKey', timestamp);
+        final prefs = await SharedPreferences.getInstance();
+        prefs.setInt('myTimestampKey', timestamp);
 
-         DateTime dateTime = DateTime.fromMillisecondsSinceEpoch(timestamp);
-         Navigator.pushAndRemoveUntil(
-        context,
-        PageRouteBuilder(
-          pageBuilder: (_, __, ___) => DyanmicHomeScreen(),
-          transitionDuration: Duration(seconds: 0),
-        ),
-        (route) => false,
-      );
+        Navigator.pushAndRemoveUntil(
+          context,
+          PageRouteBuilder(
+            pageBuilder: (_, __, ___) => DyanmicHomeScreen(),
+            transitionDuration: Duration(seconds: 0),
+          ),
+          (route) => false,
+        );
+      } else {
+        Navigator.pushAndRemoveUntil(
+          context,
+          PageRouteBuilder(
+            pageBuilder: (_, __, ___) => HomeScreen(),
+            transitionDuration: Duration(seconds: 0),
+          ),
+          (route) => false,
+        );
       }
-      else{
-         Navigator.pushAndRemoveUntil(
-        context,
-        PageRouteBuilder(
-          pageBuilder: (_, __, ___) => HomeScreen(),
-          transitionDuration: Duration(seconds: 0),
-        ),
-        (route) => false,
-      );
-      }   
     } on DioError catch (e) {
       Navigator.pop(context);
       if (e.response?.statusCode.toString() == '401') {
@@ -164,14 +209,6 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
 
-  void _getVereion() {
-    PackageInfo.fromPlatform().then((PackageInfo packageInfo) {
-      setState(() {
-        version = packageInfo.version;
-      });
-    });
-  }
-
   void _onLanguageChanged(String lang) {
     if (lang.isNotEmpty) {
       setState(() {
@@ -184,151 +221,135 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget build(BuildContext context) {
     final node = FocusScope.of(context);
 
-    _getVereion();
-
     var psaLogo = Image(
       width: 300,
       image: AssetImage('assets/images/ProjectSalesAchieverLogo.png'),
     );
 
     return Scaffold(
-      resizeToAvoidBottomInset: false,
-      body: Container(
-        decoration: BoxDecoration(
-          gradient: new LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [
-              Color.fromARGB(255, 66, 165, 245),
-              Color.fromARGB(255, 21, 101, 165)
-            ],
-            stops: [
-              0.1,
-              1.0,
-            ],
-          ),
-          image: DecorationImage(
-            image: ExactAssetImage('assets/images/buildings_image.png'),
-            fit: BoxFit.scaleDown,
-            alignment: Alignment.bottomLeft,
-            scale: MediaQuery.of(context).size.width > 480 ? 1 : 1.4,
-          ),
-        ),
-
-        child: SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.only(top: 20, left: 20, right: 20),
-            child: Column(
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    LanguageSelector(
-                      localeId: localeId,
-                      onLanguageChanged: _onLanguageChanged,
-                    )
-                  ],
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.only(bottom: 20.0),
-                      child: psaLogo,
-                    ),
-                  ],
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    SizedBox(
-                      width: MediaQuery.of(context).size.width < 440
-                          ? MediaQuery.of(context).size.width - 40
-                          : 400,
-                      child: Column(
-                        children: [
-                          Container(
-                            decoration: BoxDecoration(
-                              color: Color(0xFFFAFAFAFA),
-                              borderRadius: BorderRadius.all(
-                                new Radius.circular(8.0),
-                              ),
-                            ),
-                            child: Padding(
-                              padding: const EdgeInsets.all(16),
-                              child: Column(
-                                children: [
-                                  PsaTextField(
-                                    controller: loginNameController,
-                                    placeholder: 'UserName',
-                                    keyboardType: TextInputType.text,
-                                    onEditingComplete: () => node.nextFocus(),
-                                    textInputAction: TextInputAction.next,
-                                  ),
-                                  PsaTextField(
-                                    controller: passwordController,
-                                    placeholder: 'Password',
-                                    keyboardType: TextInputType.visiblePassword,
-                                    isPassword: true,
-                                    onEditingComplete: () => node.nextFocus(),
-                                    textInputAction: TextInputAction.next,
-                                  ),
-                                  PsaTextField(
-                                    controller: apiController,
-                                    placeholder: 'Url',
-                                    keyboardType: TextInputType.url,
-                                    onEditingComplete: () => node.nextFocus(),
-                                    textInputAction: TextInputAction.next,
-                                  ),
-                                  PsaTextField(
-                                    controller: companyController,
-                                    placeholder: 'Database',
-                                    keyboardType: TextInputType.text,
-                                    onEditingComplete: () => node.nextFocus(),
-                                    textInputAction: TextInputAction.go,
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                          SizedBox(height: 10,),
-                          LoginButton(
-                            onTap: (context) {
-                              _login(
-                                context,
-                                apiController.text,
-                                loginNameController.text,
-                                passwordController.text,
-                                companyController.text,
-                                localeId,
-                              );
-                            },
-                          )
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-                Expanded(
-                  child: Row(
+        resizeToAvoidBottomInset: false,
+        body: Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [
+                  Color.fromARGB(255, 66, 165, 245),
+                  Color.fromARGB(255, 21, 101, 165)
+                ],
+                stops: [0.1, 1.0],
+              ),
+              image: DecorationImage(
+                image: ExactAssetImage('assets/images/buildings_image.png'),
+                fit: BoxFit.scaleDown,
+                alignment: Alignment.bottomLeft,
+                scale: MediaQuery.of(context).size.width > 480 ? 1 : 1.4,
+              ),
+            ),
+            child: SafeArea(
+                child: Padding(
+              padding: const EdgeInsets.only(top: 20, left: 20, right: 20),
+              child: Column(
+                children: [
+                  Row(
                     mainAxisAlignment: MainAxisAlignment.end,
-                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      LanguageSelector(
+                        localeId: localeId,
+                        onLanguageChanged: _onLanguageChanged,
+                      ),
+                    ],
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
                     children: [
                       Padding(
-                        padding: const EdgeInsets.only(bottom: 20, right: 0),
-                        child: Text(
-                          'Version: $version',  
-                          style: TextStyle(color: Colors.white),
+                        padding: const EdgeInsets.only(bottom: 20.0),
+                        child: psaLogo,
+                      ),
+                    ],
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      SizedBox(
+                        width: MediaQuery.of(context).size.width < 440
+                            ? MediaQuery.of(context).size.width - 40
+                            : 400,
+                        child: Column(
+                          children: [
+                            Container(
+                              decoration: BoxDecoration(
+                                color: Color(0xFFFAFAFAFA),
+                                borderRadius: BorderRadius.all(
+                                  new Radius.circular(8.0),
+                                ),
+                              ),
+                              child: Padding(
+                                padding: const EdgeInsets.all(16),
+                                child: Column(
+                                  children: [
+                                    PsaTextField(
+                                      controller: loginNameController,
+                                      placeholder: 'UserName',
+                                      keyboardType: TextInputType.text,
+                                      onEditingComplete: () => node.nextFocus(),
+                                      textInputAction: TextInputAction.next,
+                                    ),
+                                    PsaTextField(
+                                      controller: passwordController,
+                                      placeholder: 'Password',
+                                      keyboardType:
+                                          TextInputType.visiblePassword,
+                                      isPassword: true,
+                                      onEditingComplete: () => node.nextFocus(),
+                                      textInputAction: TextInputAction.next,
+                                    ),
+                                    PsaTextField(
+                                      controller: apiController,
+                                      placeholder: 'Url',
+                                      keyboardType: TextInputType.url,
+                                      onEditingComplete: () => node.nextFocus(),
+                                      textInputAction: TextInputAction.next,
+                                    ),
+                                    PsaTextField(
+                                      controller: companyController,
+                                      placeholder: 'Database',
+                                      keyboardType: TextInputType.text,
+                                      onEditingComplete: () => node.nextFocus(),
+                                      textInputAction: TextInputAction.go,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                            SizedBox(height: 20),
+                            LoginButton(
+                              onTap: (context) {
+                                _login(
+                                  context,
+                                  apiController.text,
+                                  loginNameController.text,
+                                  passwordController.text,
+                                  companyController.text,
+                                  localeId,
+                                );
+                              },
+                            ),
+                            if (_isBiometricAvailable)
+                              TextButton(
+                                onPressed: _authenticateWithBiometrics,
+                                child: Text('Use Face ID/Touch ID',style: TextStyle(
+                                  color: Colors.white
+                                ),),
+                              ),
+                          ],
                         ),
                       ),
                     ],
                   ),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
+                ],
+              ),
+            ))));
   }
 }

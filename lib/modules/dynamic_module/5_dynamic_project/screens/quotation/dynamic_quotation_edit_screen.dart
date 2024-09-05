@@ -65,8 +65,12 @@ class _DynamicQuotationEditScreenState extends State<DynamicQuotationEditScreen>
   void initState() {
     super.initState();
     _dynamicTabProvider = Provider.of<DynamicTabProvide>(context,listen: false);
-    _dynamicTabProvider.setQuotationEntity(widget.entity);
-    _dynamicTabProvider.setReadOnly(widget.readonly);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        _dynamicTabProvider.setQuotationEntity(widget.entity);
+        _dynamicTabProvider.setReadOnly(widget.readonly);
+      }
+    });
     callApi();
 
     super.initState();

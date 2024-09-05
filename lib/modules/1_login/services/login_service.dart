@@ -21,7 +21,7 @@ class LoginService {
     final String token =
         await LoginApi().login(api, loginName, password, company);
 
-    await _saveLoginDetails(token, api, loginName, company,firstUrl,SecondUrl);
+    await _saveLoginDetails(token, api, loginName, company,firstUrl,SecondUrl,password);
     await _updateLocalization(localeId);
     await _checkLicense(localeId);
     await _fetchActiveFeatures();
@@ -44,7 +44,7 @@ class LoginService {
 
   Future<void> _saveLoginDetails(
       String token, String api, String loginName, String company, String firstUrl,
-    String SecondUrl,) async {
+    String SecondUrl,String password) async {
       if(firstUrl != SecondUrl){
          StorageUtil.putString('changeFirstUrl', SecondUrl);
         StorageUtil.putString('newUrl', SecondUrl);
@@ -57,13 +57,11 @@ class LoginService {
     StorageUtil.putString('api', api);
     StorageUtil.putString('loginName', loginName);
     StorageUtil.putString('company', company);
-    
+    StorageUtil.putString('password', password);
+
   }
 
   Future<void> _updateLocalization(localeId) async {
-    // LocaleService lookupService = LocaleService();
-    // await lookupService.updateSelectdLocalization(localeId);
-
     StorageUtil.putString('localeId', localeId);
   }
 

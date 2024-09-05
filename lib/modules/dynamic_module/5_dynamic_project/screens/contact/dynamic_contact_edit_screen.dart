@@ -65,8 +65,12 @@ class _DynamicContactEditScreenState extends State<DynamicContactEditScreen> {
   void initState() {
     super.initState();
     _dynamicTabProvider = Provider.of<DynamicTabProvide>(context,listen: false);
-    _dynamicTabProvider.setContactEntity(widget.entity);
-    _dynamicTabProvider.setReadOnly(widget.readonly);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        _dynamicTabProvider.setContactEntity(widget.entity);
+        _dynamicTabProvider.setReadOnly(widget.readonly);
+      }
+    });
     callApi();
 
     super.initState();
@@ -75,20 +79,15 @@ class _DynamicContactEditScreenState extends State<DynamicContactEditScreen> {
   var filedEntity;
 
   callApi() async {
-    print("lets check entity ${widget.entityType}");
     await getProjectForm(widget.entity['CONT_ID']??"Init");
   }
 
   Future<List> getProjectForm(String id) async {
-    print("LEt chech id$id");
-    print("LEt chech id${widget.tabId}");
-
     final dynamic response =
     await DynamicProjectApi().getProjectForm(widget.tabId.toString(), id);
     setState(() {
       fieldData = response;
     });
-    print("fieldData${response}");
 
     return response;
   }
