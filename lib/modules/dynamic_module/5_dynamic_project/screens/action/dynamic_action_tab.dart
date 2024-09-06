@@ -53,7 +53,11 @@ class _DynamicActionTabScreenState extends State<DynamicActionTabScreen> {
   void initState() {
     super.initState();
     _dynamicTabProvider = Provider.of<DynamicTabProvide>(context, listen: false);
-    _dynamicTabProvider.setActionEntity(widget.entity);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        _dynamicTabProvider.setActionEntity(widget.entity);
+      }
+    });
     fetchData();
     super.initState();
   }

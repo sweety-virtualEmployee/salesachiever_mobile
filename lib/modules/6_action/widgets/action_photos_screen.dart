@@ -108,7 +108,7 @@ class _ActionPhotosScreenState extends State<ActionPhotosScreen> {
             Padding(
                 padding: const EdgeInsets.all(8),
                 child: isLoading
-                    ? Center(child: PlatformCircularProgressIndicator())
+                    ? Center(child: CircularProgressIndicator())
                     : GridView.builder(
                         itemCount: _imageList.length,
                         gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
@@ -245,6 +245,7 @@ class _ActionPhotosScreenState extends State<ActionPhotosScreen> {
     setState(() {
       isLoading = true;
     });
+    print("isloading$isLoading");
     _imageList.clear();
 
     int pageNumber = 1;
@@ -253,10 +254,6 @@ class _ActionPhotosScreenState extends State<ActionPhotosScreen> {
     while (loadMore) {
       var response = await SitePhotoService()
           .galleryImage(widget.action['ACTION_ID'], pageNumber);
-
-      setState(() {
-        isLoading = false;
-      });
 
       List<dynamic> files = response;
       List<dynamic> imageFiles = files.where((file) {
@@ -267,8 +264,10 @@ class _ActionPhotosScreenState extends State<ActionPhotosScreen> {
                 filename.endsWith('.png'));
       }).toList();
       setState(() {
+        isLoading = false;
         _imageList.addAll(imageFiles);
       });
+      print("after loading$isLoading");
 
       for (var i = 0; i < _imageList.length; i++) {
         if (_imageList[i]['BLOB_TYPE'] == "1") {

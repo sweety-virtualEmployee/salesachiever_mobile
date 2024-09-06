@@ -51,8 +51,11 @@ class _DynamicContactTabScreen extends State<DynamicContactTabScreen> {
   void initState() {
     super.initState();
     _dynamicTabProvider = Provider.of<DynamicTabProvide>(context, listen: false);
-    print("widget.entityType${widget.entityType}");
-    _dynamicTabProvider.setContactEntity(widget.entity);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        _dynamicTabProvider.setContactEntity(widget.entity);
+      }
+    });
     fetchData();
     super.initState();
   }
@@ -238,8 +241,6 @@ class _DynamicContactTabScreen extends State<DynamicContactTabScreen> {
       String tableName = "";
       String id = "";
       path = path.replaceAll("@RECORDID", provider.getContactEntity['CONT_ID']);
-      print("widget.entityType.toUpperCase() ${widget.entityType.toUpperCase() }");
-      print("widget.entityType.toUpperCase() ${tableName }");
       var result = await service.getTabListEntityApi(path.replaceAll("&amp;", "&"), tableName, id, 1);
       Navigator.push(
         context,

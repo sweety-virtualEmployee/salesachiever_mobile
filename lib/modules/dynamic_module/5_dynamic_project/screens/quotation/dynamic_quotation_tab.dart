@@ -53,8 +53,11 @@ class _DynamicQuotationTabScreenState extends State<DynamicQuotationTabScreen> {
   void initState() {
     super.initState();
     _dynamicTabProvider = Provider.of<DynamicTabProvide>(context, listen: false);
-    print("widget.entityType${widget.entityType}");
-    _dynamicTabProvider.setQuotationEntity(widget.entity);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        _dynamicTabProvider.setQuotationEntity(widget.entity);
+      }
+    });
     fetchData();
     super.initState();
   }

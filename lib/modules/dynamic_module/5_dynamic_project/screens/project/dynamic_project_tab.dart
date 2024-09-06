@@ -51,7 +51,11 @@ class _DynamicProjectTabScreenState extends State<DynamicProjectTabScreen> {
   void initState() {
     super.initState();
     _dynamicTabProvider = Provider.of<DynamicTabProvide>(context, listen: false);
-    _dynamicTabProvider.setProjectEntity(widget.entity);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        _dynamicTabProvider.setProjectEntity(widget.entity);
+      }
+    });
     fetchData();
     super.initState();
   }

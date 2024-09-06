@@ -51,8 +51,11 @@ class _DynamicCompanyTabScreenState extends State<DynamicCompanyTabScreen> {
   void initState() {
     super.initState();
     _dynamicTabProvider = Provider.of<DynamicTabProvide>(context, listen: false);
-    print("widget.entityType${widget.entityType}");
-    _dynamicTabProvider.setCompanyEntity(widget.entity);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        _dynamicTabProvider.setCompanyEntity(widget.entity);
+      }
+    });
     fetchData();
     super.initState();
   }
