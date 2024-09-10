@@ -198,7 +198,7 @@ class _ActionPhotosScreenState extends State<ActionPhotosScreen> {
     context.loaderOverlay.show();
 
     try {
-      _imageList.forEach((image) async {
+      for (var image in _imageList) {
         if (image['ISNEW'] == true) {
           var uuid = Uuid().v1().toUpperCase();
           var encoder = ZipFileEncoder();
@@ -212,9 +212,7 @@ class _ActionPhotosScreenState extends State<ActionPhotosScreen> {
             'BLOB_DATA': base64Image,
             'ENTITY_ID': widget.action['ACTION_ID'],
             'ENTITY_NAME': 'ACTION',
-            'FILENAME': '${widget.action['ACCTNAME']}'
-                '$uuid'
-                '${path.extension(image["FILE"].toString())}',
+            'FILENAME': '${widget.action['ACCTNAME']}$uuid${path.extension(image["FILE"].toString())}',
           };
 
           await SitePhotoService().uploadBlob(blob);
@@ -229,8 +227,10 @@ class _ActionPhotosScreenState extends State<ActionPhotosScreen> {
 
           await SitePhotoService().updateBlob(image['BLOB_ID'], blob);
         }
-      });
-      _fetchImages();
+      }
+
+      // Ensure the images are fetched only after all uploads/updates are done
+      await _fetchImages();
     } on DioError catch (e) {
       ErrorUtil.showErrorMessage(context, e.message);
     } catch (e) {
@@ -240,6 +240,7 @@ class _ActionPhotosScreenState extends State<ActionPhotosScreen> {
       imageFileList!.clear();
     }
   }
+
 
   _fetchImages() async {
     setState(() {
@@ -310,6 +311,8 @@ class _ActionPhotosScreenState extends State<ActionPhotosScreen> {
             }
           });
         } else if (_imageList[i]['BLOB_TYPE'] == "2") {
+          print("blob_id");
+          print(_imageList[i]['BLOB_ID']);
           var decodedBytes =
               base64.decode(_imageList[i]['BLOB_DATA'].replaceAll('\r\n', ''));
           final archive = ZipDecoder().decodeBytes(decodedBytes);

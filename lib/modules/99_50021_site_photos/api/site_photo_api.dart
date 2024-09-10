@@ -61,7 +61,7 @@ class SitePhotoApi {
 
   Future<dynamic> getGalleryImage(String actionId, int pageNumber) async {
     Response response = await _api
-        .get('/Document/Entity.Gallery?id=$actionId&searchText=%25&pageSize=30&pageNumber=$pageNumber');
+        .get('/Document/Entity.Gallery?id=$actionId&searchText=%25&pageSize=20&pageNumber=$pageNumber');
     return response.data;
   }
 }
