@@ -183,7 +183,7 @@ class _ActionSiteQuestionDetailScreenState
         ),
         child: Text(
           text,
-          style: TextStyle(color: Colors.black, fontSize: 12),
+          style: TextStyle(color: Colors.black, fontSize: 10),
         ),
       ),
     );
@@ -221,7 +221,7 @@ class _ActionSiteQuestionDetailScreenState
                     ),
                     SizedBox(height: 50),
                     Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 15.0),
+                      padding: const EdgeInsets.symmetric(horizontal: 8.0),
                       child: Container(
                         decoration: BoxDecoration(
                           color: Color(0xffabdbfb),
