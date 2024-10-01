@@ -77,7 +77,7 @@ class _PsaFloatFieldRowState extends State<PsaFloatFieldRow> {
                     }
                   },
                   inputFormatters: [
-                    FilteringTextInputFormatter.allow(RegExp("[0-9]\.?")),
+                    FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*'))
                     // ThousandsSeparatorInputFormatter(),
                   ],
                 ),

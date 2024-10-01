@@ -31,7 +31,6 @@ class PsaCountyDropdownRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var contextId = HiveUtil.getContextId('account', tableName, fieldName);
-
     _onTap() async {
       if (!readOnly) {
         var result = await Navigator.push(

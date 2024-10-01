@@ -67,7 +67,7 @@ class _ProjectInfoSectionState extends State<ProjectInfoSection> {
           readOnly: widget._readonly,
           onChange: (_, __) => widget._onChange(_, __, true),
         ),
-        PsaButtonRow(
+        widget._project['PROJECT_ID']!=null? PsaButtonRow(
           isVisible: false,
           title: LangUtil.getString(
               'AccountEditWindow', 'NotesTab.Header'),
@@ -84,7 +84,7 @@ class _ProjectInfoSectionState extends State<ProjectInfoSection> {
               ),
             );
           },
-        ),
+        ):SizedBox(),
        /* FutureBuilder<dynamic>(
             future: futureNote,
             builder: (context, AsyncSnapshot<dynamic> snapshot) {

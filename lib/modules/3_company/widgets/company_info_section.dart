@@ -70,7 +70,7 @@ class _CompanyInfoSectionState extends State<CompanyInfoSection> {
           isRequired: true,
           onChange: (_, __) => widget._onChange(_, __, true),
         ),
-        PsaButtonRow(
+        widget._company!['ACCT_ID']!=null? PsaButtonRow(
           isVisible: false,
           title: LangUtil.getString(
               'AccountEditWindow', 'NotesTab.Header'),
@@ -87,7 +87,7 @@ class _CompanyInfoSectionState extends State<CompanyInfoSection> {
               ),
             );
           },
-        ),
+        ):SizedBox(),
    /*     FutureBuilder<List<dynamic>>(
             future: futureNote,
             builder: (context, AsyncSnapshot<List<dynamic>> snapshot) {

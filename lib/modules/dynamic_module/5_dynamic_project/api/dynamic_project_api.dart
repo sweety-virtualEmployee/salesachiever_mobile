@@ -387,7 +387,9 @@ class DynamicProjectApi {
 
   Future<dynamic> getStaffZoneEntityApi(String tableName,String fieldName,String staffZoneType,String id,int page,String searchText,List<dynamic>? sortBy,List<dynamic>? filterBy) async {
     List<dynamic> headers = [];
-    var filter = [{"TableName": tableName,"FieldName":fieldName,"Comparison":5,"ItemValue":id}];
+    var filter = [{"TableName": tableName,"FieldName":fieldName,"Comparison":5,"ItemValue":id},
+      {"TableName":tableName,"FieldName":"DORMANT","Comparison":"2","ItemValue":"N"},
+    ];
     if (sortBy != null) {
       headers.add({'key': 'SortSet', 'headers': jsonEncode(sortBy)});
     }
@@ -440,6 +442,13 @@ class DynamicProjectApi {
   Future<void> updateEntityNote(String entityType,String noteId, String note, String description) async {
     Response response =
     await _api.put('/' + entityType + 'Note' + '/' + noteId, {'NOTES': note,'DESCRIPTION':description});
+    return response.data;
+  }
+
+
+  Future<dynamic> toggleDormantStatus(String tableName,String entityId) async {
+    Response response =
+    await _api.post('Entity/Entity.ToggleDormantStatus?EntityName=$tableName&EntityId=$entityId&UniqueColumnName=ENTITY_ID',{});
     return response.data;
   }
 }

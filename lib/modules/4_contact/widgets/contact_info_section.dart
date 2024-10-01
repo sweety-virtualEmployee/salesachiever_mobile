@@ -67,7 +67,7 @@ class _ContactInfoSectionState extends State<ContactInfoSection> {
           isRequired: true,
           onChange: (_, __) => widget._onChange(_, __, true),
         ),
-        PsaButtonRow(
+        widget._contact!['CONT_ID']!=null?PsaButtonRow(
           isVisible: false,
           title: LangUtil.getString(
               'AccountEditWindow', 'NotesTab.Header'),
@@ -84,7 +84,7 @@ class _ContactInfoSectionState extends State<ContactInfoSection> {
               ),
             );
           },
-        ),
+        ):SizedBox(),
        /* FutureBuilder<dynamic>(
             future: futureNote,
             builder: (context, AsyncSnapshot<dynamic> snapshot) {

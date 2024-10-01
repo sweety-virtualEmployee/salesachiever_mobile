@@ -73,7 +73,7 @@ class _PsaTextAreaFieldRowState extends State<PsaTextAreaFieldRow> {
                   keyboardType: widget.keyboardType,
                   textCapitalization: TextCapitalization.sentences,
                   readOnly: widget.readOnly,
-                  minLines: 3,
+                  minLines: 5,
                   maxLines: widget.maxLines,
                   onChanged: (value) {
                     if (widget.onChange != null)

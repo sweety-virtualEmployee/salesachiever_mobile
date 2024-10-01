@@ -5,7 +5,6 @@ import 'package:flutter_pdfview/flutter_pdfview.dart';
 import 'package:salesachiever_mobile/shared/widgets/buttons/psa_Share_button.dart';
 import 'package:salesachiever_mobile/shared/widgets/layout/psa_scaffold.dart';
 import 'package:share/share.dart';
-import 'package:path/path.dart' as path;
 
 class DynamicStaffzoneDocumentView extends StatefulWidget {
   final String filePath;

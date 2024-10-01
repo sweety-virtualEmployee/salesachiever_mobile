@@ -20,6 +20,7 @@ import 'package:salesachiever_mobile/shared/widgets/buttons/psa_add_button.dart'
 import 'package:salesachiever_mobile/shared/widgets/layout/psa_scaffold.dart';
 import 'package:salesachiever_mobile/utils/copy_util.dart';
 import 'package:salesachiever_mobile/utils/date_util.dart';
+import 'package:salesachiever_mobile/utils/dormant_util.dart';
 import 'package:salesachiever_mobile/utils/error_util.dart';
 import 'package:salesachiever_mobile/utils/lang_util.dart';
 import 'package:salesachiever_mobile/utils/message_util.dart';
@@ -155,67 +156,70 @@ class _DynamicStaffZoneListScreenState
         title: "${capitalizeFirstLetter(widget.title)} - List",
         body: Column(
           children: [
-        Padding(
-        padding: const EdgeInsets.all(8.0),
-      child: Stack(
-        alignment: Alignment.centerRight,
-        children: [
-          CupertinoTextField(
-            controller: _textEditingController,
-            autocorrect: false,
-            placeholder: LangUtil.getString('Entities', 'List.Search'),
-            onSubmitted: (value) {
-              setState(() {
-                _searchText = value;
-              });
-              fetchData();
-            },
-            decoration: BoxDecoration(
-              color: Colors.grey.withOpacity(0.15),
-              borderRadius: BorderRadius.circular(8.0), // Optional: adds rounded corners
-            ),
-            style: TextStyle(
-              color: Colors.black, // Text color
-            ),
-            placeholderStyle: TextStyle(
-              color: Colors.grey, // Placeholder text color (optional)
-            ),
-            prefix: Icon(context.platformIcons.search),
-            onChanged: (value) {
-              if (value.isEmpty) {
-                setState(() {
-                  _searchText = value;
-                });
-                fetchData();
-              }
-            },
-            textInputAction: TextInputAction.search,
-            clearButtonMode: OverlayVisibilityMode.never, // Disable default clear button
-          ),
-          if (_textEditingController.text.isNotEmpty)
-            Positioned(
-              right: 0,
-              child: GestureDetector(
-                onTap: () {
-                  _textEditingController.clear();
-                  setState(() {
-                    _searchText = '';
-                  });
-                  fetchData();
-                },
-                child: Padding(
-                  padding: const EdgeInsets.only(right: 8.0),
-                  child: Icon(
-                    CupertinoIcons.clear_thick_circled,
-                    color: Colors.blueAccent, // Custom clear button color
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Stack(
+                alignment: Alignment.centerRight,
+                children: [
+                  CupertinoTextField(
+                    controller: _textEditingController,
+                    autocorrect: false,
+                    placeholder: LangUtil.getString('Entities', 'List.Search'),
+                    onSubmitted: (value) {
+                      setState(() {
+                        _searchText = value;
+                      });
+                      fetchData();
+                    },
+                    decoration: BoxDecoration(
+                      color: Colors.grey.withOpacity(0.15),
+                      borderRadius: BorderRadius.circular(
+                          8.0), // Optional: adds rounded corners
+                    ),
+                    style: TextStyle(
+                      color: Colors.black, // Text color
+                    ),
+                    placeholderStyle: TextStyle(
+                      color: Colors.grey, // Placeholder text color (optional)
+                    ),
+                    prefix: Icon(context.platformIcons.search),
+                    onChanged: (value) {
+                      if (value.isEmpty) {
+                        setState(() {
+                          _searchText = value;
+                        });
+                        fetchData();
+                      }
+                    },
+                    textInputAction: TextInputAction.search,
+                    clearButtonMode: OverlayVisibilityMode
+                        .never, // Disable default clear button
                   ),
-                ),
+                  if (_textEditingController.text.isNotEmpty)
+                    Positioned(
+                      right: 0,
+                      child: GestureDetector(
+                        onTap: () {
+                          _textEditingController.clear();
+                          setState(() {
+                            _searchText = '';
+                          });
+                          fetchData();
+                        },
+                        child: Padding(
+                          padding: const EdgeInsets.only(right: 8.0),
+                          child: Icon(
+                            CupertinoIcons.clear_thick_circled,
+                            color:
+                                Colors.blueAccent, // Custom clear button color
+                          ),
+                        ),
+                      ),
+                    ),
+                ],
               ),
             ),
-        ],
-      ),
-    ),
-    Container(
+            Container(
               decoration: BoxDecoration(
                 color: Colors.grey.withOpacity(0.02),
               ),
@@ -306,7 +310,12 @@ class _DynamicStaffZoneListScreenState
                             Row(
                               children: [
                                 Expanded(
-                                  child: GestureDetector(
+                                  child: InkWell(
+                                    onLongPress: () {
+                                      print("yes on long press");
+                                      DormantUtil.showDormantMessage(context,
+                                              () => onDormant(item["ENTITY_ID"],"Y"));
+                                    },
                                     onTap: () async {
                                       if (widget.isSelectable) {
                                         Navigator.pop(context, {
@@ -544,6 +553,16 @@ class _DynamicStaffZoneListScreenState
   Future<void> onCopy(String entityId) async {
     var newEntity = await DynamicProjectService()
         .copyNewStaffZoneEntity(widget.tableName, entityId);
+    print("newEntity$newEntity");
+    fetchData();
+  }
+
+
+  Future<void> onDormant(String entityId,String dormant) async {
+    print("entity$entityId");
+    var dormantEntity =  await DynamicProjectService().toggleDormantEntity(
+        widget.tableName,entityId);
+    print("newEntity$dormantEntity");
     fetchData();
   }
 }

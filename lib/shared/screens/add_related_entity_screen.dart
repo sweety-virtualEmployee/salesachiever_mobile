@@ -17,6 +17,7 @@ import 'package:salesachiever_mobile/shared/widgets/forms/psa_related_entity_row
 import 'package:salesachiever_mobile/shared/widgets/layout/psa_scaffold.dart';
 import 'package:salesachiever_mobile/utils/auth_util.dart';
 import 'package:salesachiever_mobile/utils/lang_util.dart';
+import 'package:salesachiever_mobile/utils/success_util.dart';
 
 class AddRelatedEntityScreen extends StatefulWidget {
   final String? linkId;
@@ -73,10 +74,6 @@ class _AddRelatedEntityScreenState extends State<AddRelatedEntityScreen> {
 
   @override
   Widget build(BuildContext context) {
-    print("account check$account");
-    print("account check$project");
-    print("account check$contact");
-    print("account check$role");
     return Container(
       child: PsaScaffold(
         action: PsaEditButton(
@@ -97,11 +94,11 @@ class _AddRelatedEntityScreenState extends State<AddRelatedEntityScreen> {
                     if (role != null) projectLink['ROLE_TYPE_ID'] = role['ID'];
                     if (deal != null) projectLink['DEAL_ID'] = deal['ID'];
                     if (role != null && deal != null) deal['ROLE_TYPE_ID'] = role['ID'];
-                    print("deal check $contact");
-                    print("deal check $deal");
-                    if (contact != null && deal != null&&contact['ID']!=null) deal['CONT_ID'] = contact['ID'];
-                    if (contact != null && contact['TEXT'] != null) deal['FIRSTNAME'] = contact['TEXT'];
-                    print("deal check $deal");
+                    print("deal check1 $contact");
+                    print("deal check2 $deal");
+                    if (contact != null && deal != null && contact['ID']!=null) deal['CONT_ID'] = contact['ID'];
+                    if (contact != null && deal != null  && contact['TEXT'] != null) deal['FIRSTNAME'] = contact['TEXT'];
+                    print("deal check3 $deal");
                     if (deal != null) deal['DEAL_ID'] = deal['ID'];
                     if (account != null && deal != null&&account['ID']!=null) deal['ACCT_ID'] = account['ID'];
                     print("projectlink123$projectLink");
@@ -127,9 +124,8 @@ class _AddRelatedEntityScreenState extends State<AddRelatedEntityScreen> {
                             .createProjectAccountLink(projectLink);
                       }
                     }
-
-                    //Navigator.pop(context);
-                   // Navigator.pop(context);
+                    Navigator.pop(context);
+                    Navigator.pop(context);
 
                     context.loaderOverlay.hide();
                   } catch (e) {

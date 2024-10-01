@@ -365,4 +365,11 @@ class DynamicProjectService extends EntityService {
 
     return DynamicProjectApi().updateEntityNote(entityType,noteId, companyNote,description);
   }
+
+
+
+  Future<dynamic> toggleDormantEntity(
+      String tableName,String entityId) async {
+    return DynamicProjectApi().toggleDormantStatus(tableName,entityId);
+  }
 }

@@ -219,6 +219,9 @@ class _DynamicStaffZoneEditScreenState
     filedList.sort((a, b) => (a["ORDER_NUM"] as int).compareTo(b["ORDER_NUM"] as int));
     List<Widget> widgets = [];
     for (dynamic field in filedList) {
+      print("fvhjdcgfvr");
+      print(field['FIELD_NAME']);
+      print(field['FIELD_TYPE']);
       var isRequired = mandatoryFields.any((e) =>
           e['TABLE_NAME'] == field['TABLE_NAME'] &&
           e['FIELD_NAME'] == field['FIELD_NAME']);
@@ -280,7 +283,7 @@ class _DynamicStaffZoneEditScreenState
               widgets.add(PsaStaffZoneRelatedValue(
                 isRequired: isRequired,
                 title: LangUtil.getString(field['TABLE_NAME'], field['FIELD_NAME']),
-                staffZoneEntity: "List/RA_API",
+                staffZoneEntity: "/List/RA_API",
                 relatedEntityType: widget.relatedEntityType,
                 tableName: "RATE_AGREEMENT",
                 tabTitle: field["FieldDescription"],

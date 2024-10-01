@@ -26,7 +26,8 @@ class InfoFieldService {
 
     for (dynamic field in filedList) {
      var isRequired = field['ISREQUIRED'];
-
+      print("field['FIELD_TYPE']${field['FIELD_TYPE']}");
+      print("field['FIELD_TYPE']${field['FIELD_NAME']}");
       switch (field['FIELD_TYPE']) {
         case 'L':
           widgets.add(
@@ -145,6 +146,7 @@ class InfoFieldService {
           widgets.add(
             PsaTextAreaFieldRow(
               isRequired: isRequired,
+              maxLines: null,
               fieldKey: field['FIELD_NAME'],
               title:
                   LangUtil.getString(field['FIELD_TABLE'], field['FIELD_NAME']),

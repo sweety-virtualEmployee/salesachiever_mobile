@@ -181,9 +181,12 @@ class _ActionSiteQuestionDetailScreenState
         style: TextButton.styleFrom(
           backgroundColor: _selectedOption == value ? Colors.white : Colors.transparent,
         ),
-        child: Text(
-          text,
-          style: TextStyle(color: Colors.black, fontSize: 10),
+        child: FittedBox(
+          fit: BoxFit.scaleDown,
+          child: Text(
+            text,
+            style: TextStyle(color: Colors.black, fontSize: 10),
+          ),
         ),
       ),
     );
@@ -258,6 +261,7 @@ class _ActionSiteQuestionDetailScreenState
                           border: Border.all(color: Colors.grey),
                         ),
                         child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween, // Ensures even distribution with some space
                           children: [
                             _buildOptionButton('yes', 'Yes'),
                             SizedBox(width: 8),
