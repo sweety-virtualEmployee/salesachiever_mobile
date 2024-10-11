@@ -71,8 +71,11 @@ class _ActionInfoSectionState extends State<ActionInfoSection> {
         ),
         PsaButtonRow(
           isVisible: false,
-          title: LangUtil.getString('AccountEditWindow', 'InformationTab.Header'),
-          color: ActionService().validateUserFields(widget._action) ? null : Colors.red,
+          title:
+              LangUtil.getString('AccountEditWindow', 'InformationTab.Header'),
+          color: ActionService().validateUserFields(widget._action)
+              ? null
+              : Colors.red,
           icon: Icon(context.platformIcons.rightChevron),
           onTap: () {
             if (widget._action['ACTION_TYPE_ID'] == null ||
@@ -93,12 +96,16 @@ class _ActionInfoSectionState extends State<ActionInfoSection> {
             });
           },
         ),
-        if (AuthUtil.hasAccess(int.parse(ACCESS_CODES['Stormsaver'].toString()))) ...[
+        if (AuthUtil.hasAccess(
+            int.parse(ACCESS_CODES['Stormsaver'].toString()))) ...[
           if (widget._action["TIER1"] != null)
             PsaButtonRow(
               isVisible: false,
-              title: LangUtil.getString('ActionEditWindow', 'SiteQuestion.Description'),
-              color: ActionService().validateUserFields(widget._action) ? null : Colors.red,
+              title: LangUtil.getString(
+                  'ActionEditWindow', 'SiteQuestion.Description'),
+              color: ActionService().validateUserFields(widget._action)
+                  ? null
+                  : Colors.red,
               icon: Icon(context.platformIcons.rightChevron),
               onTap: () {
                 Navigator.push(
@@ -112,57 +119,68 @@ class _ActionInfoSectionState extends State<ActionInfoSection> {
                 );
               },
             ),
-          PsaButtonRow(
-            isVisible: false,
-            title: LangUtil.getString('AccountEditWindow', 'Photo.Description'),
-            color: ActionService().validateUserFields(widget._action) ? null : Colors.red,
-            icon: Icon(context.platformIcons.rightChevron),
-            onTap: () {
-              Navigator.push(
-                context,
-                platformPageRoute(
-                  context: context,
-                  builder: (BuildContext context) => ActionPhotosScreen(
-                    action: widget._action,
+          if (widget._action["ACTION_ID"] != null)
+            PsaButtonRow(
+              isVisible: false,
+              title:
+                  LangUtil.getString('AccountEditWindow', 'Photo.Description'),
+              color: ActionService().validateUserFields(widget._action)
+                  ? null
+                  : Colors.red,
+              icon: Icon(context.platformIcons.rightChevron),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  platformPageRoute(
+                    context: context,
+                    builder: (BuildContext context) => ActionPhotosScreen(
+                      action: widget._action,
+                    ),
                   ),
-                ),
-              );
-            },
-          ),
-          PsaButtonRow(
-            isVisible: false,
-            title: LangUtil.getString('Entities', 'ClientSignature.Description'),
-            color: ActionService().validateUserFields(widget._action) ? null : Colors.red,
-            icon: Icon(context.platformIcons.rightChevron),
-            onTap: () {
-              Navigator.push(
-                context,
-                platformPageRoute(
-                  context: context,
-                  builder: (BuildContext context) => ActionSignature(
-                    action: widget._action,
+                );
+              },
+            ),
+          if (widget._action["ACTION_ID"] != null)
+            PsaButtonRow(
+              isVisible: false,
+              title:
+                  LangUtil.getString('Entities', 'ClientSignature.Description'),
+              color: ActionService().validateUserFields(widget._action)
+                  ? null
+                  : Colors.red,
+              icon: Icon(context.platformIcons.rightChevron),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  platformPageRoute(
+                    context: context,
+                    builder: (BuildContext context) => ActionSignature(
+                      action: widget._action,
+                    ),
                   ),
-                ),
-              );
-            },
-          ),
-          PsaButtonRow(
-            isVisible: false,
-            title: LangUtil.getString('Entities', 'Email.Description'),
-            color: ActionService().validateUserFields(widget._action) ? null : Colors.red,
-            icon: Icon(context.platformIcons.rightChevron),
-            onTap: () {
-              Navigator.push(
-                context,
-                platformPageRoute(
-                  context: context,
-                  builder: (BuildContext context) => ActionEmailScreen(
-                    action: widget._action,
+                );
+              },
+            ),
+          if (widget._action["ACTION_ID"] != null)
+            PsaButtonRow(
+              isVisible: false,
+              title: LangUtil.getString('Entities', 'Email.Description'),
+              color: ActionService().validateUserFields(widget._action)
+                  ? null
+                  : Colors.red,
+              icon: Icon(context.platformIcons.rightChevron),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  platformPageRoute(
+                    context: context,
+                    builder: (BuildContext context) => ActionEmailScreen(
+                      action: widget._action,
+                    ),
                   ),
-                ),
-              );
-            },
-          ),
+                );
+              },
+            ),
         ],
       ],
     );

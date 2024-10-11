@@ -257,83 +257,95 @@ class _ActionPhotosScreenState extends State<ActionPhotosScreen> {
           .galleryImage(widget.action['ACTION_ID'], pageNumber);
 
       List<dynamic> files = response;
-      List<dynamic> imageFiles = files.where((file) {
-        String filename = file['FILENAME'] ?? '';
-        return filename.isNotEmpty &&
-            !filename.endsWith('.pdf') && (filename.endsWith('.jpg') ||
-                filename.endsWith('.jpeg') ||
-                filename.endsWith('.png'));
-      }).toList();
-      setState(() {
-        isLoading = false;
-        _imageList.addAll(imageFiles);
-      });
-      print("after loading$isLoading");
+      if (files.isEmpty) {
+        setState(() {
+          isLoading = false;
+          _imageList = []; // Initialize _imageList to an empty array
+        });
+      } else {
+        List<dynamic> imageFiles = files.where((file) {
+          String filename = file['FILENAME'] ?? '';
+          return filename.isNotEmpty &&
+              !filename.endsWith('.pdf') && (filename.endsWith('.jpg') ||
+              filename.endsWith('.jpeg') ||
+              filename.endsWith('.png'));
+        }).toList();
+        setState(() {
+          isLoading = false;
+          _imageList.addAll(imageFiles);
+        });
+        print("after loading$isLoading");
 
-      for (var i = 0; i < _imageList.length; i++) {
-        if (_imageList[i]['BLOB_TYPE'] == "1") {
-          SitePhotoService()
-              .getBlobById(_imageList[i]['BLOB_ID'])
-              .then((blob) async {
-            var decodedBytes = base64.decode(blob.replaceAll('\r\n', ''));
+
+        for (var i = 0; i < _imageList.length; i++) {
+          if (_imageList[i]['BLOB_TYPE'] == "1") {
+            SitePhotoService()
+                .getBlobById(_imageList[i]['BLOB_ID'])
+                .then((blob) async {
+              var decodedBytes = base64.decode(blob.replaceAll('\r\n', ''));
+              final archive = ZipDecoder().decodeBytes(decodedBytes);
+              File? outFile;
+
+              for (var file in archive) {
+                var fileName = '$_dir/${files[i]['BLOB_ID']}';
+                final directory = await getApplicationDocumentsDirectory();
+                final filePath = '${directory.path}/file.pdf';
+
+                final pdfFile = File(filePath);
+                await pdfFile.writeAsBytes(file.content);
+                setState(() {
+                  int index = _imageList.indexWhere(
+                          (element) =>
+                      element['BLOB_ID'] == files[i]['BLOB_ID']);
+                  if (index != -1) {
+                    _imageList[index]['FILEPATH'] = filePath;
+                  }
+                });
+
+                if (file.isFile) {
+                  outFile = File(fileName);
+                  outFile = await outFile.create(recursive: true);
+                  await outFile.writeAsBytes(file.content);
+                }
+              }
+              if (outFile != null) {
+                setState(() {
+                  int index = _imageList.indexWhere(
+                          (element) =>
+                      element['BLOB_ID'] == files[i]['BLOB_ID']);
+                  if (index != -1) {
+                    _imageList[index]['FILE'] = outFile;
+                  }
+                });
+              }
+            });
+          } else if (_imageList[i]['BLOB_TYPE'] == "2") {
+            print("blob_id");
+            print(_imageList[i]['BLOB_ID']);
+            var decodedBytes =
+            base64.decode(_imageList[i]['BLOB_DATA'].replaceAll('\r\n', ''));
             final archive = ZipDecoder().decodeBytes(decodedBytes);
+            final directory = await getApplicationDocumentsDirectory();
+            final uniqueFileName =
+                '${DateTime
+                .now()
+                .millisecondsSinceEpoch}image.png';
+            final filePath = '${directory.path}/$uniqueFileName';
             File? outFile;
 
             for (var file in archive) {
-              var fileName = '$_dir/${files[i]['BLOB_ID']}';
-              final directory = await getApplicationDocumentsDirectory();
-              final filePath = '${directory.path}/file.pdf';
-
-              final pdfFile = File(filePath);
-              await pdfFile.writeAsBytes(file.content);
-              setState(() {
-                int index = _imageList.indexWhere(
-                    (element) => element['BLOB_ID'] == files[i]['BLOB_ID']);
-                if (index != -1) {
-                  _imageList[index]['FILEPATH'] = filePath;
-                }
-              });
-
               if (file.isFile) {
-                outFile = File(fileName);
+                outFile = File(filePath);
                 outFile = await outFile.create(recursive: true);
                 await outFile.writeAsBytes(file.content);
               }
             }
             if (outFile != null) {
               setState(() {
-                int index = _imageList.indexWhere(
-                    (element) => element['BLOB_ID'] == files[i]['BLOB_ID']);
-                if (index != -1) {
-                  _imageList[index]['FILE'] = outFile;
-                }
+                _imageList[i]['FILE'] = outFile;
+                _imageList[i]['FILEPATH'] = outFile?.path;
               });
             }
-          });
-        } else if (_imageList[i]['BLOB_TYPE'] == "2") {
-          print("blob_id");
-          print(_imageList[i]['BLOB_ID']);
-          var decodedBytes =
-              base64.decode(_imageList[i]['BLOB_DATA'].replaceAll('\r\n', ''));
-          final archive = ZipDecoder().decodeBytes(decodedBytes);
-          final directory = await getApplicationDocumentsDirectory();
-          final uniqueFileName =
-              '${DateTime.now().millisecondsSinceEpoch}image.png';
-          final filePath = '${directory.path}/$uniqueFileName';
-          File? outFile;
-
-          for (var file in archive) {
-            if (file.isFile) {
-              outFile = File(filePath);
-              outFile = await outFile.create(recursive: true);
-              await outFile.writeAsBytes(file.content);
-            }
-          }
-          if (outFile != null) {
-            setState(() {
-              _imageList[i]['FILE'] = outFile;
-              _imageList[i]['FILEPATH'] = outFile?.path;
-            });
           }
         }
       }

@@ -164,6 +164,7 @@ class _LoginScreenState extends State<LoginScreen> {
         apiController.text,
       );
       bool isContainActiveFeature = await feature.activeFeatures();
+      print("isContain$isContainActiveFeature");
       if (isContainActiveFeature) {
         int timestamp = DateTime.now().millisecondsSinceEpoch;
 

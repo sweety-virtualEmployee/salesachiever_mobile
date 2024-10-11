@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_pdfview/flutter_pdfview.dart';
 import 'package:salesachiever_mobile/shared/widgets/buttons/psa_Share_button.dart';
 import 'package:salesachiever_mobile/shared/widgets/layout/psa_scaffold.dart';
-import 'package:share/share.dart';
+import 'package:share_plus/share_plus.dart';
 
 class DynamicStaffzoneDocumentView extends StatefulWidget {
   final String filePath;
@@ -34,9 +34,11 @@ class _DynamicStaffzoneDocumentViewState extends State<DynamicStaffzoneDocumentV
     final file = File(filePath);
 
     if (file.existsSync()) {
-      Share.shareFiles(
-        [file.path],
-        text: 'Sharing PDF file',
+      final xFile = XFile(filePath);
+      Share.shareXFiles(
+          [xFile], // Path to the file wrapped in XFile
+          text: 'pdf document',
+          subject: 'pdf document'// Optional subject
       );
     } else {
       print('PDF file does not exist at the specified path');

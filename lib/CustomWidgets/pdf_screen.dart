@@ -10,7 +10,7 @@ import 'package:salesachiever_mobile/shared/widgets/buttons/psa_Share_button.dar
 import 'package:salesachiever_mobile/shared/widgets/buttons/psa_edit_button.dart';
 import 'package:salesachiever_mobile/shared/widgets/layout/psa_scaffold.dart';
 import 'package:salesachiever_mobile/utils/decode_base64_util.dart';
-import 'package:share/share.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:signature/signature.dart';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
@@ -153,9 +153,11 @@ class _PDFViewerPageState extends State<PDFViewerPage> {
     final file = File(filePath);
 
     if (file.existsSync()) {
-      Share.shareFiles(
-        [file.path],
-        text: 'Sharing PDF file',
+      final xFile = XFile(filePath);
+      Share.shareXFiles(
+          [xFile], // Path to the file wrapped in XFile
+          text: 'sharing pdf file',
+          subject: 'sharing pdf file'// Optional subject
       );
     } else {
       print('PDF file does not exist at the specified path');
