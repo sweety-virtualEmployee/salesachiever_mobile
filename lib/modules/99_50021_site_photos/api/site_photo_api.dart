@@ -26,11 +26,6 @@ class SitePhotoApi {
       }
     ];
     filterData = jsonEncode(filterBy);
-
-    /*Response response = await _api
-        .get('/LIST/ACPIC/?searchText=%25&pageSize=20&pageNumber=1', [
-      {'key': 'FilterSet', 'headers': jsonEncode(filterBy)}
-    ]);*/
     Response response = await _api
         .get('/Document/$actionId');
     return response.data;

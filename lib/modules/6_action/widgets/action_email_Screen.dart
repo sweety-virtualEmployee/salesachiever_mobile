@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_pdfview/flutter_pdfview.dart';
+import 'package:intl/intl.dart';
 import 'package:loader_overlay/loader_overlay.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:salesachiever_mobile/modules/6_action/services/action_service.dart';
@@ -78,7 +79,9 @@ class _ActionEmailScreenState extends State<ActionEmailScreen> {
       final directory = await getApplicationDocumentsDirectory();
       final projectId = widget.action["PROJECT_ID"] ?? '';
       final projectTitle = widget.action["PROJECT_TITLE"] ?? '';
-      final fileValue = '${directory.path}/$projectId $projectTitle.pdf'.trim();
+      final date = DateFormat('dd-MM-yyyy').format(DateTime.parse( widget.action["ACTION_DATE"]));
+      print("action${widget.action}");
+      final fileValue = '${directory.path}/$projectId $projectTitle SERVICE REPORT $date.pdf'.trim();
       final pdfFile = File(fileValue);
       await pdfFile.writeAsBytes(fileBytes);
 
@@ -100,7 +103,7 @@ class _ActionEmailScreenState extends State<ActionEmailScreen> {
       final xFile = XFile(filePath, mimeType: 'application/pdf');
         Share.shareXFiles(
           [xFile], // Path to the file wrapped in XFile
-            subject: '${widget.action["PROJECT_ID"]} ${widget.action["PROJECT_TITLE"]}'// Optional subject
+            subject: '${widget.action["PROJECT_ID"]} ${widget.action["PROJECT_TITLE"]} SERVICE REPORT ${ DateFormat('dd-MM-yyyy').format(DateTime.parse( widget.action["ACTION_DATE"]))}'// Optional subject
         );
       } else {
         print('PDF file does not exist at the specified path');

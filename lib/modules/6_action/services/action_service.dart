@@ -171,4 +171,9 @@ class ActionService extends EntityService {
   Future<dynamic> questionRptApi(String reportId,String actionId) {
     return _actionApi.questionReportApi(reportId, actionId);
   }
+
+  @override
+  Future<dynamic> getTableTierCategory() {
+    return _actionApi.getTableTierCategoryValues();
+  }
 }

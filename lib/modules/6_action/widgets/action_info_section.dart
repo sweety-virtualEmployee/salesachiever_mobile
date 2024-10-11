@@ -128,13 +128,16 @@ class _ActionInfoSectionState extends State<ActionInfoSection> {
                   ? null
                   : Colors.red,
               icon: Icon(context.platformIcons.rightChevron),
-              onTap: () {
+              onTap: () async {
+                var response = await ActionService().getTableTierCategory();
+                print(response);
                 Navigator.push(
                   context,
                   platformPageRoute(
                     context: context,
                     builder: (BuildContext context) => ActionPhotosScreen(
                       action: widget._action,
+                      category: response["Items"],
                     ),
                   ),
                 );

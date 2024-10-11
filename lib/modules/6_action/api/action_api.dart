@@ -98,4 +98,9 @@ class ActionApi {
     Response response = await _api.get('/ACTION/Actions.QuestionReport?ReportId=$reportId&ActionId=$actionId');
     return response.data;
   }
+
+  Future<void> getTableTierCategoryValues() async {
+    Response response = await _api.get('/System/Table.Data/tbl_TIER2/?searchtext=%25&pageSize=-1&pageNumber=0');
+    return response.data;
+  }
 }

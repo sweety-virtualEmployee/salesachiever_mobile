@@ -390,9 +390,9 @@ class PhotoTile extends StatelessWidget {
       onTap: () => onTap(),
       child: Container(
         decoration: BoxDecoration(
-          color: isSelected ? Colors.blue.shade400 : Colors.white,
+          color: isSelected ? Colors.white : Colors.white,
           border: Border.all(
-            color: isSelected ? Colors.blue : Colors.grey.shade100,
+            color: isSelected ? Colors.white : Colors.grey.shade100,
             width: 2,
           ),
           boxShadow: [
