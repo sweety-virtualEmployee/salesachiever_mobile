@@ -10,6 +10,7 @@ import 'package:loader_overlay/loader_overlay.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:salesachiever_mobile/modules/6_action/screens/action_attachment_screen.dart';
 import 'package:salesachiever_mobile/modules/6_action/screens/action_photo_preview_screen.dart';
+import 'package:salesachiever_mobile/modules/6_action/services/action_service.dart';
 import 'package:salesachiever_mobile/modules/99_50021_site_photos/services/site_photo_service.dart';
 import 'package:salesachiever_mobile/shared/widgets/buttons/psa_add_button.dart';
 import 'package:salesachiever_mobile/shared/widgets/buttons/psa_camera_button.dart';
@@ -152,6 +153,8 @@ class _ActionPhotosScreenState extends State<ActionPhotosScreen> {
                       itemBuilder: (BuildContext context, int index) {
                         bool isSelected =
                             _selectedImages.contains(_imageList[index]);
+                        print(isSelected);
+                        print("isSelected");
                         return Stack(
                           children: [
                             PhotoTile(
@@ -163,7 +166,7 @@ class _ActionPhotosScreenState extends State<ActionPhotosScreen> {
                               description:
                                   _imageList[index]['DESCRIPTION'] ?? '',
                               isSelected: isSelected,
-                              isDelete: false,
+                              isDelete: true,
                               onTap: () {
                                 if (_isSelectionMode) {
                                   setState(() {
@@ -254,101 +257,114 @@ class _ActionPhotosScreenState extends State<ActionPhotosScreen> {
     );
   }
 
-  void _showBottomSheet(
-      BuildContext context, List<Map<String, dynamic>> selectedImages) {
+  void _showBottomSheet(BuildContext context, List<Map<String, dynamic>> selectedImages) {
     showModalBottomSheet(
       context: context,
       builder: (BuildContext context) {
-        String category = 'Select Category';
         bool showPhoto = false;
         bool abort = false;
         String? selectedCategoryId; // Store the selected TIER2_ID
+
         return StatefulBuilder(
-            builder: (BuildContext context, StateSetter setState) {
-          return Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20.0,vertical: 8.00),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                SizedBox(height: 10),
-                Row(
-                  children: [
-                    Text("Category"),
-                    Spacer(),
-                    DropdownButton<String>(
-                      value: selectedCategoryId,
-                      hint: Text('Select Category'),
-                      items: widget.category.map((category) {
-                        return DropdownMenuItem<String>(
-                          value: category['TIER2_ID'],  // Store TIER2_ID as the value
-                          child: Text(category['DESCRIPTION']),  // Display DESCRIPTION
-                        );
-                      }).toList(),
-                      onChanged: (String? newValue) {
-                        setState(() {
-                          selectedCategoryId = newValue;  // Update the selected TIER2_ID
-                        });
-                      },
-                    ),
-                  ],
-                ),
-                SizedBox(height: 5),
-                Row(
-                  children: [
-                    Text('Show Photo'),
-                    Spacer(),
-                    Checkbox(
-                      value: showPhoto,
-                      onChanged: (bool? value) {
-                        setState(() {
-                          showPhoto = value!;
-                        });
-                      },
-                    ),
-                    // Optional label you can keep or remove
-                  ],
-                ),
-                Row(
-                  children: [
-                    Text('Abort'),
-                    Spacer(),
-                    Checkbox(
-                      value: abort,
-                      onChanged: (bool? value) {
-                        setState(() {
-                          abort = value!;
-                        });
-                      },
-                    ),
-                    // Optional label you can keep or remove
-                  ],
-                ),
-                SizedBox(height: 20),
-                ElevatedButton(
-                  onPressed: () {
-                    setState(() {
-                      for (var image in selectedImages) {
-                        image['CATEGORY'] = selectedCategoryId;  // Store the selected category
-                        image['SHOWPHOTO'] = showPhoto;
-                        image['ABORT'] = abort;
-                      }
-                    });
-                    Navigator.pop(context);
-                    uploadImages();
-                  },
-                  style: ElevatedButton.styleFrom(
-                    minimumSize: Size(double.infinity, 50), // Button takes full width
-                    textStyle: TextStyle(fontSize: 16),
+          builder: (BuildContext context, StateSetter bottomSheetSetState) {
+            return Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 8.00),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  SizedBox(height: 10),
+                  Row(
+                    children: [
+                      Text("Category"),
+                      Spacer(),
+                      DropdownButton<String>(
+                        value: selectedCategoryId,
+                        hint: Text('Select Category'),
+                        items: widget.category.map((category) {
+                          return DropdownMenuItem<String>(
+                            value: category['TIER2_ID'],  // Store TIER2_ID as the value
+                            child: Text(category['DESCRIPTION']),  // Display DESCRIPTION
+                          );
+                        }).toList(),
+                        onChanged: (String? newValue) {
+                          bottomSheetSetState(() {
+                            selectedCategoryId = newValue;  // Update the selected TIER2_ID
+                          });
+                        },
+                      ),
+                    ],
                   ),
-                  child: Text('Save'),
-                ),
-              ],
-            ),
-          );
-        });
+                  SizedBox(height: 5),
+                  Row(
+                    children: [
+                      Text('Show Photo'),
+                      Spacer(),
+                      Checkbox(
+                        value: showPhoto,
+                        onChanged: (bool? value) {
+                          bottomSheetSetState(() {
+                            showPhoto = value!;
+                          });
+                        },
+                      ),
+                    ],
+                  ),
+                  Row(
+                    children: [
+                      Text('Abort'),
+                      Spacer(),
+                      Checkbox(
+                        value: abort,
+                        onChanged: (bool? value) {
+                          bottomSheetSetState(() {
+                            abort = value!;
+                          });
+                        },
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 20),
+                  ElevatedButton(
+                    onPressed: () async {
+                      // Update images with new values
+                      setState(() {
+                        for (var image in selectedImages) {
+                          image['CATEGORY_ID'] = selectedCategoryId;
+                          image['SHOW_PHOTO'] = showPhoto;
+                          image['ABORT'] = abort;
+                          updateAction(widget.action["ACTION_ID"], image);
+                        }
+                      });
+
+                      // Dismiss the bottom sheet
+                      Navigator.pop(context);
+
+                      // After closing the bottom sheet, update the selection mode and clear the selected images
+                      setState(() {
+                        _isSelectionMode = false; // Turn off selection mode
+                        _selectedImages.clear();  // Clear selected images
+                      });
+                    },
+                    style: ElevatedButton.styleFrom(
+                      minimumSize: Size(double.infinity, 50), // Button takes full width
+                      textStyle: TextStyle(fontSize: 16),
+                    ),
+                    child: Text('Save'),
+                  ),
+                ],
+              ),
+            );
+          },
+        );
       },
     );
+  }
+
+
+
+  Future updateAction(String actionId, dynamic image) async {
+    await ActionService().updateAction(actionId, image);
   }
 
   Future uploadImages() async {
@@ -386,8 +402,6 @@ class _ActionPhotosScreenState extends State<ActionPhotosScreen> {
           await SitePhotoService().updateBlob(image['BLOB_ID'], blob);
         }
       }
-
-      // Ensure the images are fetched only after all uploads/updates are done
       await _fetchImages();
     } on DioError catch (e) {
       ErrorUtil.showErrorMessage(context, e.message);

@@ -12,15 +12,16 @@ import 'package:salesachiever_mobile/shared/widgets/layout/psa_scaffold.dart';
 import 'package:salesachiever_mobile/utils/error_util.dart';
 import 'package:salesachiever_mobile/utils/message_util.dart';
 import 'package:share_plus/share_plus.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 class ActionEmailScreen extends StatefulWidget {
   ActionEmailScreen({
     Key? key,
     required this.action,
+    required this.projectNo
   }) : super(key: key);
 
   final Map<String, dynamic> action;
+  final String projectNo;
 
   @override
   State<ActionEmailScreen> createState() => _ActionEmailScreenState();
@@ -37,22 +38,6 @@ class _ActionEmailScreenState extends State<ActionEmailScreen> {
     fetchActionQuestionReportId();
   }
 
-  void launchEmailSubmission() async {
-    final Uri params = Uri(
-      scheme: 'mailto',
-      path: 'myOwnEmailAddress@gmail.com',
-      queryParameters: {
-        'subject': 'Default Subject',
-        'body': 'Default body',
-      },
-    );
-    String url = params.toString();
-    if (await canLaunch(url)) {
-      await launch(url);
-    } else {
-      print('Could not launch $url');
-    }
-  }
 
   fetchActionQuestionReportId() async {
     context.loaderOverlay.show(); // Show loader
@@ -77,11 +62,11 @@ class _ActionEmailScreenState extends State<ActionEmailScreen> {
     try {
       final fileBytes = base64Decode(base64String);
       final directory = await getApplicationDocumentsDirectory();
-      final projectId = widget.action["PROJECT_ID"] ?? '';
       final projectTitle = widget.action["PROJECT_TITLE"] ?? '';
       final date = DateFormat('dd-MM-yyyy').format(DateTime.parse( widget.action["ACTION_DATE"]));
       print("action${widget.action}");
-      final fileValue = '${directory.path}/$projectId $projectTitle SERVICE REPORT $date.pdf'.trim();
+      print("action${widget.projectNo}");
+      final fileValue = '${directory.path}/${widget.projectNo} $projectTitle SERVICE REPORT $date.pdf'.trim();
       final pdfFile = File(fileValue);
       await pdfFile.writeAsBytes(fileBytes);
 
@@ -103,7 +88,7 @@ class _ActionEmailScreenState extends State<ActionEmailScreen> {
       final xFile = XFile(filePath, mimeType: 'application/pdf');
         Share.shareXFiles(
           [xFile], // Path to the file wrapped in XFile
-            subject: '${widget.action["PROJECT_ID"]} ${widget.action["PROJECT_TITLE"]} SERVICE REPORT ${ DateFormat('dd-MM-yyyy').format(DateTime.parse( widget.action["ACTION_DATE"]))}'// Optional subject
+            subject: '${widget.projectNo} ${widget.action["PROJECT_TITLE"]} SERVICE REPORT ${ DateFormat('dd-MM-yyyy').format(DateTime.parse( widget.action["ACTION_DATE"]))}'// Optional subject
         );
       } else {
         print('PDF file does not exist at the specified path');

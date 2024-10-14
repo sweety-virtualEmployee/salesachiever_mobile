@@ -176,4 +176,8 @@ class ActionService extends EntityService {
   Future<dynamic> getTableTierCategory() {
     return _actionApi.getTableTierCategoryValues();
   }
+
+  Future<dynamic> updateAction(String actionId,dynamic image) {
+    return _actionApi.updateActionCategory(actionId,image);
+  }
 }

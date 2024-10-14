@@ -103,4 +103,19 @@ class ActionApi {
     Response response = await _api.get('/System/Table.Data/tbl_TIER2/?searchtext=%25&pageSize=-1&pageNumber=0');
     return response.data;
   }
+
+  Future<dynamic> updateActionCategory(String actionId, dynamic image) async {
+    Response response = await _api.put('/Document/$actionId', {
+      "ENTITY_ID": image["ENTITY_ID"],
+      "ENTITY_NAME": "ACTION",
+      "BLOB_TYPE": image["BLOB_TYPE"],
+      "BLOB_ID": image["BLOB_ID"],
+      "FILENAME": image["FILENAME"],
+      "DESCRIPTION": image["DESCRIPTION"],
+      "ABORT": image["ABORT"],
+      "SHOW_PHOTO": image["SHOW_PHOTO"],
+      "CATEGORY_ID": image["CATEGORY_ID"],
+    });
+    return response.data;
+  }
 }

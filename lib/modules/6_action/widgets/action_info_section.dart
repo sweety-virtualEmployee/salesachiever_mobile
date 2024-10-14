@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:salesachiever_mobile/data/access_codes.dart';
+import 'package:salesachiever_mobile/modules/5_project/services/project_service.dart';
 import 'package:salesachiever_mobile/modules/6_action/screens/action_info_screen.dart';
 import 'package:salesachiever_mobile/modules/6_action/services/action_service.dart';
 import 'package:salesachiever_mobile/modules/6_action/widgets/action_email_Screen.dart';
@@ -172,13 +173,16 @@ class _ActionInfoSectionState extends State<ActionInfoSection> {
                   ? null
                   : Colors.red,
               icon: Icon(context.platformIcons.rightChevron),
-              onTap: () {
+              onTap: () async {
+                var response = await ProjectService().getEntity(widget._action["PROJECT_ID"]);
+                print(response.data["PROJECT_NO"]);
                 Navigator.push(
                   context,
                   platformPageRoute(
                     context: context,
                     builder: (BuildContext context) => ActionEmailScreen(
                       action: widget._action,
+                      projectNo:response.data["PROJECT_NO"],
                     ),
                   ),
                 );
