@@ -18,7 +18,7 @@ import 'package:salesachiever_mobile/utils/error_util.dart';
 import 'package:salesachiever_mobile/utils/lang_util.dart';
 import 'package:salesachiever_mobile/utils/success_util.dart';
 import 'package:signature/signature.dart';
-import 'package:image_gallery_saver/image_gallery_saver.dart';
+//import 'package:image_gallery_saver/image_gallery_saver.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -432,7 +432,7 @@ class _ActionSignatureState extends State<ActionSignature> {
   }
 
   Future<void> saveImageToGallery(Uint8List byteList) async {
-    if (await Permission.storage.request().isGranted) {
+  /*  if (await Permission.storage.request().isGranted) {
       final result = await ImageGallerySaver.saveImage(byteList);
       if (result['isSuccess']) {
         print("Image saved to gallery successfully!");
@@ -441,7 +441,7 @@ class _ActionSignatureState extends State<ActionSignature> {
       }
     } else {
       print("Storage permission not granted.");
-    }
+    }*/
   }
 
   @override
