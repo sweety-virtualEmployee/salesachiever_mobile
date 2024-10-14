@@ -114,8 +114,8 @@ class _ProjectInfoScreenState extends State<ProjectInfoScreen> {
                       setState(() => _readonly = !_readonly);
 
                       Navigator.pop(context);
-                    } on DioError catch (e) {
-                      ErrorUtil.showErrorMessage(context, e.message);
+                    } on DioException catch (e) {
+                      ErrorUtil.showErrorMessage(context, e.message!);
                     } catch (e) {
                       ErrorUtil.showErrorMessage(
                           context, MessageUtil.getMessage('500'));

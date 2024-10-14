@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:salesachiever_mobile/data/action_types.dart';
 import 'package:salesachiever_mobile/modules/dynamic_module/5_dynamic_project/screens/action/dynamic_action_tab.dart';
 import 'package:salesachiever_mobile/shared/widgets/layout/psa_scaffold.dart';

@@ -46,8 +46,8 @@ class _ActionEmailScreenState extends State<ActionEmailScreen> {
       var response = await ActionService().questionRptApi(
           result["Items"][0]["VAR_VALUE"], widget.action["ACTION_ID"]);
       await fetchPdfFilePath(response["Value"]);
-    } on DioError catch (e) {
-      ErrorUtil.showErrorMessage(context, e.message);
+    } on DioException catch (e) {
+      ErrorUtil.showErrorMessage(context, e.message!);
     } catch (e) {
       ErrorUtil.showErrorMessage(
         context,
@@ -99,9 +99,11 @@ class _ActionEmailScreenState extends State<ActionEmailScreen> {
   Widget build(BuildContext context) {
     return LoaderOverlay(
       useDefaultLoading: true,
-      overlayWidget: Center(
-        child: CircularProgressIndicator(),
-      ),
+      overlayWidgetBuilder:(_){
+        return Center(
+          child: CircularProgressIndicator(),
+        );
+      },
       child: PsaScaffold(
         title: '',
         showHome: false,

@@ -1,6 +1,5 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
 import 'package:loader_overlay/loader_overlay.dart';
 import 'package:provider/provider.dart';
 import 'package:salesachiever_mobile/modules/10_opportunities/services/opportunity_service.dart';
@@ -428,7 +427,7 @@ class _DynamicQuotationEditScreenState extends State<DynamicQuotationEditScreen>
       context.loaderOverlay.show();
       if (widget.entityType.toUpperCase() == "COMPANY") {
         if (_dynamicTabProvider.getQuotationEntity['ACCT_ID'] != null) {
-          await CompanyService().updateEntity(_dynamicTabProvider.getQuotationEntity!['ACCT_ID'], _dynamicTabProvider.getQuotationEntity);
+          await CompanyService().updateEntity(_dynamicTabProvider.getQuotationEntity['ACCT_ID'], _dynamicTabProvider.getQuotationEntity);
         } else {
           var newEntity = await CompanyService().addNewEntity(_dynamicTabProvider.getQuotationEntity);
           _dynamicTabProvider.getQuotationEntity['ACCT_ID'] = newEntity['ACCT_ID'];
@@ -461,14 +460,14 @@ class _DynamicQuotationEditScreenState extends State<DynamicQuotationEditScreen>
         }
       } else if (widget.entityType.toUpperCase() == "ACTION"||widget.entityType.toUpperCase() == "ACTIONS") {
         if (_dynamicTabProvider.getQuotationEntity['ACTION_ID'] != null) {
-          await ActionService().updateEntity(_dynamicTabProvider.getQuotationEntity!['ACTION_ID'], _dynamicTabProvider.getQuotationEntity);
+          await ActionService().updateEntity(_dynamicTabProvider.getQuotationEntity['ACTION_ID'], _dynamicTabProvider.getQuotationEntity);
         } else {
           var newEntity = await ActionService().addNewEntity(_dynamicTabProvider.getQuotationEntity);
           _dynamicTabProvider.getQuotationEntity['ACTION_ID'] = newEntity['ACTION_ID'];
         }
       } else if (widget.entityType.toUpperCase() == "OPPORTUNITY") {
         if (_dynamicTabProvider.getQuotationEntity['DEAL_ID'] != null) {
-          await OpportunityService().updateEntity(_dynamicTabProvider.getQuotationEntity!['DEAL_ID'], _dynamicTabProvider.getQuotationEntity);
+          await OpportunityService().updateEntity(_dynamicTabProvider.getQuotationEntity['DEAL_ID'], _dynamicTabProvider.getQuotationEntity);
         } else {
           var newEntity = await OpportunityService().addNewEntity(_dynamicTabProvider.getQuotationEntity);
           _dynamicTabProvider.getQuotationEntity['DEAL_ID'] = newEntity['DEAL_ID'];
@@ -501,16 +500,22 @@ class _DynamicQuotationEditScreenState extends State<DynamicQuotationEditScreen>
       }
       _dynamicTabProvider.setQuotationEntity( _dynamicTabProvider.getQuotationEntity);
       _dynamicTabProvider.setReadOnly(!_dynamicTabProvider.getReadOnly);
-    } on DioError catch (e) {
+    } on DioException catch (e) {
       _dynamicTabProvider.setQuotationEntity(_dynamicTabProvider.getQuotationEntity);
-      print("data ${e.error[0]["Data"]}");
       List<String> values = [];
-      for (int i = 0; i < e.error[0]["Data"].length; i++) {
-        String fieldString = LangUtil.getString(widget.entityType, e.error[0]["Data"][i]); // Replace this with the actual LangUtil.getString call
-        values.add(fieldString);
+      if (e.error is List) {
+        List<dynamic> errorList = e.error as List<dynamic>;
+        if (errorList.isNotEmpty && errorList[0] is Map) {
+          Map<String, dynamic> errorData = errorList[0] as Map<String, dynamic>;
+          var dataList = errorData["Data"] as List? ?? [];
+          for (int i = 0; i < dataList.length; i++) {
+            String fieldString = LangUtil.getString(widget.entityType, dataList[i]);
+            values.add(fieldString);
+          }
+          print("values: $values");
+          ErrorUtil.showErrorMessage(context, "${errorData["Message"]}\n${values}");
+        }
       }
-      print("values$values");
-      ErrorUtil.showErrorMessage(context, "${e.error[0]["Message"]}\n${values}");
     } catch (e) {
       ErrorUtil.showErrorMessage(context, MessageUtil.getMessage('500'));
     } finally {

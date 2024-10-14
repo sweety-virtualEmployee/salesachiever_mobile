@@ -520,8 +520,8 @@ class _DynamicStaffZoneEditScreenState
                                     staffZoneType: widget.staffZoneType),
                                 ),
                               );
-                            } on DioError catch (e) {
-                              ErrorUtil.showErrorMessage(context, e.message);
+                            } on DioException catch (e) {
+                              ErrorUtil.showErrorMessage(context, e.message!);
                             } catch (e) {
                               ErrorUtil.showErrorMessage(
                                   context, MessageUtil.getMessage('500'));
@@ -672,7 +672,7 @@ class _DynamicStaffZoneEditScreenState
         var bytes = File('$_dir/$uuid.zip').readAsBytesSync();
         String base64Image = base64Encode(bytes);
         var blob = {
-          'DESCRIPTION': (image as Map<String, dynamic>)['DESCRIPTION'],
+          'DESCRIPTION': (image)['DESCRIPTION'],
           'ENTITY_ID': _entity['ENTITY_ID'],
           'ENTITY_NAME': widget.tableName,
           'FILENAME': '${_entity['ENTITY_ID']}' '$uuid' '',
@@ -696,8 +696,8 @@ class _DynamicStaffZoneEditScreenState
 
       await _dynamicStaffZoneProvider.setStaffZoneEntity(result);
       Navigator.pop(context);
-    } on DioError catch (e) {
-      ErrorUtil.showErrorMessage(context, e.message);
+    } on DioException catch (e) {
+      ErrorUtil.showErrorMessage(context, e.message!);
     } catch (e) {
       ErrorUtil.showErrorMessage(context, MessageUtil.getMessage('500'));
     } finally {
@@ -743,8 +743,8 @@ class _DynamicStaffZoneEditScreenState
       }
       Navigator.pop(context);
       fetchData();
-    } on DioError catch (e) {
-      ErrorUtil.showErrorMessage(context, e.message);
+    } on DioException catch (e) {
+      ErrorUtil.showErrorMessage(context, e.message!);
     } catch (e) {
       ErrorUtil.showErrorMessage(context, MessageUtil.getMessage('500'));
     } finally {

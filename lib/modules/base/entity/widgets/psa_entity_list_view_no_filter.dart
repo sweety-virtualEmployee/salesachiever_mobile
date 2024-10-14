@@ -2,15 +2,9 @@ import 'dart:async';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:salesachiever_mobile/modules/11_Potentials/services/potential_service.dart';
 import 'package:salesachiever_mobile/modules/base/entity/models/entity.dart';
-import 'package:salesachiever_mobile/modules/base/entity/models/entity_list_stream.dart';
-import 'package:salesachiever_mobile/shared/screens/filtering/slected_filter_fields_screen.dart';
-import 'package:salesachiever_mobile/shared/screens/sorting/slected_sort_fields_screen.dart';
-import 'package:salesachiever_mobile/modules/base/entity/services/entity_service.dart';
 import 'package:salesachiever_mobile/shared/widgets/elements/psa_progress_indicator.dart';
 import 'package:salesachiever_mobile/shared/widgets/error_view.dart';
 import 'package:salesachiever_mobile/utils/lang_util.dart';

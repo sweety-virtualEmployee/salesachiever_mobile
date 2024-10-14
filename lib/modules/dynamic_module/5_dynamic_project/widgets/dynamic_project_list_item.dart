@@ -60,10 +60,8 @@ class _ProjectListItemWidgetState
       for (var format in formats) {
         var dateFormat = DateFormat(format);
         DateTime dateTime = dateFormat.parseStrict(input);
-        if (dateTime != null) {
-          return true;
-        }
-      }
+        return true;
+            }
       return false; // None of the formats matched
     } catch (e) {
       return false; // Parsing error means it's not a date

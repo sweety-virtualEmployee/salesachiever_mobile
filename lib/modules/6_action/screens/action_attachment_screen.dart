@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'dart:io';
-import 'dart:typed_data';
 import 'package:dio/dio.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:loader_overlay/loader_overlay.dart';
@@ -177,8 +176,8 @@ class _ActionAttachmentScreenState extends State<ActionAttachmentScreen> {
       });*/
 
       _fetchImages();
-    } on DioError catch (e) {
-      ErrorUtil.showErrorMessage(context, e.message);
+    } on DioException catch (e) {
+      ErrorUtil.showErrorMessage(context, e.message!);
     } catch (e) {
       ErrorUtil.showErrorMessage(context, MessageUtil.getMessage('500'));
     } finally {

@@ -189,7 +189,7 @@ class _LoginScreenState extends State<LoginScreen> {
           (route) => false,
         );
       }
-    } on DioError catch (e) {
+    } on DioException catch (e) {
       Navigator.pop(context);
       if (e.response?.statusCode.toString() == '401') {
         String message = e.response?.data['Errors'][0]['Message'] ?? '0';

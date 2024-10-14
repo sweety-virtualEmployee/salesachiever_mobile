@@ -140,8 +140,8 @@ class _ContactListItemWidgetState
               },
             ),
           ).then((value) => widget.refresh());
-        } on DioError catch (e) {
-          ErrorUtil.showErrorMessage(context, e.message);
+        } on DioException catch (e) {
+          ErrorUtil.showErrorMessage(context, e.message!);
         } catch (e) {
           ErrorUtil.showErrorMessage(context, MessageUtil.getMessage('500'));
         } finally {

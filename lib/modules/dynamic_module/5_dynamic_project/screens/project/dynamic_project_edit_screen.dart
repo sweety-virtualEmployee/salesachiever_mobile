@@ -1,13 +1,8 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
 import 'package:loader_overlay/loader_overlay.dart';
 import 'package:provider/provider.dart';
-import 'package:salesachiever_mobile/modules/10_opportunities/services/opportunity_service.dart';
-import 'package:salesachiever_mobile/modules/3_company/services/company_service.dart';
-import 'package:salesachiever_mobile/modules/4_contact/services/contact_service.dart';
 import 'package:salesachiever_mobile/modules/5_project/services/project_service.dart';
-import 'package:salesachiever_mobile/modules/6_action/services/action_service.dart';
 import 'package:salesachiever_mobile/modules/dynamic_module/5_dynamic_project/api/dynamic_project_api.dart';
 import 'package:salesachiever_mobile/modules/dynamic_module/5_dynamic_project/provider/dynamic_tab_provider.dart';
 import 'package:salesachiever_mobile/modules/dynamic_module/5_dynamic_project/widgets/common_header.dart';
@@ -439,16 +434,22 @@ class _DynamicProjectEditScreenState extends State<DynamicProjectEditScreen> {
         }
       _dynamicTabProvider.setProjectEntity( _dynamicTabProvider.getProjectEntity);
       _dynamicTabProvider.setReadOnly(!_dynamicTabProvider.getReadOnly);
-    } on DioError catch (e) {
+    } on DioException catch (e) {
       _dynamicTabProvider.setProjectEntity(_dynamicTabProvider.getProjectEntity);
-      print("data ${e.error[0]["Data"]}");
       List<String> values = [];
-      for (int i = 0; i < e.error[0]["Data"].length; i++) {
-        String fieldString = LangUtil.getString(widget.entityType, e.error[0]["Data"][i]); // Replace this with the actual LangUtil.getString call
-        values.add(fieldString);
+      if (e.error is List) {
+        List<dynamic> errorList = e.error as List<dynamic>;
+        if (errorList.isNotEmpty && errorList[0] is Map) {
+          Map<String, dynamic> errorData = errorList[0] as Map<String, dynamic>;
+          var dataList = errorData["Data"] as List? ?? [];
+          for (int i = 0; i < dataList.length; i++) {
+            String fieldString = LangUtil.getString(widget.entityType, dataList[i]);
+            values.add(fieldString);
+          }
+          print("values: $values");
+          ErrorUtil.showErrorMessage(context, "${errorData["Message"]}\n${values}");
+        }
       }
-      print("values$values");
-      ErrorUtil.showErrorMessage(context, "${e.error[0]["Message"]}\n${values}");
     } catch (e) {
       ErrorUtil.showErrorMessage(context, MessageUtil.getMessage('500'));
     } finally {

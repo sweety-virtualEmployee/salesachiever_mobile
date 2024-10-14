@@ -1,7 +1,5 @@
 import 'package:dio/dio.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:loader_overlay/loader_overlay.dart';
 import 'package:salesachiever_mobile/modules/10_opportunities/services/opportunity_service.dart';
@@ -259,8 +257,8 @@ class _OpportunityEditScreenState extends State<OpportunityEditScreen> {
       }
 
       setState(() => _readonly = !_readonly);
-    } on DioError catch (e) {
-      ErrorUtil.showErrorMessage(context, e.message);
+    } on DioException catch (e) {
+      ErrorUtil.showErrorMessage(context, e.message!);
     } catch (e) {
       ErrorUtil.showErrorMessage(context, MessageUtil.getMessage('500'));
     } finally {

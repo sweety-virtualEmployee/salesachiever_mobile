@@ -72,9 +72,9 @@ class _DynamicProjectNotesState extends State<DynamicProjectNotes> {
       }
       setState(() => _readonly = !_readonly);
     }
-    on DioError catch (e) {
+    on DioException catch (e) {
       print("error value$e");
-      ErrorUtil.showErrorMessage(context, e.message);
+      ErrorUtil.showErrorMessage(context, e.message!);
     } catch (e) {
       ErrorUtil.showErrorMessage(context, MessageUtil.getMessage('500'));
     } finally {

@@ -1,6 +1,5 @@
 
 
-import 'dart:developer';
 import 'package:dio/dio.dart';
 import 'package:salesachiever_mobile/utils/message_util.dart';
 import 'package:salesachiever_mobile/utils/storage_util.dart';
@@ -19,8 +18,8 @@ class Api {
         'Accept': 'application/json',
       },
       responseType: ResponseType.json,
-      connectTimeout: 120000,
-      receiveTimeout: 300000,
+      connectTimeout: Duration(milliseconds: 120000),
+      receiveTimeout: Duration(milliseconds:300000),
     );
 
     _dio = Dio(options);
@@ -51,14 +50,14 @@ class Api {
         // If you want to reject the request with a error message,
         // you can reject a `DioError` object eg: return `dio.reject(dioError)`
       },
-      onError: (DioError e, handler) {
+      onError: (DioException e, handler) {
         print('Dio eEdfhbs: ${e.response?.statusCode}');
         print('Dio eEdfhbs: ${e.response}');
 
         var message =
             MessageUtil.getMessage(e.response?.statusCode.toString() ?? '500');
 
-        var error = DioError(requestOptions: e.requestOptions, error: e.response?.data?["Errors"]);
+        var error = DioException(requestOptions: e.requestOptions, error: e.response?.data?["Errors"]);
 
         // Do something with response error
         return handler.next(error); //continue

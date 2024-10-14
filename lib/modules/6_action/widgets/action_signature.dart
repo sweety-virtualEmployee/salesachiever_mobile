@@ -2,9 +2,6 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 import 'package:archive/archive.dart';
-import 'package:dio/dio.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:image/image.dart' as img;
 import 'dart:ui' as ui;
@@ -19,7 +16,6 @@ import 'package:salesachiever_mobile/shared/widgets/forms/psa_textfield_row.dart
 import 'package:salesachiever_mobile/shared/widgets/layout/psa_scaffold.dart';
 import 'package:salesachiever_mobile/utils/error_util.dart';
 import 'package:salesachiever_mobile/utils/lang_util.dart';
-import 'package:salesachiever_mobile/utils/message_util.dart';
 import 'package:salesachiever_mobile/utils/success_util.dart';
 import 'package:signature/signature.dart';
 import 'package:image_gallery_saver/image_gallery_saver.dart';
@@ -410,7 +406,7 @@ class _ActionSignatureState extends State<ActionSignature> {
       await Future.delayed(Duration(milliseconds: 100));
       Navigator.pop(context);
       final pickedFile =
-          await ImagePicker().getImage(source: ImageSource.gallery);
+          await ImagePicker().pickImage(source: ImageSource.gallery);
       if (pickedFile != null) {
         final uploadBytes = await pickedFile.readAsBytes();
         await convertAndUploadImage(uploadBytes, context);
@@ -451,11 +447,13 @@ class _ActionSignatureState extends State<ActionSignature> {
   @override
   Widget build(BuildContext context) {
     return LoaderOverlay(
-      overlayWidget: Center(
-        child: CircularProgressIndicator(),
-      ),
+      overlayWidgetBuilder:(_){
+        return Center(
+          child: CircularProgressIndicator(),
+        );
+      },
       overlayColor: Colors.black.withOpacity(0.5),
-      overlayOpacity: 0.7,
+      //overlayOpacity: 0.7,
       child: PsaScaffold(
         action: signatureField['BLOB_ID'] != null
             ? PsaEditButton(

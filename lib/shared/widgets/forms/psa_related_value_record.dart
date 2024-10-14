@@ -1,6 +1,5 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:loader_overlay/loader_overlay.dart';
 import 'package:salesachiever_mobile/modules/10_opportunities/screens/opportunity_edit_screen.dart';
@@ -10,7 +9,6 @@ import 'package:salesachiever_mobile/modules/4_contact/screens/contact_list_scre
 import 'package:salesachiever_mobile/modules/5_project/screens/project_edit_screen.dart';
 import 'package:salesachiever_mobile/modules/5_project/screens/project_list_screen.dart';
 import 'package:salesachiever_mobile/modules/5_project/services/project_service.dart';
-import 'package:salesachiever_mobile/modules/dynamic_module/dynamic_staffzone/dynamic_Staffzone_list_Screen.dart';
 import 'package:salesachiever_mobile/shared/screens/related_entity_screen.dart';
 
 import '../../../modules/10_opportunities/services/opportunity_service.dart';

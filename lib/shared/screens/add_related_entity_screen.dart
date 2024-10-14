@@ -9,7 +9,6 @@ import 'package:salesachiever_mobile/modules/3_company/services/company_service.
 import 'package:salesachiever_mobile/modules/5_project/screens/project_list_screen.dart';
 import 'package:salesachiever_mobile/modules/5_project/services/project_service.dart';
 import 'package:salesachiever_mobile/modules/dynamic_module/5_dynamic_project/provider/dynamic_tab_provider.dart';
-import 'package:salesachiever_mobile/modules/dynamic_module/5_dynamic_project/services/dynamic_project_service.dart';
 import 'package:salesachiever_mobile/shared/screens/related_entity_screen.dart';
 import 'package:salesachiever_mobile/shared/widgets/buttons/psa_edit_button.dart';
 import 'package:salesachiever_mobile/shared/widgets/forms/psa_list_picker.dart';
@@ -17,7 +16,6 @@ import 'package:salesachiever_mobile/shared/widgets/forms/psa_related_entity_row
 import 'package:salesachiever_mobile/shared/widgets/layout/psa_scaffold.dart';
 import 'package:salesachiever_mobile/utils/auth_util.dart';
 import 'package:salesachiever_mobile/utils/lang_util.dart';
-import 'package:salesachiever_mobile/utils/success_util.dart';
 
 class AddRelatedEntityScreen extends StatefulWidget {
   final String? linkId;

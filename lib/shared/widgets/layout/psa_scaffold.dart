@@ -28,24 +28,26 @@ class PsaScaffold extends StatelessWidget {
     return LoaderOverlay(
       useDefaultLoading: false,
       closeOnBackButton: true,
-      overlayWidget: Center(
-        child: SizedBox(
-          width: 70,
-          height: 70,
-          child: Container(
-            decoration: BoxDecoration(
-              color: Color(0xFFFAFAFAFA).withOpacity(0.7),
-              borderRadius: BorderRadius.all(
-                new Radius.circular(8.0),
+      overlayWidgetBuilder:(_) {
+        return Center(
+          child: SizedBox(
+            width: 70,
+            height: 70,
+            child: Container(
+              decoration: BoxDecoration(
+                color: Color(0xFFFAFAFAFA).withOpacity(0.7),
+                borderRadius: BorderRadius.all(
+                  new Radius.circular(8.0),
+                ),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: PlatformCircularProgressIndicator(),
               ),
             ),
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: PlatformCircularProgressIndicator(),
-            ),
           ),
-        ),
-      ),
+        );
+      },
       child: PlatformScaffold(
         appBar: PlatformAppBar(
           automaticallyImplyLeading: false,

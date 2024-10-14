@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:salesachiever_mobile/data/access_codes.dart';
 import 'package:salesachiever_mobile/modules/2_list_manager/screens/list_manager_list_screen.dart';
@@ -8,7 +7,6 @@ import 'package:salesachiever_mobile/shared/widgets/psa_menu_item.dart';
 import 'package:salesachiever_mobile/shared/widgets/layout/psa_scaffold.dart';
 import 'package:salesachiever_mobile/utils/auth_util.dart';
 import 'package:salesachiever_mobile/utils/lang_util.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class ListCategoryScreen extends StatelessWidget {
   const ListCategoryScreen({Key? key}) : super(key: key);

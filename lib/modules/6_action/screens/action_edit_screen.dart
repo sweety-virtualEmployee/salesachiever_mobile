@@ -272,9 +272,9 @@ class _ActionEditScreenState extends State<ActionEditScreen> {
         ErrorUtil.showErrorMessage(context, 'Start Date cannot be later than End Date');
       }
 
-    } on DioError catch (e) {
+    } on DioException catch (e) {
       print(e.toString());
-      ErrorUtil.showErrorMessage(context, e.message);
+      ErrorUtil.showErrorMessage(context, e.message!);
     } catch (e) {
       if (!newAct) {
         print(e.toString());

@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_phone_direct_caller/flutter_phone_direct_caller.dart';
 import 'package:loader_overlay/loader_overlay.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:salesachiever_mobile/CustomWidgets/CustomUrlLauncher.dart';
 import 'package:salesachiever_mobile/modules/3_company/screens/company_edit_screen.dart';
 import 'package:salesachiever_mobile/modules/3_company/services/company_service.dart';
 import 'package:salesachiever_mobile/modules/base/entity/widgets/entity_list_item.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 class CompanyListItemWidget extends EntityListItemWidget {
   const CompanyListItemWidget({

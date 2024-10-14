@@ -1,6 +1,4 @@
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:salesachiever_mobile/shared/widgets/related_entity_widget.dart';
 import 'package:salesachiever_mobile/utils/lang_util.dart';
 

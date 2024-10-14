@@ -124,9 +124,9 @@ class _LinkedCompanyListItemWidgetState
                                       },
                                     ),
                                   ).then((value) => widget.refresh());
-                                } on DioError catch (e) {
+                                } on DioException catch (e) {
                                   ErrorUtil.showErrorMessage(
-                                      context, e.message);
+                                      context, e.message!);
                                 } catch (e) {
                                   ErrorUtil.showErrorMessage(
                                       context, MessageUtil.getMessage('500'));

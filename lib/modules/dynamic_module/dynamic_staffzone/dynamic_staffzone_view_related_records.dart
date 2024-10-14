@@ -1,6 +1,4 @@
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:salesachiever_mobile/modules/3_company/screens/company_list_screen.dart';
 import 'package:salesachiever_mobile/modules/4_contact/screens/contact_list_screen.dart';

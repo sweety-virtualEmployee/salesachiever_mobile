@@ -80,9 +80,11 @@ class _ActionSiteTierValueState extends State<ActionSiteTierValue> {
         builder: (context, provider, child) {
         return LoaderOverlay(
           useDefaultLoading: true,
-          overlayWidget: Center(
-            child: CircularProgressIndicator(),
-          ),
+          overlayWidgetBuilder:(_){
+            return Center(
+              child: CircularProgressIndicator(),
+            );
+          },
           child: PsaScaffold(
             showHome: false,
             body: ListView.separated(

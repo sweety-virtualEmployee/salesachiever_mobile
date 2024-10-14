@@ -193,8 +193,8 @@ class _DynamicSignatureViewerPageState
       );
 
       await fetchPdfFilePath(encodedString);
-    } on DioError catch (e) {
-      ErrorUtil.showErrorMessage(context, e.message);
+    } on DioException catch (e) {
+      ErrorUtil.showErrorMessage(context, e.message!);
     } catch (e) {
       ErrorUtil.showErrorMessage(
         context,
@@ -259,9 +259,9 @@ class _DynamicSignatureViewerPageState
 
       Navigator.pop(context);
       Navigator.pop(context);
-    } on DioError catch (e) {
+    } on DioException catch (e) {
       print("e,tv${e.toString()}");
-      ErrorUtil.showErrorMessage(context, e.message);
+      ErrorUtil.showErrorMessage(context, e.message!);
     } catch (e) {
       print("catch${e.toString()}");
       ErrorUtil.showErrorMessage(
