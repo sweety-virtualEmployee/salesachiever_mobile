@@ -1,4 +1,4 @@
-package com.constructioncrm.universal
+package com.constructioncrm.universalappApp
 
 import io.flutter.embedding.android.FlutterActivity
 

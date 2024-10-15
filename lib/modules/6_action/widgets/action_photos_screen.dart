@@ -327,7 +327,6 @@ class _ActionPhotosScreenState extends State<ActionPhotosScreen> {
                   SizedBox(height: 20),
                   ElevatedButton(
                     onPressed: () async {
-                      // Update images with new values
                       setState(() {
                         for (var image in selectedImages) {
                           image['CATEGORY_ID'] = selectedCategoryId;
@@ -336,11 +335,7 @@ class _ActionPhotosScreenState extends State<ActionPhotosScreen> {
                           updateAction(widget.action["ACTION_ID"], image);
                         }
                       });
-
-                      // Dismiss the bottom sheet
                       Navigator.pop(context);
-
-                      // After closing the bottom sheet, update the selection mode and clear the selected images
                       setState(() {
                         _isSelectionMode = false; // Turn off selection mode
                         _selectedImages.clear();  // Clear selected images
@@ -417,10 +412,11 @@ class _ActionPhotosScreenState extends State<ActionPhotosScreen> {
     setState(() {
       isLoading = true;
     });
-    _imageList.clear();
+    _imageList.clear(); // Clear previous images
 
     int pageNumber = 1;
     bool loadMore = true;
+    Map<String, List<Map<String, dynamic>>> groupedImages = {};
 
     while (loadMore) {
       var response = await SitePhotoService()
@@ -433,6 +429,7 @@ class _ActionPhotosScreenState extends State<ActionPhotosScreen> {
             _imageList = []; // Initialize _imageList to an empty array
           });
         } else {
+          // Filter images (only jpg, jpeg, png)
           List<dynamic> imageFiles = files.where((file) {
             String filename = file['FILENAME'] ?? '';
             return filename.isNotEmpty &&
@@ -441,16 +438,12 @@ class _ActionPhotosScreenState extends State<ActionPhotosScreen> {
                     filename.endsWith('.jpeg') ||
                     filename.endsWith('.png'));
           }).toList();
-          setState(() {
-            isLoading = false;
-            _imageList.addAll(imageFiles);
-          });
-          print("after loading$isLoading");
 
-          for (var i = 0; i < _imageList.length; i++) {
-            if (_imageList[i]['BLOB_TYPE'] == "1") {
+          for (var i = 0; i < imageFiles.length; i++) {
+            if (imageFiles[i]['BLOB_TYPE'] == "1") {
+              // Handle BLOB_TYPE 1 (e.g., downloading PDF)
               SitePhotoService()
-                  .getBlobById(_imageList[i]['BLOB_ID'])
+                  .getBlobById(imageFiles[i]['BLOB_ID'])
                   .then((blob) async {
                 var decodedBytes = base64.decode(blob.replaceAll('\r\n', ''));
                 final archive = ZipDecoder().decodeBytes(decodedBytes);
@@ -465,7 +458,7 @@ class _ActionPhotosScreenState extends State<ActionPhotosScreen> {
                   await pdfFile.writeAsBytes(file.content);
                   setState(() {
                     int index = _imageList.indexWhere(
-                        (element) => element['BLOB_ID'] == files[i]['BLOB_ID']);
+                            (element) => element['BLOB_ID'] == files[i]['BLOB_ID']);
                     if (index != -1) {
                       _imageList[index]['FILEPATH'] = filePath;
                     }
@@ -480,18 +473,16 @@ class _ActionPhotosScreenState extends State<ActionPhotosScreen> {
                 if (outFile != null) {
                   setState(() {
                     int index = _imageList.indexWhere(
-                        (element) => element['BLOB_ID'] == files[i]['BLOB_ID']);
+                            (element) => element['BLOB_ID'] == files[i]['BLOB_ID']);
                     if (index != -1) {
                       _imageList[index]['FILE'] = outFile;
                     }
                   });
                 }
               });
-            } else if (_imageList[i]['BLOB_TYPE'] == "2") {
-              print("blob_id");
-              print(_imageList[i]['BLOB_ID']);
+            } else if (imageFiles[i]['BLOB_TYPE'] == "2") {
               var decodedBytes = base64
-                  .decode(_imageList[i]['BLOB_DATA'].replaceAll('\r\n', ''));
+                  .decode(imageFiles[i]['BLOB_DATA'].replaceAll('\r\n', ''));
               final archive = ZipDecoder().decodeBytes(decodedBytes);
               final directory = await getApplicationDocumentsDirectory();
               final uniqueFileName =
@@ -508,12 +499,28 @@ class _ActionPhotosScreenState extends State<ActionPhotosScreen> {
               }
               if (outFile != null) {
                 setState(() {
-                  _imageList[i]['FILE'] = outFile;
-                  _imageList[i]['FILEPATH'] = outFile?.path;
+                  imageFiles[i]['FILE'] = outFile;
+                  imageFiles[i]['FILEPATH'] = outFile?.path;
                 });
               }
             }
           }
+
+          // Group images by CATEGORY_ID
+          for (var file in imageFiles) {
+            String categoryId = file['CATEGORY_ID'] ?? 'undefined'; // Default to 'undefined' if no CATEGORY_ID
+            if (!groupedImages.containsKey(categoryId)) {
+              groupedImages[categoryId] = [];
+            }
+            groupedImages[categoryId]!.add(file);
+          }
+
+          setState(() {
+            isLoading = false;
+            _imageList = imageFiles; // Update _imageList with the new images
+          });
+
+          print("after loading$isLoading");
         }
       } catch (e) {
         setState(() {
@@ -521,9 +528,13 @@ class _ActionPhotosScreenState extends State<ActionPhotosScreen> {
           _imageList = []; // Initialize _imageList to an empty array
         });
       }
-      print(_imageList);
+      print("CATEGORY_ID Keys:");
+      groupedImages.keys.forEach((categoryId) {
+        print(categoryId); // This will print each CATEGORY_ID
+      }); // Output grouped images for debugging
       loadMore = false;
       pageNumber++;
     }
   }
+
 }
